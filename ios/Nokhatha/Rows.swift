@@ -113,6 +113,12 @@ struct TaskSheet: View {
                     wide(model.t("act.done"), primary: true) { model.done(e); dismiss() }
                     wide(model.t("act.snooze"), primary: false) { model.snooze(e); dismiss() }
                 }
+                Button(role: .destructive) {
+                    model.update(e.item.tpl == nil ? "toast.deleted" : "toast.stopped") { $0.stop(e.item.id) }
+                    dismiss()
+                } label: {
+                    Text(e.item.tpl == nil ? model.t("act.delete") : model.t("act.stop")).font(Theme.body(15, "SemiBold")).frame(maxWidth: .infinity).frame(height: 44)
+                }
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 24)

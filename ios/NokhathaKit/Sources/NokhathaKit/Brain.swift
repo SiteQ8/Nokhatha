@@ -193,6 +193,128 @@ public struct Brain: Sendable {
         }
     }
 
+    // MARK: first run, editing
+
+    public static let countries: [String: (cc: String, len: Int, cur: String)] = [
+        "KW": ("965", 8, "KWD"), "SA": ("966", 9, "SAR"), "AE": ("971", 9, "AED"),
+        "QA": ("974", 8, "QAR"), "BH": ("973", 8, "BHD"), "OM": ("968", 8, "OMR"),
+    ]
+    public static let countryOrder = ["KW", "SA", "AE", "QA", "BH", "OM"]
+
+    /// The questions of "when was the last time?", in the web app's order.
+    public static let lastKeys = ["ac_filters", "pests", "water_tank", "water_filter", "hood", "smoke", "oil", "tire_pressure"]
+    public static let lastOptions: [(key: String, days: Int?)] = [("unknown", nil), ("month", 15), ("m3", 90), ("m6", 180), ("year", 365)]
+
+    public struct Setup: Sendable {
+        public var country = "KW"
+        public var homeType = "house"
+        public var homeName = ""
+        public var features: [String: Bool] = ["central_ac": false, "tank": true, "filter": false]
+        public var extras: [(title: String, months: Int)] = []
+        public var hasCar = true
+        public var carName = ""
+        public var km: Int?
+        public var things: [String] = []
+        public var otherName = ""
+        public init() {}
+    }
+
+    /// Creates what the person described and returns the ids of the new home, car and belongings.
+    public mutating func setUp(_ s: Setup, names: (home: String, car: String, thing: (String) -> String)) -> [String] {
+        state.settings.country = s.country
+        state.settings.currency = Brain.countries[s.country]?.cur ?? "KWD"
+        let home = addHome(type: s.homeType, name: s.homeName.trimmingCharacters(in: .whitespaces).isEmpty ? names.home : s.homeName, features: s.features)
+        var created = [home.id]
+        for x in s.extras { addCustom(title: x.title, every: Every(months: x.months), to: home.id) }
+        if s.hasCar {
+            created.append(addCar(name: s.carName.trimmingCharacters(in: .whitespaces).isEmpty ? names.car : s.carName, km: s.km).id)
+        }
+        for type in s.things {
+            let name = type == "other" && !s.otherName.trimmingCharacters(in: .whitespaces).isEmpty ? s.otherName : names.thing(type)
+            created.append(addThing(type: type, name: name).id)
+        }
+        return created
+    }
+
+    /// Applies "when was the last time?" answers, then plans the first dates of the rest.
+    public mutating func finishSetUp(created: [String], answers: [String: String]) {
+        for (id, key) in answers {
+            guard let days = Brain.lastOptions.first(where: { $0.key == key })?.days,
+                  let i = state.items.firstIndex(where: { $0.id == id }) else { continue }
+            state.items[i].lastDone = today.adding(-days).iso
+            if let a = asset(state.items[i].asset), a.kind == .car, set(every(state.items[i]).km) != nil, let car = a.car, let now = kmOn(car, today) {
+                state.items[i].lastKm = max(0, now - days * (car.dailyKm > 0 ? car.dailyKm : Engine.defaultDailyKm))
+            }
+        }
+        spreadNew(created)
+        state.settings.onboarded = true
+    }
+
+    public func lastQuestions(created: [String]) -> [Item] {
+        state.items.filter { Brain.lastKeys.contains($0.tpl ?? "") && $0.isOn && created.contains($0.asset) }
+            .sorted { Brain.lastKeys.firstIndex(of: $0.tpl!)! < Brain.lastKeys.firstIndex(of: $1.tpl!)! }
+    }
+
+    /// Templates that can still be added to an asset.
+    public func addable(to assetId: String) -> [Template] {
+        guard let a = asset(assetId) else { return [] }
+        let have = Set(state.items.filter { $0.asset == assetId && $0.isOn }.compactMap(\.tpl))
+        let type = state.things.first { $0.id == assetId }?.type
+        return catalog.templates.filter { $0.kind == a.kind.rawValue && (a.kind != .thing || $0.forType == type) && !have.contains($0.id) }
+    }
+
+    public mutating func addTemplate(_ tplId: String, to assetId: String) {
+        if let i = state.items.firstIndex(where: { $0.asset == assetId && $0.tpl == tplId }) {
+            state.items[i].enabled = true
+        } else {
+            state.items.append(Item(id: newID(), asset: assetId, tpl: tplId))
+        }
+    }
+
+    public mutating func addCustom(title: String, every: Every, to assetId: String) {
+        state.items.append(Item(id: newID(), asset: assetId, tpl: nil, title: title, every: every))
+    }
+
+    /// Suggested tasks are switched off, one's own tasks are removed.
+    public mutating func stop(_ itemId: String) {
+        guard let i = state.items.firstIndex(where: { $0.id == itemId }) else { return }
+        if state.items[i].tpl == nil { state.items.remove(at: i) } else { state.items[i].enabled = false }
+    }
+
+    public mutating func removeAsset(_ id: String) {
+        state.homes.removeAll { $0.id == id }
+        state.cars.removeAll { $0.id == id }
+        state.things.removeAll { $0.id == id }
+        state.items.removeAll { $0.asset == id }
+    }
+
+    public mutating func addReading(car id: String, km: Int, on day: Day) {
+        guard let i = state.cars.firstIndex(where: { $0.id == id }) else { return }
+        var r = (state.cars[i].readings ?? []).filter { $0.date != day.iso }
+        r.append(Reading(date: day.iso, km: km))
+        state.cars[i].readings = r.sorted { $0.date < $1.date }
+    }
+
+    public mutating func saveSub(_ sub: Sub) {
+        if let i = state.subs.firstIndex(where: { $0.id == sub.id }) { state.subs[i] = sub } else { state.subs.append(sub) }
+    }
+
+    /// The answer to "still using it?" for the coming renewal.
+    public mutating func answer(sub id: String, keep: Bool) {
+        guard let i = state.subs.firstIndex(where: { $0.id == id }), let v = subs().first(where: { $0.id == id }) else { return }
+        var usage = state.subs[i].usage ?? [:]
+        usage[v.next.iso] = keep ? "yes" : "no"
+        state.subs[i].usage = usage
+    }
+
+    public mutating func cancelSub(_ id: String) {
+        guard let i = state.subs.firstIndex(where: { $0.id == id }) else { return }
+        state.subs[i].cancelled = true
+        state.subs[i].cancelledOn = today.iso
+    }
+
+    public mutating func deleteSub(_ id: String) { state.subs.removeAll { $0.id == id } }
+
     // MARK: sample household, the same as the web app's
 
     public static func sample(catalog: Catalog, lang: String, today: Day) -> AppState {

@@ -42,7 +42,7 @@ jobs:
       - name: Screenshots in Arabic and English
         working-directory: ios
         run: |
-          UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; print([x['udid'] for k,v in sorted(d.items(), reverse=True) if 'iOS' in k for x in v if x['name'].startswith('iPhone 16 Pro') or x['name'].startswith('iPhone 1')][0])")
+          UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; ok=[x for k,v in sorted(d.items(), reverse=True) if 'iOS' in k for x in v if x['name'].startswith('iPhone')]; pick=[x for x in ok if 'Pro Max' in x['name']] or ok; print(pick[0]['udid'])")
           echo "device $UDID"
           xcrun simctl boot "$UDID"
           xcrun simctl bootstatus "$UDID" -b
@@ -61,6 +61,10 @@ jobs:
           xcrun simctl launch "$UDID" com.eworldq8.nokhatha -AppleLanguages "(ar)"
           sleep 6
           xcrun simctl io "$UDID" screenshot "shots/ar-welcome.png"
+          xcrun simctl terminate "$UDID" com.eworldq8.nokhatha || true
+          xcrun simctl launch "$UDID" com.eworldq8.nokhatha -screen setup -lang ar -AppleLanguages "(ar)"
+          sleep 6
+          xcrun simctl io "$UDID" screenshot "shots/ar-setup.png"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

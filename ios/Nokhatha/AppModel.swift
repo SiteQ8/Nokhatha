@@ -4,6 +4,11 @@ import NokhathaKit
 import SwiftUI
 import UserNotifications
 
+enum Onboarding: Equatable {
+    case setup
+    case last([String])
+}
+
 struct Toast: Identifiable, Equatable {
     let id = UUID()
     let text: String
@@ -18,6 +23,7 @@ final class AppModel: ObservableObject {
     @Published var today = Day.today()
     @Published var toast: Toast?
     @Published var tab: String
+    @Published var onboarding: Onboarding?
 
     private let file: URL = {
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -30,7 +36,10 @@ final class AppModel: ObservableObject {
         catalog = try! Catalog.load(from: data)
         let defaults = UserDefaults.standard
         tab = defaults.string(forKey: "tab") ?? "today"
-        if defaults.bool(forKey: "sample") {
+        if defaults.string(forKey: "screen") == "setup" {
+            state = AppState(lang: defaults.string(forKey: "lang") ?? AppModel.deviceLang)
+            onboarding = .setup
+        } else if defaults.bool(forKey: "sample") {
             state = Brain.sample(catalog: catalog, lang: defaults.string(forKey: "lang") ?? AppModel.deviceLang, today: today)
         } else if let d = try? Data(contentsOf: file), let s = try? JSONDecoder().decode(AppState.self, from: d) {
             state = s
@@ -57,7 +66,7 @@ final class AppModel: ObservableObject {
         Reminders.schedule(model: self)
     }
 
-    private func change(_ toastKey: String? = nil, _ vars: [String: String] = [:], _ body: (inout Brain) -> Void) {
+    func update(_ toastKey: String? = nil, _ vars: [String: String] = [:], _ body: (inout Brain) -> Void) {
         let before = state
         var b = brain
         body(&b)
@@ -68,19 +77,19 @@ final class AppModel: ObservableObject {
 
     func done(_ e: Evaluated) {
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        change("toast.done", ["title": e.title(lang)]) { $0.markDone(e.item.id) }
+        update("toast.done", ["title": e.title(lang)]) { $0.markDone(e.item.id) }
     }
 
     func snooze(_ e: Evaluated) {
-        change("toast.snoozed", ["date": words.date(today.adding(7), today: today)]) { $0.snooze(e.item.id) }
+        update("toast.snoozed", ["date": words.date(today.adding(7), today: today)]) { $0.snooze(e.item.id) }
     }
 
-    func renew(_ e: Evaluated) { change("toast.saved") { $0.renew(e.item.id) } }
+    func renew(_ e: Evaluated) { update("toast.saved") { $0.renew(e.item.id) } }
 
     func setDue(_ e: Evaluated, _ d: Date) {
         let c = Calendar.current.dateComponents([.year, .month, .day], from: d)
         let day = Day(y: c.year!, m: c.month!, d: c.day!)
-        change("toast.saved") { b in
+        update("toast.saved") { b in
             if let i = b.state.items.firstIndex(where: { $0.id == e.item.id }) { b.state.items[i].due = day.iso }
         }
     }
@@ -95,6 +104,34 @@ final class AppModel: ObservableObject {
     func startWithSample() {
         state = Brain.sample(catalog: catalog, lang: lang, today: today)
         save()
+    }
+
+    static func guessCountry() -> String {
+        let zones = ["Asia/Kuwait": "KW", "Asia/Riyadh": "SA", "Asia/Dubai": "AE", "Asia/Qatar": "QA", "Asia/Bahrain": "BH", "Asia/Muscat": "OM"]
+        if let c = zones[TimeZone.current.identifier] { return c }
+        if let r = Locale.current.region?.identifier, Brain.countries[r] != nil { return r }
+        return "KW"
+    }
+
+    func thingName(_ type: String) -> String { catalog.thingTypes.first { $0.id == type }?.name(lang) ?? type }
+
+    func beginSetup() {
+        if state == nil { state = AppState(lang: lang) }
+        onboarding = .setup
+    }
+
+    func runSetup(_ draft: Brain.Setup) {
+        var b = brain
+        let created = b.setUp(draft, names: (home: t("type." + draft.homeType), car: t("car.default"), thing: { [catalog, lang] type in
+            catalog.thingTypes.first { $0.id == type }?.name(lang) ?? type
+        }))
+        state = b.state
+        onboarding = .last(created)
+    }
+
+    func finishSetup(_ created: [String], answers: [String: String]) {
+        update { $0.finishSetUp(created: created, answers: answers) }
+        onboarding = nil
     }
 
     func startFresh() {

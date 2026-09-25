@@ -69,7 +69,7 @@ enum Symbol {
         "boat": "sailboat", "bike": "scooter", "waves": "water.waves", "leaf": "leaf", "tent": "tent", "paw": "pawprint",
         "box": "shippingbox", "dust": "aqi.medium", "rain": "cloud.rain", "sun": "sun.max", "spark": "sparkle", "bell": "bell",
         "play": "play.circle", "music": "music.note", "cloud": "cloud", "game": "gamecontroller", "gym": "dumbbell",
-        "wifi": "wifi", "phone": "phone", "apps": "square.grid.2x2",
+        "wifi": "wifi", "phone": "phone", "apps": "square.grid.2x2", "close": "xmark", "plus": "plus", "edit": "pencil", "trash": "trash",
     ]
     static func name(_ icon: String) -> String { map[icon] ?? "sparkle" }
 }

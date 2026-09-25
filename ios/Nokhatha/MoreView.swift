@@ -32,6 +32,27 @@ struct MoreView: View {
                     }
                     .pickerStyle(.segmented)
 
+                    SectionTitle(text: model.t("settings.country"))
+                    Picker(model.t("settings.country"), selection: Binding(get: { model.state?.settings.country ?? "KW" }, set: { c in
+                        model.update { b in
+                            let before = Brain.countries[b.state.settings.country]?.cur
+                            b.state.settings.country = c
+                            if b.state.settings.currency == before { b.state.settings.currency = Brain.countries[c]?.cur ?? "KWD" }
+                        }
+                    })) {
+                        ForEach(Brain.countryOrder, id: \.self) { c in Text(model.t("country." + c)).tag(c) }
+                    }
+                    .pickerStyle(.menu).tint(Theme.ink)
+                    Picker(model.t("settings.currency"), selection: Binding(get: { model.state?.settings.currency ?? "KWD" }, set: { c in model.update { $0.state.settings.currency = c } })) {
+                        ForEach(["KWD", "SAR", "AED", "QAR", "BHD", "OMR", "USD"], id: \.self) { c in Text("\(c)  \(model.t("cur." + c))").tag(c) }
+                    }
+                    .pickerStyle(.menu).tint(Theme.ink)
+                    SectionTitle(text: model.t("settings.lead"))
+                    Picker(model.t("settings.lead"), selection: Binding(get: { model.state?.settings.lead ?? 7 }, set: { n in model.update { $0.state.settings.lead = n } })) {
+                        ForEach([3, 7, 14], id: \.self) { n in Text(model.words.dayCount(n)).tag(n) }
+                    }
+                    .pickerStyle(.segmented)
+
                     SectionTitle(text: model.t("settings.notify"))
                     Text(model.state?.settings.notify == true ? model.t("notify.state_on") : model.t("notify.ios_ready"))
                         .font(Theme.body(14)).foregroundStyle(Theme.ink2).lineSpacing(4)

@@ -32,6 +32,10 @@ struct RootView: View {
                     MoreView().tabItem { Label(model.t("tab.more"), systemImage: Symbol.name("more")) }.tag("more")
                 }
                 .tint(Theme.ink)
+            } else if model.onboarding == .setup {
+                SetupView()
+            } else if case .last(let created) = model.onboarding {
+                LastTimeView(created: created)
             } else {
                 WelcomeView()
             }

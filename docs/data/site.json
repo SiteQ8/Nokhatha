@@ -73,7 +73,8 @@
     "x_things": "Anything else you want to track, like a boat, a generator, a pool, a garden or a camp, or something you name yourself with your own tasks",
     "q6": "How do weather alerts know my area?",
     "a6": "You pick your area from the list or let the app find your location, which is rounded to about 10 km before it is sent to Open-Meteo for the dust, rain and heat forecast. Dust is judged against what is usual for your own area, and the connection only happens if you turn weather on.",
-    "x_weather": "Dust, rain and heat alerts for your area, with dust judged against what is usual there"
+    "x_weather": "Dust, rain and heat alerts for your area, with dust judged against what is usual there",
+    "privacy_link": "Privacy policy"
   },
   "dyn": {
     "ar": {

@@ -70,6 +70,7 @@ struct TodayView: View {
                 } else {
                     TaskList(rows: now, showAsset: true)
                 }
+                if let ask = subs.first(where: { $0.ask || $0.planned }) { AskCard(s: ask).padding(.top, 8) }
                 if let cur, let t = totals[cur] {
                     Button { model.tab = "subs" } label: {
                         Card(padding: 14) {

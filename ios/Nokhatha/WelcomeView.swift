@@ -19,7 +19,7 @@ struct WelcomeView: View {
             .pickerStyle(.segmented)
             .frame(width: 220)
             .padding(.vertical, 6)
-            Button { model.startFresh() } label: {
+            Button { model.beginSetup() } label: {
                 Text(model.t("welcome.start")).font(Theme.body(16, "SemiBold")).frame(maxWidth: .infinity).frame(height: 52)
                     .foregroundStyle(Theme.onInk).background(Theme.ink, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             }

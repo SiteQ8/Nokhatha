@@ -166,7 +166,7 @@ for (const m of html.matchAll(/data-icon="(\w+)"/g)) if (!iconNames.has(m[1])) b
 /* ---------------------------------------------------- pages and security */
 
 if (read('docs/CNAME').trim() !== 'nokhatha.3li.info') bad('docs/CNAME must be nokhatha.3li.info');
-for (const page of ['docs/index.html', 'docs/app/index.html']) {
+for (const page of ['docs/index.html', 'docs/app/index.html', 'docs/privacy/index.html']) {
   const h = read(page);
   if (!/http-equiv="Content-Security-Policy"/.test(h)) bad(`${page}: no content security policy`);
   if (/script-src[^;"]*'unsafe-inline'|style-src[^;"]*'unsafe-inline'/.test(h)) bad(`${page}: the policy allows inline code`);
@@ -188,6 +188,8 @@ const csp = (page) => /content="(default-src[^"]+)"/.exec(read(page))[1];
 const connect = (page) => (/connect-src ([^;]+)/.exec(csp(page)) || [])[1];
 if (connect('docs/app/index.html') !== "'self' https://api.open-meteo.com https://air-quality-api.open-meteo.com") bad('app policy: connect-src must be self and the two weather hosts only');
 if (connect('docs/index.html') !== "'self'") bad('site policy: connect-src must be self only');
+if (connect('docs/privacy/index.html') !== "'self'") bad('privacy page policy: connect-src must be self only');
+for (const m of read('docs/privacy/index.html').matchAll(/<p>([^<]+)</g)) arabicPeriods('privacy/index.html', m[1]);
 
 for (const f of textFiles.filter((x) => /^docs\/.*\.(js|html)$/.test(rel(x)))) {
   const s = readFileSync(f, 'utf8');

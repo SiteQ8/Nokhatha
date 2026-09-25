@@ -4,6 +4,8 @@ import SwiftUI
 
 struct SubsView: View {
     @EnvironmentObject var model: AppModel
+    @State private var editing: Sub?
+    @State private var adding = false
 
     var body: some View {
         let b = model.brain
@@ -25,10 +27,12 @@ struct SubsView: View {
                         }
                     }
                 }
+                ForEach(b.subs().filter { $0.ask || $0.planned }) { s in AskCard(s: s) }
                 SectionTitle(text: model.t("subs.all"))
                 VStack(spacing: 0) {
                     ForEach(Array(subs.enumerated()), id: \.element.id) { i, s in
                         if i > 0 { Divider().overlay(Theme.line) }
+                        Button { editing = s.sub } label: {
                         HStack(spacing: 12) {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(s.sub.name).font(Theme.body(15.5, "SemiBold")).foregroundStyle(s.status == "off" ? Theme.ink3 : Theme.ink)
@@ -44,14 +48,20 @@ struct SubsView: View {
                             }
                         }
                         .padding(14)
+                        .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Theme.line, lineWidth: 1))
+                WideButton(title: model.t("act.add_sub")) { adding = true }.padding(.top, 8)
             }
             .padding(.horizontal, 18)
             .padding(.bottom, 28)
         }
         .background(Theme.bg)
+        .sheet(item: $editing) { s in SubSheet(existing: s).environmentObject(model).presentationDetents([.large]) }
+        .sheet(isPresented: $adding) { SubSheet(existing: nil).environmentObject(model).presentationDetents([.large]) }
     }
 }

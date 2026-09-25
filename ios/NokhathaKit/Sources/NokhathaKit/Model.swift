@@ -165,6 +165,12 @@ public struct Sub: Codable, Hashable, Sendable, Identifiable {
     public var note: String?
     public var cancelled: Bool?
     public var cancelledOn: String?
+
+    public init(id: String, name: String, amount: Int, currency: String, cycle: String, anchor: String, category: String? = nil,
+                usage: [String: String]? = nil, trial: Bool? = nil, note: String? = nil, cancelled: Bool? = nil, cancelledOn: String? = nil) {
+        self.id = id; self.name = name; self.amount = amount; self.currency = currency; self.cycle = cycle; self.anchor = anchor
+        self.category = category; self.usage = usage; self.trial = trial; self.note = note; self.cancelled = cancelled; self.cancelledOn = cancelledOn
+    }
 }
 
 public struct Warranty: Codable, Hashable, Sendable, Identifiable {

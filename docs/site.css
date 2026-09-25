@@ -153,3 +153,11 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 .faq summary::after { content: "+"; flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--bg); color: var(--ink-2); font-weight: 600; font-size: 18px; line-height: 1; }
 .faq details[open] summary::after { content: "\2212"; }
 .faq details p { margin: 0; padding: 0 18px 18px; color: var(--ink-2); line-height: 1.9; }
+
+/* privacy policy */
+.policy { display: grid; gap: 48px; max-width: 860px; }
+.policy h1 { margin: 0 0 6px; font-size: clamp(32px, 4.4vw, 46px); }
+.policy h2 { margin: 26px 0 6px; font-size: 19px; font-weight: 700; }
+.policy p { margin: 0; color: var(--ink-2); line-height: 1.9; max-width: 70ch; }
+.policy a { color: var(--ink); font-weight: 600; }
+.policy article + article { padding-top: 40px; border-top: 1px solid var(--line); }

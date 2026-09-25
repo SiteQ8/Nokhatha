@@ -1,0 +1,116 @@
+name: ios-release
+
+on:
+  push:
+    tags:
+      - "ios-v*"
+  workflow_dispatch:
+
+# Signs Nokhatha and uploads it to App Store Connect (TestFlight) from a macOS runner,
+# so no Mac is needed. Everything sensitive comes from repository secrets:
+#   IOS_CERT_P12        base64 of the Apple Distribution .p12
+#   IOS_CERT_PASSWORD   its password
+#   ASC_KEY_ID          App Store Connect API key id
+#   ASC_ISSUER_ID       App Store Connect API issuer id
+#   ASC_KEY_P8          the .p8 key contents
+# The bundle id and the App Store provisioning profile are created by tools/ios/asc.py.
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select the newest Xcode
+        run: |
+          set -euo pipefail
+          latest=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          sudo xcode-select -s "$latest/Contents/Developer"
+          xcodebuild -version
+
+      - name: Import the distribution certificate
+        env:
+          IOS_CERT_P12: ${{ secrets.IOS_CERT_P12 }}
+          IOS_CERT_PASSWORD: ${{ secrets.IOS_CERT_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN=$RUNNER_TEMP/nokhatha.keychain-db
+          KP=$(uuidgen)
+          security create-keychain -p "$KP" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KP" "$KEYCHAIN"
+          echo "$IOS_CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -P "$IOS_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          rm -f "$RUNNER_TEMP/cert.p12"
+          security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
+          security set-key-partition-list -S apple-tool:,apple: -k "$KP" "$KEYCHAIN" >/dev/null
+          SERIAL=$(security find-certificate -c "Apple Distribution" -p "$KEYCHAIN" | openssl x509 -noout -serial | cut -d= -f2)
+          test -n "$SERIAL"
+          echo "CERT_SERIAL=$SERIAL" >> "$GITHUB_ENV"
+
+      - name: Bundle id and provisioning profile
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --break-system-packages pyjwt cryptography requests
+          UUID=$(python3 tools/ios/asc.py)
+          echo "PROFILE_UUID=$UUID" >> "$GITHUB_ENV"
+
+      - name: Version from the tag
+        run: |
+          V="${GITHUB_REF_NAME#ios-v}"
+          case "$V" in [0-9]*) ;; *) V=$(sed -n 's/.*MARKETING_VERSION: *//p' ios/project.yml | head -1);; esac
+          echo "APP_VERSION=$V" >> "$GITHUB_ENV"
+          echo "version $V build ${{ github.run_number }}"
+
+      - name: Engine against the shared vectors
+        working-directory: ios/NokhathaKit
+        run: swift test
+
+      - name: Archive
+        working-directory: ios
+        run: |
+          set -euo pipefail
+          brew install xcodegen
+          xcodegen generate
+          xcodebuild -project Nokhatha.xcodeproj -scheme Nokhatha -configuration Release \
+            -archivePath "$RUNNER_TEMP/Nokhatha.xcarchive" -destination 'generic/platform=iOS' \
+            CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Apple Distribution" DEVELOPMENT_TEAM=FKZPXUFH45 \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
+            MARKETING_VERSION="$APP_VERSION" CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            clean archive
+
+      - name: Package the IPA
+        run: |
+          set -euo pipefail
+          APP="$RUNNER_TEMP/Nokhatha.xcarchive/Products/Applications/Nokhatha.app"
+          test -f "$APP/Nokhatha" || { echo "app bundle has no executable"; ls -la "$APP"; exit 1; }
+          WORK="$RUNNER_TEMP/ipa"; rm -rf "$WORK"; mkdir -p "$WORK/Payload" "$RUNNER_TEMP/export"
+          cp -R "$APP" "$WORK/Payload/Nokhatha.app"
+          ( cd "$WORK" && zip -qry "$RUNNER_TEMP/export/Nokhatha.ipa" Payload )
+          unzip -l "$RUNNER_TEMP/export/Nokhatha.ipa" | grep -q "Payload/Nokhatha.app/Nokhatha"
+
+      - name: Validate and upload to App Store Connect
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          printf '%s' "$ASC_KEY_P8" > "$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+          IPA="$RUNNER_TEMP/export/Nokhatha.ipa"
+          xcrun altool --validate-app -f "$IPA" -t ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+          xcrun altool --upload-app -f "$IPA" -t ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Nokhatha-ipa
+          path: ${{ runner.temp }}/export/*.ipa
+          if-no-files-found: warn
