@@ -81,8 +81,7 @@ jobs:
           xcodegen generate
           xcodebuild -project Nokhatha.xcodeproj -scheme Nokhatha -configuration Release \
             -archivePath "$RUNNER_TEMP/Nokhatha.xcarchive" -destination 'generic/platform=iOS' \
-            CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Apple Distribution" DEVELOPMENT_TEAM=FKZPXUFH45 \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
+            DEVELOPMENT_TEAM=FKZPXUFH45 NOKHATHA_PROFILE="$PROFILE_UUID" \
             MARKETING_VERSION="$APP_VERSION" CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             clean archive
 
