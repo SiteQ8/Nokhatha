@@ -368,7 +368,8 @@
     "wx.wind": "رياح قوية {day}، فثبّت الأغراض اللي في السطح والحوش.",
     "wx.heat": "حر شديد {day} يوصل {t}°، فلا تخلي السيارة بالشمس وانتبه للبطارية والتواير.",
     "wx.cold": "برد قارس {day} ينزل لين {t}°، فغطّ الزرع وخل الدفايات بعيدة عن الفرش والستاير.",
-    "notify.title_weather": "تنبيه طقس"
+    "notify.title_weather": "تنبيه طقس",
+    "notify.ios_ready": "جهازك ينبهك الساعة 9 الصبح في كل يوم عليك فيه شي، والتنبيهات تنجدول على جهازك نفسه بدون أي سيرفر."
   },
   "en": {
     "app.name": "Nokhatha",
@@ -739,6 +740,7 @@
     "wx.wind": "Strong wind {day}: secure anything loose on the roof and in the yard.",
     "wx.heat": "Extreme heat {day}, up to {t}°: keep the car out of the sun and watch the battery and tires.",
     "wx.cold": "Bitter cold {day}, down to {t}°: cover the plants and keep heaters away from bedding and curtains.",
-    "notify.title_weather": "Weather alert"
+    "notify.title_weather": "Weather alert",
+    "notify.ios_ready": "Your iPhone alerts you at 9 am on each day something is due, scheduled on the device itself with no server."
   }
 }

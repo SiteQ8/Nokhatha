@@ -24,3 +24,47 @@ jobs:
       - name: Shared vectors and properties
         working-directory: ios/NokhathaKit
         run: swift test
+
+  app:
+    name: iPhone app build and screenshots
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate the Xcode project
+        run: brew install xcodegen && cd ios && xcodegen generate
+      - name: Build for the simulator
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild -project Nokhatha.xcodeproj -scheme Nokhatha -sdk iphonesimulator -configuration Debug \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+          test -d build/Build/Products/Debug-iphonesimulator/Nokhatha.app
+      - name: Screenshots in Arabic and English
+        working-directory: ios
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; print([x['udid'] for k,v in sorted(d.items(), reverse=True) if 'iOS' in k for x in v if x['name'].startswith('iPhone 16 Pro') or x['name'].startswith('iPhone 1')][0])")
+          echo "device $UDID"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100 || true
+          xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/Nokhatha.app
+          mkdir -p shots
+          for lang in ar en; do
+            for tab in today home car subs more; do
+              xcrun simctl terminate "$UDID" com.eworldq8.nokhatha || true
+              xcrun simctl launch "$UDID" com.eworldq8.nokhatha -sample YES -tab $tab -lang $lang -AppleLanguages "($lang)"
+              sleep 6
+              xcrun simctl io "$UDID" screenshot "shots/$lang-$tab.png"
+            done
+          done
+          xcrun simctl terminate "$UDID" com.eworldq8.nokhatha || true
+          xcrun simctl launch "$UDID" com.eworldq8.nokhatha -AppleLanguages "(ar)"
+          sleep 6
+          xcrun simctl io "$UDID" screenshot "shots/ar-welcome.png"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: iphone-screenshots
+          path: |
+            ios/shots
+            ios/build.log

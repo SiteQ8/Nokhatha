@@ -1,0 +1,942 @@
+{
+ "today": "2026-09-25",
+ "state": {
+  "v": 1,
+  "settings": {
+   "lang": "ar",
+   "country": "KW",
+   "theme": "auto",
+   "currency": "KWD",
+   "lead": 7,
+   "onboarded": true
+  },
+  "homes": [
+   {
+    "id": "000d1a273441",
+    "kind": "home",
+    "type": "house",
+    "name": "البيت",
+    "features": {
+     "central_ac": false,
+     "tank": true,
+     "filter": true
+    }
+   },
+   {
+    "id": "626f7c8996a3",
+    "kind": "home",
+    "type": "chalet",
+    "name": "الشاليه",
+    "features": {
+     "central_ac": false,
+     "tank": true,
+     "filter": false
+    }
+   }
+  ],
+  "cars": [
+   {
+    "id": "bdcad7e4f1fe",
+    "kind": "car",
+    "name": "سيارتي",
+    "dailyKm": 40,
+    "readings": [
+     {
+      "date": "2026-05-18",
+      "km": 61200
+     },
+     {
+      "date": "2026-09-15",
+      "km": 66050
+     }
+    ]
+   }
+  ],
+  "things": [
+   {
+    "id": "505d6a778491",
+    "kind": "thing",
+    "type": "boat",
+    "name": "الطراد"
+   }
+  ],
+  "items": [
+   {
+    "id": "0714212e3b48",
+    "asset": "000d1a273441",
+    "tpl": "ac_filters",
+    "enabled": true,
+    "lastDone": "2026-08-23",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "0e1b2835424f",
+    "asset": "000d1a273441",
+    "tpl": "ac_service",
+    "enabled": true,
+    "lastDone": "2026-03-31",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-03-31",
+      "cost": 25000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "15222f3c4956",
+    "asset": "000d1a273441",
+    "tpl": "water_tank",
+    "enabled": true,
+    "lastDone": "2026-04-08",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-04-08",
+      "cost": 15000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "1c293643505d",
+    "asset": "000d1a273441",
+    "tpl": "water_filter",
+    "enabled": true,
+    "lastDone": "2026-07-03",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "23303d4a5764",
+    "asset": "000d1a273441",
+    "tpl": "water_heater",
+    "enabled": true,
+    "lastDone": "2025-11-24",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "2a3744515e6b",
+    "asset": "000d1a273441",
+    "tpl": "leaks",
+    "enabled": true,
+    "lastDone": "2026-06-17",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "313e4b586572",
+    "asset": "000d1a273441",
+    "tpl": "roof_drains",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "3845525f6c79",
+    "asset": "000d1a273441",
+    "tpl": "seals",
+    "enabled": true,
+    "lastDone": "2026-05-26",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "3f4c59667380",
+    "asset": "000d1a273441",
+    "tpl": "smoke",
+    "enabled": true,
+    "lastDone": "2026-04-28",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "4653606d7a87",
+    "asset": "000d1a273441",
+    "tpl": "extinguisher",
+    "enabled": true,
+    "lastDone": "2026-03-09",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "4d5a6774818e",
+    "asset": "000d1a273441",
+    "tpl": "gas_hose",
+    "enabled": true,
+    "lastDone": "2026-04-02",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "54616e7b8895",
+    "asset": "000d1a273441",
+    "tpl": "hood",
+    "enabled": true,
+    "lastDone": "2026-08-11",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "5b6875828f9c",
+    "asset": "000d1a273441",
+    "tpl": "pests",
+    "enabled": true,
+    "lastDone": "2026-06-21",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-06-21",
+      "cost": 12000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "697683909daa",
+    "asset": "626f7c8996a3",
+    "tpl": "ac_filters",
+    "enabled": true,
+    "lastDone": "2026-09-05",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "707d8a97a4b1",
+    "asset": "626f7c8996a3",
+    "tpl": "ac_service",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "7784919eabb8",
+    "asset": "626f7c8996a3",
+    "tpl": "water_tank",
+    "enabled": true,
+    "lastDone": "2026-07-27",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "7e8b98a5b2bf",
+    "asset": "626f7c8996a3",
+    "tpl": "water_heater",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "85929facb9c6",
+    "asset": "626f7c8996a3",
+    "tpl": "leaks",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "8c99a6b3c0cd",
+    "asset": "626f7c8996a3",
+    "tpl": "roof_drains",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "93a0adbac7d4",
+    "asset": "626f7c8996a3",
+    "tpl": "seals",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "9aa7b4c1cedb",
+    "asset": "626f7c8996a3",
+    "tpl": "smoke",
+    "enabled": true,
+    "lastDone": "2026-06-27",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "a1aebbc8d5e2",
+    "asset": "626f7c8996a3",
+    "tpl": "extinguisher",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "a8b5c2cfdce9",
+    "asset": "626f7c8996a3",
+    "tpl": "gas_hose",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "afbcc9d6e3f0",
+    "asset": "626f7c8996a3",
+    "tpl": "hood",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "b6c3d0ddeaf7",
+    "asset": "626f7c8996a3",
+    "tpl": "pests",
+    "enabled": true,
+    "lastDone": "2026-08-16",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-08-16",
+      "cost": 10000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "c4d1deebf805",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "oil",
+    "enabled": true,
+    "lastDone": "2026-06-17",
+    "lastKm": 61900,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-06-17",
+      "cost": 18500,
+      "cur": "KWD",
+      "km": 61900
+     }
+    ]
+   },
+   {
+    "id": "cbd8e5f2ff0c",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "air_filter",
+    "enabled": true,
+    "lastDone": "2026-03-09",
+    "lastKm": 57500,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "d2dfecf90613",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "cabin_filter",
+    "enabled": true,
+    "lastDone": "2026-03-19",
+    "lastKm": 58000,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "d9e6f3000d1a",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "car_ac",
+    "enabled": true,
+    "lastDone": "2026-04-06",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "e0edfa071421",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "coolant",
+    "enabled": true,
+    "lastDone": "2026-04-13",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "e7f4010e1b28",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "tires",
+    "enabled": true,
+    "lastDone": "2026-04-18",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-04-18",
+      "cost": 120000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "eefb0815222f",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "tire_pressure",
+    "enabled": true,
+    "lastDone": "2026-08-29",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "f5020f1c2936",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "brake_fluid",
+    "enabled": true,
+    "lastDone": "2025-08-21",
+    "lastKm": 50000,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "fc091623303d",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "battery",
+    "enabled": true,
+    "lastDone": "2026-04-20",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "03101d2a3744",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "wipers",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "0a1724313e4b",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "registration",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": "2026-10-16",
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "111e2b384552",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "insurance",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": "2026-10-16",
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "5764717e8b98",
+    "asset": "505d6a778491",
+    "tpl": "boat_engine",
+    "enabled": true,
+    "lastDone": "2026-04-28",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-04-28",
+      "cost": 45000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "5e6b7885929f",
+    "asset": "505d6a778491",
+    "tpl": "boat_hull",
+    "enabled": true,
+    "lastDone": "2026-07-17",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "65727f8c99a6",
+    "asset": "505d6a778491",
+    "tpl": "boat_safety",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "6c798693a0ad",
+    "asset": "505d6a778491",
+    "tpl": "boat_license",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": "2026-11-09",
+    "snoozeUntil": null,
+    "log": []
+   }
+  ],
+  "subs": [
+   {
+    "id": "1825323f4c59",
+    "name": "منصة الأفلام",
+    "amount": 3500,
+    "currency": "KWD",
+    "cycle": "monthly",
+    "anchor": "2025-12-26",
+    "category": "stream",
+    "usage": {}
+   },
+   {
+    "id": "1f2c39465360",
+    "name": "الموسيقى",
+    "amount": 1990,
+    "currency": "KWD",
+    "cycle": "monthly",
+    "anchor": "2026-01-07",
+    "category": "music",
+    "usage": {}
+   },
+   {
+    "id": "2633404d5a67",
+    "name": "التخزين السحابي",
+    "amount": 990,
+    "currency": "KWD",
+    "cycle": "monthly",
+    "anchor": "2026-09-28",
+    "category": "cloud",
+    "usage": {},
+    "trial": true
+   },
+   {
+    "id": "2d3a4754616e",
+    "name": "النادي الرياضي",
+    "amount": 45000,
+    "currency": "KWD",
+    "cycle": "quarterly",
+    "anchor": "2026-02-04",
+    "category": "gym",
+    "usage": {}
+   },
+   {
+    "id": "34414e5b6875",
+    "name": "إنترنت البيت",
+    "amount": 15000,
+    "currency": "KWD",
+    "cycle": "monthly",
+    "anchor": "2026-01-01",
+    "category": "internet",
+    "usage": {}
+   },
+   {
+    "id": "3b4855626f7c",
+    "name": "برنامج التصميم",
+    "amount": 35000,
+    "currency": "KWD",
+    "cycle": "yearly",
+    "anchor": "2025-11-28",
+    "category": "apps",
+    "usage": {}
+   }
+  ],
+  "warranties": [
+   {
+    "id": "424f5c697683",
+    "name": "الثلاجة",
+    "store": "معرض الأجهزة",
+    "bought": "2025-11-29",
+    "months": 24
+   },
+   {
+    "id": "495663707d8a",
+    "name": "مكيف الصالة",
+    "store": "وكيل المكيفات",
+    "bought": "2024-10-21",
+    "months": 24
+   }
+  ],
+  "techs": [
+   {
+    "id": "73808d9aa7b4",
+    "name": "أبو محمد",
+    "trade": "ac",
+    "phone": "12345678"
+   },
+   {
+    "id": "7a8794a1aebb",
+    "name": "أبو علي",
+    "trade": "plumber",
+    "phone": "12345679"
+   },
+   {
+    "id": "818e9ba8b5c2",
+    "name": "كراج الشويخ",
+    "trade": "mechanic",
+    "phone": "12345680"
+   }
+  ],
+  "travel": {
+   "done": []
+  },
+  "sample": true
+ },
+ "tasks": [
+  {
+   "id": "d2dfecf90613",
+   "due": "2026-09-19",
+   "by": "time",
+   "status": "overdue",
+   "days": -6
+  },
+  {
+   "id": "5b6875828f9c",
+   "due": "2026-09-21",
+   "by": "time",
+   "status": "overdue",
+   "days": -4
+  },
+  {
+   "id": "0714212e3b48",
+   "due": "2026-09-22",
+   "by": "time",
+   "status": "overdue",
+   "days": -3
+  },
+  {
+   "id": "313e4b586572",
+   "due": "2026-09-24",
+   "by": "season",
+   "status": "overdue",
+   "days": -1
+  },
+  {
+   "id": "8c99a6b3c0cd",
+   "due": "2026-09-24",
+   "by": "season",
+   "status": "overdue",
+   "days": -1
+  },
+  {
+   "id": "eefb0815222f",
+   "due": "2026-09-28",
+   "by": "time",
+   "status": "soon",
+   "days": 3
+  },
+  {
+   "id": "03101d2a3744",
+   "due": "2026-10-01",
+   "by": "season",
+   "status": "soon",
+   "days": 6
+  },
+  {
+   "id": "4d5a6774818e",
+   "due": "2026-10-02",
+   "by": "time",
+   "status": "soon",
+   "days": 7
+  },
+  {
+   "id": "0a1724313e4b",
+   "due": "2026-10-16",
+   "by": "fixed",
+   "status": "soon",
+   "days": 21
+  },
+  {
+   "id": "111e2b384552",
+   "due": "2026-10-16",
+   "by": "fixed",
+   "status": "soon",
+   "days": 21
+  },
+  {
+   "id": "1c293643505d",
+   "due": "2026-10-03",
+   "by": "time",
+   "status": "ok",
+   "days": 8
+  },
+  {
+   "id": "697683909daa",
+   "due": "2026-10-05",
+   "by": "time",
+   "status": "ok",
+   "days": 10
+  },
+  {
+   "id": "c4d1deebf805",
+   "due": "2026-10-07",
+   "by": "km",
+   "status": "ok",
+   "days": 12
+  },
+  {
+   "id": "15222f3c4956",
+   "due": "2026-10-08",
+   "by": "time",
+   "status": "ok",
+   "days": 13
+  },
+  {
+   "id": "54616e7b8895",
+   "due": "2026-10-11",
+   "by": "time",
+   "status": "ok",
+   "days": 16
+  },
+  {
+   "id": "5e6b7885929f",
+   "due": "2026-10-17",
+   "by": "time",
+   "status": "ok",
+   "days": 22
+  },
+  {
+   "id": "cbd8e5f2ff0c",
+   "due": "2026-10-21",
+   "by": "km",
+   "status": "ok",
+   "days": 26
+  },
+  {
+   "id": "3f4c59667380",
+   "due": "2026-10-28",
+   "by": "time",
+   "status": "ok",
+   "days": 33
+  },
+  {
+   "id": "5764717e8b98",
+   "due": "2026-10-28",
+   "by": "time",
+   "status": "ok",
+   "days": 33
+  },
+  {
+   "id": "6c798693a0ad",
+   "due": "2026-11-09",
+   "by": "fixed",
+   "status": "ok",
+   "days": 45
+  },
+  {
+   "id": "b6c3d0ddeaf7",
+   "due": "2026-11-16",
+   "by": "time",
+   "status": "ok",
+   "days": 52
+  },
+  {
+   "id": "23303d4a5764",
+   "due": "2026-11-22",
+   "by": "season",
+   "status": "ok",
+   "days": 58
+  },
+  {
+   "id": "2a3744515e6b",
+   "due": "2026-12-17",
+   "by": "time",
+   "status": "ok",
+   "days": 83
+  },
+  {
+   "id": "9aa7b4c1cedb",
+   "due": "2026-12-27",
+   "by": "time",
+   "status": "ok",
+   "days": 93
+  },
+  {
+   "id": "7784919eabb8",
+   "due": "2027-01-27",
+   "by": "time",
+   "status": "ok",
+   "days": 124
+  },
+  {
+   "id": "4653606d7a87",
+   "due": "2027-03-09",
+   "by": "time",
+   "status": "ok",
+   "days": 165
+  },
+  {
+   "id": "0e1b2835424f",
+   "due": "2027-04-01",
+   "by": "season",
+   "status": "ok",
+   "days": 188
+  },
+  {
+   "id": "d9e6f3000d1a",
+   "due": "2027-04-08",
+   "by": "season",
+   "status": "ok",
+   "days": 195
+  },
+  {
+   "id": "e0edfa071421",
+   "due": "2027-04-15",
+   "by": "season",
+   "status": "ok",
+   "days": 202
+  },
+  {
+   "id": "65727f8c99a6",
+   "due": "2027-04-15",
+   "by": "season",
+   "status": "ok",
+   "days": 202
+  },
+  {
+   "id": "e7f4010e1b28",
+   "due": "2027-04-19",
+   "by": "season",
+   "status": "ok",
+   "days": 206
+  },
+  {
+   "id": "fc091623303d",
+   "due": "2027-04-22",
+   "by": "season",
+   "status": "ok",
+   "days": 209
+  },
+  {
+   "id": "3845525f6c79",
+   "due": "2027-05-24",
+   "by": "season",
+   "status": "ok",
+   "days": 241
+  },
+  {
+   "id": "f5020f1c2936",
+   "due": "2027-08-21",
+   "by": "time",
+   "status": "ok",
+   "days": 330
+  }
+ ],
+ "subs": [
+  {
+   "id": "1825323f4c59",
+   "next": "2026-09-26",
+   "days": 1
+  },
+  {
+   "id": "1f2c39465360",
+   "next": "2026-10-07",
+   "days": 12
+  },
+  {
+   "id": "2633404d5a67",
+   "next": "2026-09-28",
+   "days": 3
+  },
+  {
+   "id": "2d3a4754616e",
+   "next": "2026-11-04",
+   "days": 40
+  },
+  {
+   "id": "34414e5b6875",
+   "next": "2026-10-01",
+   "days": 6
+  },
+  {
+   "id": "3b4855626f7c",
+   "next": "2026-11-28",
+   "days": 64
+  }
+ ],
+ "totals": {
+  "KWD": {
+   "month": 39397,
+   "year": 472760,
+   "count": 6
+  }
+ }
+}
