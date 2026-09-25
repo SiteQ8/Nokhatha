@@ -37,7 +37,7 @@ struct RootView: View {
             }
         }
         .environment(\.layoutDirection, model.isArabic ? .rightToLeft : .leftToRight)
-        .environment(\.locale, Locale(identifier: model.isArabic ? "ar_KW" : "en_GB"))
+        .environment(\.locale, Locale(identifier: model.isArabic ? "ar_KW@numbers=latn" : "en_GB"))
         .overlay(alignment: .bottom) {
             if let toast = model.toast {
                 HStack {

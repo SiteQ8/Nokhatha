@@ -21,7 +21,7 @@ struct SectionTitle: View {
             Text(text).font(Theme.title(20)).foregroundStyle(Theme.ink)
             Spacer()
             if let count, count > 0 {
-                Text("\(count)").font(Theme.body(13, "Bold")).foregroundStyle(Theme.overdue)
+                Text(verbatim: String(count)).font(Theme.body(13, "Bold")).foregroundStyle(Theme.overdue)
                     .padding(.horizontal, 9).frame(height: 26).background(Theme.overdue.opacity(0.11), in: Capsule())
             }
         }

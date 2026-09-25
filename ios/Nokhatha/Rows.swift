@@ -24,10 +24,12 @@ struct TaskRow: View {
                         HStack(spacing: 8) {
                             Text(line.rel).font(Theme.body(13.5, "SemiBold")).foregroundStyle(Theme.tint(e.status))
                             if let d = line.detail { Text(d).font(Theme.body(13.5)).foregroundStyle(Theme.ink3) }
-                            if showAsset {
-                                Text(e.asset.name).font(Theme.body(12, "SemiBold")).foregroundStyle(Theme.ink2)
-                                    .padding(.horizontal, 8).background(Theme.ink.opacity(0.07), in: Capsule())
-                            }
+                        }
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                        if showAsset {
+                            Text(e.asset.name).font(Theme.body(12, "SemiBold")).foregroundStyle(Theme.ink2)
+                                .padding(.horizontal, 8).background(Theme.ink.opacity(0.07), in: Capsule())
                         }
                         if let p = model.brain.progress(e) {
                             GeometryReader { g in

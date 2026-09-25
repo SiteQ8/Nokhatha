@@ -18,7 +18,7 @@ struct MoreView: View {
                                 Image(systemName: Symbol.name("box")).foregroundStyle(Theme.ink)
                                 Text(model.t("more.things")).font(Theme.body(16, "SemiBold")).foregroundStyle(Theme.ink)
                                 Spacer()
-                                Text("\(model.state?.things.count ?? 0)").font(Theme.body(13, "Bold")).foregroundStyle(Theme.ink3)
+                                Text(verbatim: String(model.state?.things.count ?? 0)).font(Theme.body(13, "Bold")).foregroundStyle(Theme.ink3)
                                 Image(systemName: model.isArabic ? "chevron.left" : "chevron.right").foregroundStyle(Theme.ink3)
                             }
                         }

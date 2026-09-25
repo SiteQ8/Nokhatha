@@ -114,7 +114,7 @@ struct DialView: View {
             let q = pt(132 * k, ang(-min(14, max(8, Double(-first.offset) * 0.5))))
             let r = dotR * 2.3
             ctx.fill(Path(ellipseIn: CGRect(x: q.x - r, y: q.y - r, width: r * 2, height: r * 2)), with: .color(Theme.overdue))
-            ctx.draw(Text("\(late)").font(.system(size: 15 * k, weight: .bold)).foregroundColor(.white), at: q)
+            ctx.draw(Text(verbatim: String(late)).font(.system(size: 15 * k, weight: .bold)).foregroundColor(.white), at: q)
         }
         // today's pearl
         let bead = pt((rIn + rOut) / 2, -90)
