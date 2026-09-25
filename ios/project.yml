@@ -35,7 +35,6 @@ targets:
         UILaunchScreen:
           UIColorName: AccentColor
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
-        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UIAppFonts:
           - IBMPlexSansArabic-Regular.ttf
           - IBMPlexSansArabic-Medium.ttf
@@ -47,9 +46,9 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.eworldq8.nokhatha
         DEVELOPMENT_TEAM: FKZPXUFH45
-        MARKETING_VERSION: 0.5.1
+        MARKETING_VERSION: 1.0.0
         CURRENT_PROJECT_VERSION: 1
-        TARGETED_DEVICE_FAMILY: "1,2"
+        TARGETED_DEVICE_FAMILY: "1"
         SWIFT_VERSION: "5.0"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
