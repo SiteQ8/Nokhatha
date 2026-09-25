@@ -14,7 +14,7 @@ const bad = (msg) => problems.push(msg);
 const BINARY = new Set(['.png', '.webp', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2', '.ttf', '.otf', '.pdf', '.zip']);
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
-    if (['.git', 'node_modules', '.build', 'DerivedData', '.swiftpm'].includes(name)) continue;
+    if (['.git', 'node_modules', '.build', 'DerivedData', '.swiftpm', '.gradle', 'build', '.kotlin'].includes(name)) continue;
     const p = join(dir, name);
     if (statSync(p).isDirectory()) walk(p, out);
     else out.push(p);

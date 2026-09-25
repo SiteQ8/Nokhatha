@@ -1,0 +1,71 @@
+# Signs نُوخذة with the upload key Play knows and sends it to the closed test track,
+# with the release notes in play/whatsnew. Runs on an android-v tag (android-v1.0.1
+# becomes version 1.0.1) or by hand. While the app has never been published, Play
+# only holds draft releases, so the bundle waits there as a draft.
+#
+# Secrets: ANDROID_KEYSTORE (base64), ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS,
+# ANDROID_KEY_PASSWORD, PLAY_SERVICE_ACCOUNT.
+
+name: android-release
+
+on:
+  push:
+    tags:
+      - 'android-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Engine against the shared vectors
+        run: cd android && chmod +x gradlew && ./gradlew --no-daemon :app:testDebugUnitTest
+
+      # Build 1 went to Play by hand, so every build from here is numbered above it.
+      - name: Version
+        run: |
+          echo "NOKHATHA_VERSION_CODE=$((GITHUB_RUN_NUMBER + 1))" >> "$GITHUB_ENV"
+          V="${GITHUB_REF_NAME#android-v}"
+          case "$V" in [0-9]*) echo "NOKHATHA_VERSION_NAME=$V" >> "$GITHUB_ENV";; esac
+
+      - name: Build and sign
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+          NOKHATHA_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          NOKHATHA_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          NOKHATHA_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE" | base64 --decode > "$RUNNER_TEMP/nokhatha-upload.keystore"
+          export NOKHATHA_KEYSTORE="$RUNNER_TEMP/nokhatha-upload.keystore"
+          cd android && ./gradlew --no-daemon :app:bundleRelease
+          echo "version code $NOKHATHA_VERSION_CODE"
+
+      - name: Upload to the closed test on Google Play
+        env:
+          PLAY_SERVICE_ACCOUNT: ${{ secrets.PLAY_SERVICE_ACCOUNT }}
+        run: |
+          pip install --quiet cryptography
+          python3 tools/android/play-upload.py \
+            --aab "$(ls android/app/build/outputs/bundle/release/*.aab | head -1)" \
+            --track alpha --notes play/whatsnew
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nokhatha-android-release
+          path: android/app/build/outputs/bundle/release/*.aab
+          retention-days: 14
+
+      - name: Remove the key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/nokhatha-upload.keystore"
