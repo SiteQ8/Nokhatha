@@ -39,7 +39,7 @@
 
 **الاشتراكات**، أي كم تدفع بالشهر وبالسنة لكل عملة، وقبل كل تجديد بأسبوع يسألك التطبيق "للحين تستخدمه؟" فتلغي اللي ما تحتاجه قبل ما ينسحب المبلغ، والفترة التجريبية يذكرك فيها قبل لا تخلص.
 
-**أشيائي**، أي شي ثاني تبي تتابعه مثل الطراد أو الدراجة النارية أو المولد أو المسبح أو الحديقة أو المخيم أو الحيوان الأليف مع مهامه المقترحة، أو شي تسميه بنفسك وتحط له مهامك ومددها، وفي شاشة "شنو عندك؟" تقدر تضيف أي شي ثاني في البيت مثل صيانة المصعد وتحدد كل متى.
+**أغراضي**، أي غرض ثاني تبي تتابعه مثل الطراد أو الدراجة النارية أو المولد أو المسبح أو الحديقة أو المخيم أو الحيوان الأليف مع مهامه المقترحة، أو شي تسميه بنفسك وتحط له مهامك ومددها، وفي شاشة "شنو عندك؟" تقدر تضيف أي شي ثاني في البيت مثل صيانة المصعد وتحدد كل متى.
 
 **الطقس**، أي تنبيهات الغبار والمطر والرياح والحر والبرد لمنطقتك مع شي تسويه، مثل تنظيف الفلاتر بعد الغبار وفحص المزاريب قبل المطر، وهي اختيارية.
 
@@ -125,7 +125,7 @@ AC filters come every month and every two weeks during the Bawarih, AC servicing
 - **Home**: AC filters and servicing, central AC ducts, the water tank, filter and cartridges, the water heater, leaks, the roof and drains, window seals, smoke alarms, the extinguisher, the gas hose, the kitchen hood, pest control and the electrical panel, with a separate list for every house, apartment, chalet, farm or jakhoor.
 - **Car**: oil and filters by kilometres or time, whichever comes first, an odometer estimated from your readings, tires, pressure and rotation, battery, car AC, coolant, brake fluid and wipers, and registration, insurance and inspection before they expire.
 - **Subscriptions**: what you pay per month and per year in each currency, a "still using it?" question a week before every renewal so you can cancel before the money leaves, and a reminder before free trials end.
-- **My things**: anything else you want to keep track of, such as a boat, a motorbike, a generator, a pool, a garden, a camp or a pet with suggested tasks, or something you name yourself with your own tasks and intervals. The setup screen also takes anything else at home, like lift maintenance, with how often it is due.
+- **My belongings**: anything else you want to keep track of, such as a boat, a motorbike, a generator, a pool, a garden, a camp or a pet with suggested tasks, or something you name yourself with your own tasks and intervals. The setup screen also takes anything else at home, like lift maintenance, with how often it is due.
 - **Weather**: optional dust, rain, wind, heat and cold alerts for your area, each with something to do, like cleaning the filters after dust or checking the drains before rain.
 - **And more**: warranties with a receipt photo, your technicians with call and WhatsApp next to their tasks, a pre-travel checklist, yearly spend, calendar export with a 9 am alert, and encrypted backups.
 

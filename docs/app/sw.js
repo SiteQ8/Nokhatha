@@ -1,6 +1,6 @@
 // Offline support, and reminders from the device itself.
 // One cache per version, the app shell answers every navigation.
-const VERSION = '0.5.0';
+const VERSION = '0.5.1';
 const CACHE = `nokhatha-${VERSION}`;
 // Written by the page: what is due in the coming weeks, already worded in the person's language.
 const DIGEST = 'nokhatha-digest';

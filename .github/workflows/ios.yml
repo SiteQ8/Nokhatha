@@ -1,0 +1,26 @@
+name: ios
+
+on:
+  push:
+    branches: [main]
+    paths: ['ios/**', 'tests/vectors.json', 'docs/data/**', '.github/workflows/ios.yml']
+  pull_request:
+    paths: ['ios/**', 'tests/vectors.json', 'docs/data/**', '.github/workflows/ios.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  engine:
+    name: Swift engine on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shared vectors and properties
+        working-directory: ios/NokhathaKit
+        run: swift test
