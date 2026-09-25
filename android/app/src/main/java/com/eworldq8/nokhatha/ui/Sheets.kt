@@ -71,75 +71,6 @@ fun Fact(k: String, v: String) {
 }
 
 @Composable
-fun TaskSheet(model: AppModel, e: Evaluated, onClose: () -> Unit) {
-    val p = pal()
-    val w = model.words
-    val line = w.due(e, model.today)
-    var pick by remember { mutableStateOf(e.due ?: model.today.plus(30)) }
-    var addTech by remember { mutableStateOf<String?>(null) }
-    Sheet(model, e.title(model.lang), onClose) {
-        Text(listOfNotNull(line.first, line.second).joinToString("  "), style = body(14, FontWeight.SemiBold), color = p.tint(e.status))
-        e.tpl?.why(model.lang)?.let {
-            Text(it, style = body(15), color = p.ink2, modifier = Modifier.padding(top = 12.dp).fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(p.bg).padding(14.dp))
-        }
-        Fact(model.t("item.every"), w.every(e.every, model.catalog))
-        Fact(model.t("item.last"), Day.parse(e.item.lastDone)?.let { w.date(it, model.today) } ?: model.t("item.never"))
-        e.due?.let { Fact(model.t("item.next"), w.date(it, model.today)) }
-        e.tpl?.trade?.let { trade ->
-            val tradeName = model.catalog.trades.firstOrNull { it.id == trade }?.name(model.lang) ?: trade
-            val tech = model.brain().techFor(trade)
-            Spacer(Modifier.height(10.dp))
-            Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).border(1.dp, p.line, RoundedCornerShape(16.dp)).padding(12.dp)) {
-                if (tech != null) {
-                    Text(model.t("tech.for", mapOf("trade" to tradeName, "name" to tech.name)), style = body(14, FontWeight.SemiBold), color = p.ink)
-                    Spacer(Modifier.height(8.dp))
-                    TechButtons(model, tech)
-                } else {
-                    Text(model.t("tech.none", mapOf("trade" to tradeName)), style = body(14), color = p.ink2)
-                    Spacer(Modifier.height(8.dp))
-                    WideButton(model.t("tech.add_link"), primary = false, icon = "plus") { addTech = trade }
-                }
-            }
-        }
-        Spacer(Modifier.height(14.dp))
-        if (e.every.fixed == true) {
-            DayPicker(model.t("item.expiry"), pick) { pick = it }
-            Spacer(Modifier.height(12.dp))
-            WideButton(model.t("act.save")) { model.update("toast.saved") { it.setDue(e.item.id, pick) }; onClose() }
-        } else {
-            WideButton(model.t("act.done")) { model.done(e); onClose() }
-            Spacer(Modifier.height(8.dp))
-            WideButton(model.t("act.snooze"), primary = false) { model.snooze(e); onClose() }
-        }
-        Spacer(Modifier.height(8.dp))
-        WideButton(if (e.item.tpl == null) model.t("act.delete") else model.t("act.stop"), primary = false, danger = true) {
-            model.update(if (e.item.tpl == null) "toast.deleted" else "toast.stopped") { it.stop(e.item.id) }
-            onClose()
-        }
-    }
-    addTech?.let { TechSheet(model, null, it) { addTech = null } }
-}
-
-
-@Composable
-fun OdoSheet(model: AppModel, carId: String, onClose: () -> Unit) {
-    val car = model.state?.cars?.firstOrNull { it.id == carId }
-    var km by remember { mutableStateOf(car?.let { kmOn(it.odometer, model.today)?.toString() } ?: "") }
-    Sheet(model, model.t("act.update_odo"), onClose) {
-        Text(model.t("odo.body"), style = body(14), color = pal().ink2, modifier = Modifier.padding(top = 4.dp))
-        FieldLabel(model.t("item.km"))
-        Input(km, { km = it }, "84000", numbers = true)
-        Spacer(Modifier.height(18.dp))
-        WideButton(model.t("act.save")) {
-            val k = wholeNumber(km)
-            if (k == null) { model.toast = Toast(model.t("err.number"), null); return@WideButton }
-            model.update("toast.saved") { it.addReading(carId, k, model.today) }
-            onClose()
-        }
-    }
-}
-
-@Composable
 fun AskCard(model: AppModel, s: SubView) {
     val p = pal()
     val w = model.words
@@ -253,7 +184,7 @@ fun SubSheet(model: AppModel, existing: Sub?, onClose: () -> Unit) {
                 ButtonPair(model.t("ask.cancelled"), { model.update("toast.cancelled", mapOf("name" to s.name)) { it.cancelSub(s.id) }; onClose() },
                     model.t("act.delete"), { confirm = true }, bDanger = true)
             } else {
-                WideButton(model.t("act.delete"), primary = false, danger = true, icon = "trash") { confirm = true }
+                ButtonPair(model.t("sub.restore"), { model.update("toast.saved") { it.restoreSub(s.id) }; onClose() }, model.t("act.delete"), { confirm = true }, bDanger = true)
             }
         }
     }
@@ -349,5 +280,153 @@ fun AssetSheet(model: AppModel, kind: AssetKind, existingId: String?, onClose: (
     }
     if (confirm && existingId != null) {
         ConfirmDialog(model.t("confirm.asset"), model.t("act.delete"), model.t("act.cancel"), { model.update("toast.deleted") { it.removeAsset(existingId) }; onClose() }) { confirm = false }
+    }
+}
+
+@Composable
+fun TaskSheet(model: AppModel, e: Evaluated, onClose: () -> Unit) {
+    val p = pal()
+    val w = model.words
+    val line = w.due(e, model.today)
+    val cur = model.state?.settings?.currency ?: "KWD"
+    val car = e.asset.car
+    var pick by remember { mutableStateOf(e.due ?: model.today.plus(30)) }
+    var whenDay by remember { mutableStateOf(model.today) }
+    var km by remember { mutableStateOf(if (car != null && set(e.every.km) != null) (kmOn(car, model.today)?.toString() ?: "") else "") }
+    var cost by remember { mutableStateOf("") }
+    var addTech by remember { mutableStateOf<String?>(null) }
+    var interval by remember { mutableStateOf(false) }
+    val logs = e.item.log.takeLast(6).reversed()
+    Sheet(model, e.title(model.lang), onClose) {
+        Text(listOfNotNull(line.first, line.second).joinToString("  "), style = body(14, FontWeight.SemiBold), color = p.tint(e.status))
+        e.tpl?.why(model.lang)?.let {
+            Text(it, style = body(15), color = p.ink2, modifier = Modifier.padding(top = 12.dp).fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(p.bg).padding(14.dp))
+        }
+        Fact(model.t("item.every"), w.every(e.every, model.catalog))
+        Fact(model.t("item.last"), Day.parse(e.item.lastDone)?.let { w.date(it, model.today) } ?: model.t("item.never"))
+        e.due?.let { Fact(model.t("item.next"), w.date(it, model.today)) }
+        if (e.item.lastKm != null && set(e.every.km) != null) Fact(model.t("item.at_km"), w.km(e.item.lastKm))
+        if (e.every.fixed == true) {
+            DayPicker(model.t("item.expiry"), pick) { pick = it }
+            Spacer(Modifier.height(12.dp))
+            WideButton(model.t("act.save")) { model.update("toast.saved") { it.setDue(e.item.id, pick) }; onClose() }
+            e.due?.let { due ->
+                Spacer(Modifier.height(8.dp))
+                WideButton(model.t("act.renewed_long", mapOf("date" to w.date(due.plusMonths(e.every.repeatMonths ?: 12), model.today))), primary = false, icon = "done") {
+                    model.renew(e); onClose()
+                }
+            }
+        } else {
+            // logging the job: when, the reading for car tasks, and what it cost
+            DayPicker(model.t("item.when"), whenDay) { whenDay = if (it > model.today) model.today else it }
+            if (car != null && set(e.every.km) != null) {
+                FieldLabel(model.t("item.km"))
+                Input(km, { km = it }, "84000", numbers = true)
+            }
+            FieldLabel(model.t("item.cost"))
+            Input(cost, { cost = it }, w.money(0, cur), numbers = true)
+            Spacer(Modifier.height(12.dp))
+            WideButton(model.t("act.done"), icon = "done") {
+                val k = if (km.isBlank()) null else wholeNumber(km)
+                val c = if (cost.isBlank()) null else parseMoney(cost, cur)
+                if (cost.isNotBlank() && c == null) { model.say("err.amount"); return@WideButton }
+                model.update("toast.done", mapOf("title" to e.title(model.lang))) { it.markDone(e.item.id, whenDay, k, c) }
+                onClose()
+            }
+            Spacer(Modifier.height(8.dp))
+            if (e.every.season.isNullOrEmpty()) {
+                ButtonPair(model.t("act.snooze"), { model.snooze(e); onClose() }, model.t("act.interval"), { interval = true })
+            } else {
+                WideButton(model.t("act.snooze"), primary = false, icon = "snooze") { model.snooze(e); onClose() }
+            }
+        }
+        e.tpl?.trade?.let { trade ->
+            val tradeName = model.catalog.trades.firstOrNull { it.id == trade }?.name(model.lang) ?: trade
+            val tech = model.brain().techFor(trade)
+            Spacer(Modifier.height(12.dp))
+            Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).border(1.dp, p.line, RoundedCornerShape(16.dp)).padding(12.dp)) {
+                if (tech != null) {
+                    Text(model.t("tech.for", mapOf("trade" to tradeName, "name" to tech.name)), style = body(14, FontWeight.SemiBold), color = p.ink)
+                    Spacer(Modifier.height(8.dp))
+                    TechButtons(model, tech)
+                } else {
+                    Text(model.t("tech.none", mapOf("trade" to tradeName)), style = body(14), color = p.ink2)
+                    Spacer(Modifier.height(8.dp))
+                    WideButton(model.t("tech.add_link"), primary = false, icon = "plus") { addTech = trade }
+                }
+            }
+        }
+        if (logs.isNotEmpty()) {
+            SmallHead(model.t("item.history"))
+            ListCard {
+                logs.forEachIndexed { i, l ->
+                    if (i > 0) HorizontalDivider(color = p.line)
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(Day.parse(l.date)?.let { w.date(it, model.today) } ?: l.date, style = body(14, FontWeight.SemiBold), color = p.ink, modifier = Modifier.weight(1f))
+                        l.km?.let { Text(w.km(it), style = body(14), color = p.ink2) }
+                        l.cost?.let { Text(w.money(it, l.cur ?: cur), style = body(14, FontWeight.Bold), color = p.ink) }
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        WideButton(if (e.item.tpl == null) model.t("act.delete") else model.t("act.stop"), primary = false, danger = true, icon = "trash") {
+            model.update(if (e.item.tpl == null) "toast.deleted" else "toast.stopped") { it.stop(e.item.id) }
+            onClose()
+        }
+    }
+    addTech?.let { TechSheet(model, null, it) { addTech = null } }
+    if (interval) IntervalSheet(model, e) { interval = false; onClose() }
+}
+
+/** Every n days or months, the kilometre rule for car tasks, and a way back to the suggested interval. */
+@Composable
+fun IntervalSheet(model: AppModel, e: Evaluated, onClose: () -> Unit) {
+    val base = e.every
+    var n by remember { mutableStateOf((base.days ?: base.months ?: 6).toString()) }
+    var unit by remember { mutableStateOf(if (set(base.days) != null) "days" else "months") }
+    var km by remember { mutableStateOf(base.km?.toString() ?: "") }
+    Sheet(model, model.t("act.interval"), onClose) {
+        FieldLabel(model.t("int.every"))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Input(n, { n = it }, "6", numbers = true, modifier = Modifier.width(96.dp))
+            Seg(listOf("days" to model.t("int.days"), "months" to model.t("int.months")), unit, Modifier.weight(1f)) { unit = it }
+        }
+        if (set(base.km) != null) {
+            FieldLabel(model.t("int.km"))
+            Input(km, { km = it }, base.km.toString(), numbers = true)
+        }
+        Spacer(Modifier.height(18.dp))
+        WideButton(model.t("act.save")) {
+            val k = wholeNumber(n)
+            if (k == null || k < 1 || k > 3650) { model.say("err.number"); return@WideButton }
+            model.update("toast.saved") { it.setInterval(e.item.id, k, unit, wholeNumber(km)) }
+            onClose()
+        }
+        if (e.item.every != null && e.item.tpl != null) {
+            Spacer(Modifier.height(8.dp))
+            WideButton(model.t("int.reset"), primary = false) { model.update("toast.saved") { it.setInterval(e.item.id, null, unit, null) }; onClose() }
+        }
+    }
+}
+
+@Composable
+fun OdoSheet(model: AppModel, carId: String, onClose: () -> Unit) {
+    val car = model.state?.cars?.firstOrNull { it.id == carId }
+    var km by remember { mutableStateOf(car?.let { kmOn(it.odometer, model.today)?.toString() } ?: "") }
+    var whenDay by remember { mutableStateOf(model.today) }
+    Sheet(model, model.t("act.update_odo"), onClose) {
+        Lede(model.t("odo.body"), small = true)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(Modifier.weight(1f)) { FieldLabel(model.t("item.km")); Input(km, { km = it }, "84000", numbers = true) }
+            Column(Modifier.weight(1f)) { DayPicker(model.t("item.when"), whenDay) { whenDay = if (it > model.today) model.today else it } }
+        }
+        Spacer(Modifier.height(18.dp))
+        WideButton(model.t("act.save")) {
+            val k = wholeNumber(km)
+            if (k == null) { model.say("err.number"); return@WideButton }
+            model.update("toast.saved") { it.addReading(carId, k, whenDay) }
+            onClose()
+        }
     }
 }

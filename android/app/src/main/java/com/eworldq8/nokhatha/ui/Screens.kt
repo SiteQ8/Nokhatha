@@ -125,10 +125,14 @@ fun SubsScreen(model: AppModel) {
                 Text(model.t("subs.month"), style = body(13, FontWeight.SemiBold), color = p.ink3)
                 Text(w.money(t.month, main), style = title(38), color = p.ink)
                 Text(model.t("subs.year", mapOf("amount" to w.money(t.year, main))), style = body(14), color = p.ink2)
+                for (c in totals.keys.sorted().filter { it != main }) {
+                    Text(w.money(totals.getValue(c).month, c) + " " + model.t("cycle.monthly"), style = body(14), color = p.ink2)
+                }
             }
         }
+        if (model.state?.subs.isNullOrEmpty()) EmptyNote("repeat", model.t("empty.subs"))
         for (s in b.subs().filter { it.ask || it.planned }) { Spacer(Modifier.height(10.dp)); AskCard(model, s) }
-        SectionTitle(model.t("subs.all"))
+        SectionTitle(model.t("subs.all"), subs.count { it.status != "off" })
         Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(p.surface).border(1.dp, p.line, RoundedCornerShape(20.dp))) {
             subs.forEachIndexed { i, s ->
                 if (i > 0) HorizontalDivider(color = p.line)
@@ -138,6 +142,7 @@ fun SubsScreen(model: AppModel) {
                         Text(
                             when {
                                 s.status == "off" -> model.t("sub.cancelled")
+                                s.trial && s.days == 0 -> model.t("sub.trial_today")
                                 s.trial -> model.t("sub.trial", mapOf("rel" to w.rel(s.days)))
                                 s.days == 0 -> model.t("sub.renews_today")
                                 else -> model.t("sub.renews", mapOf("rel" to w.rel(s.days)))
@@ -275,6 +280,8 @@ fun AssetsScreen(model: AppModel, kind: AssetKind, onBack: (() -> Unit)? = null)
                 CardBox {
                     Text(model.t("car.odo"), style = body(13, FontWeight.SemiBold), color = p.ink3)
                     Text(kmOn(car.odometer, model.today)?.let { model.words.km(it) } ?: model.t("car.odo_unknown"), style = title(28), color = p.ink)
+                    Text(lastReading(car.odometer)?.let { r -> Day.parse(r.date)?.let { model.t("car.odo_last", mapOf("km" to model.words.km(r.km), "date" to model.words.date(it, model.today))) } }
+                        ?: model.t("car.odo_none"), style = body(13), color = p.ink2)
                     Spacer(Modifier.height(8.dp))
                     WideButton(model.t("act.update_odo"), primary = false, icon = "gauge") { sheet = "odo" }
                 }

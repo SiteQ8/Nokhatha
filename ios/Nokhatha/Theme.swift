@@ -70,6 +70,9 @@ enum Symbol {
         "box": "shippingbox", "dust": "aqi.medium", "rain": "cloud.rain", "sun": "sun.max", "spark": "sparkle", "bell": "bell",
         "play": "play.circle", "music": "music.note", "cloud": "cloud", "game": "gamecontroller", "gym": "dumbbell",
         "wifi": "wifi", "phone": "phone", "apps": "square.grid.2x2", "close": "xmark", "plus": "plus", "edit": "pencil", "trash": "trash",
+        "sliders": "slider.horizontal.3", "info": "info.circle", "chat": "message", "globe": "globe", "snooze": "clock.badge",
+        "calendar": "calendar", "lock": "lock", "upload": "square.and.arrow.up", "download": "square.and.arrow.down", "code": "chevron.left.forwardslash.chevron.right",
+        "camera": "camera", "photo": "photo.on.rectangle", "done": "checkmark", "next": "chevron.right", "back": "chevron.left",
     ]
     static func name(_ icon: String) -> String { map[icon] ?? "sparkle" }
 }

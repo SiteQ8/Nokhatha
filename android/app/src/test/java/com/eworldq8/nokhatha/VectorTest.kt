@@ -239,6 +239,33 @@ class ExtrasTest {
     }
 
     @Test
+    fun intervalsAndRestoreLikeTheWeb() {
+        val today = Day.parse("2026-09-25")!!
+        val b = Brain(catalog, Brain.sample(catalog, "ar", today), today)
+        val oil = b.state.items.first { it.tpl == "oil" }
+        b.setInterval(oil.id, 8, "months", 12000)
+        assertEquals(Every(months = 8, km = 12000), b.state.items.first { it.id == oil.id }.every)
+        b.setInterval(oil.id, 45, "days", null)
+        assertEquals(Every(days = 45, km = 12000), b.state.items.first { it.id == oil.id }.every)
+        b.setInterval(oil.id, null, "days", null)
+        assertEquals(null, b.state.items.first { it.id == oil.id }.every)
+        val filters = b.state.items.first { it.tpl == "ac_filters" }
+        b.setInterval(filters.id, 200, "months", null)
+        assertEquals(Every(months = 120), b.state.items.first { it.id == filters.id }.every)
+        val sub = b.state.subs.first()
+        b.cancelSub(sub.id)
+        assertEquals(true, b.state.subs.first().cancelled)
+        b.restoreSub(sub.id)
+        assertEquals(null, b.state.subs.first().cancelled)
+        assertEquals(null, b.state.subs.first().cancelledOn)
+        b.markDone(oil.id, today.plus(-3), 66500, 18000)
+        val done = b.state.items.first { it.id == oil.id }
+        assertEquals(today.plus(-3).iso, done.lastDone)
+        assertEquals(66500, done.lastKm)
+        assertEquals(LogEntry(today.plus(-3).iso, 18000, "KWD", 66500), done.log.last())
+    }
+
+    @Test
     fun warrantiesSpendAndCalendar() {
         val today = Day.parse("2026-09-25")!!
         val sample = Brain.sample(catalog, "ar", today)

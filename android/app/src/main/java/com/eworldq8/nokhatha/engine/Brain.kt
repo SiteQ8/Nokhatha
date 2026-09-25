@@ -234,6 +234,23 @@ class Brain(val catalog: Catalog, var state: AppState, val today: Day) {
 
     fun deleteSub(id: String) { state = state.copy(subs = state.subs.filter { it.id != id }) }
 
+    /** A cancelled subscription comes back as it was. */
+    fun restoreSub(id: String) {
+        state = state.copy(subs = state.subs.map { if (it.id == id) it.copy(cancelled = null, cancelledOn = null) else it })
+    }
+
+    /** Every n days or months, keeping the kilometre rule; null returns a suggested task to its own interval. */
+    fun setInterval(itemId: String, n: Int?, unit: String, km: Int?) {
+        updateItem(itemId) { item ->
+            if (n == null) item.copy(every = null)
+            else {
+                val base = every(item)
+                val next = if (unit == "days") Every(days = n) else Every(months = minOf(n, 120))
+                item.copy(every = if (set(base.km) != null) next.copy(km = km ?: base.km) else next)
+            }
+        }
+    }
+
     companion object {
         /** dialling code, local digits, currency */
         val countries = linkedMapOf(
