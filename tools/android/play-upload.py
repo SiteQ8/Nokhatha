@@ -106,23 +106,26 @@ def main():
 
         notes = release_notes(a.notes)
         release = {'versionCodes': [str(code)], 'status': 'completed', 'releaseNotes': notes}
-        try:
+
+        def place_and_commit():
             call('PATCH', f'{API}/{a.package}/edits/{edit}/tracks/{a.track}', tok,
                  {'track': a.track, 'releases': [release]})
+            call('POST', f'{API}/{a.package}/edits/{edit}:commit', tok, {})
+
+        try:
+            place_and_commit()
         except RuntimeError as e:
-            # Play lets an app that was never published hold draft releases only,
-            # so until its first release is sent for review in the Play Console
-            # the bundle waits there as a draft instead of failing the build
+            # Play lets an app that was never published hold draft releases only. It says
+            # so either when the release is placed or only when the edit is committed, so
+            # both are caught here, and until the first release is sent for review in the
+            # Play Console the bundle waits in the track as a draft instead of failing
             if 'draft app' not in str(e):
                 raise
             release['status'] = 'draft'
-            call('PATCH', f'{API}/{a.package}/edits/{edit}/tracks/{a.track}', tok,
-                 {'track': a.track, 'releases': [release]})
+            place_and_commit()
             print('::notice::التطبيق لم يُنشر بعد، فوُضعت الحزمة مسودة في المسار حتى تُرسل للمراجعة من Play Console')
         print('وُضعت في مسار', a.track, '|', release['status'], '|', len(notes), 'لغة من ملاحظات الإصدار')
-
-        call('POST', f'{API}/{a.package}/edits/{edit}:commit', tok, {})
-        print('اعتُمد التحرير، والحزمة عند المختبرين')
+        print('اعتُمد التحرير')
     except Exception:
         # تحرير بلا اعتماد لا يغيّر شيئا، لكن تركه معلّقا يمنع التحرير التالي
         try:
