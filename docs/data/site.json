@@ -63,7 +63,7 @@
     "q1": "With no account, where is my data kept?",
     "a1": "On your device, in the browser's or the app's storage, and it never leaves it, so we have no need to know who you are.",
     "q2": "With no server, how does it keep track of my dates and remind me?",
-    "a2": "Your device works out each date from the last time you logged the task and from the Gulf's seasons, so you see what is due as soon as you open the app. You can export the dates to your phone's calendar for a 9 am alert, and the upcoming iPhone and Android apps will send device notifications with no server.",
+    "a2": "Your device works out each date from the last time you logged the task and from the Gulf's seasons, so you see what is due as soon as you open the app. On Android and in Chrome, install the app and turn on reminders in Settings, and your device itself alerts you even when the app is closed. On iPhone, export the dates to your calendar until the iPhone app arrives with its own reminders.",
     "q3": "What does no tracking mean?",
     "a3": "No analytics, trackers or ads watch what you do, so we cannot see who uses the app or what they record. The files download from GitHub on your first visit like any website, but your data never leaves your device.",
     "q4": "What if I change phones or clear my browser data?",

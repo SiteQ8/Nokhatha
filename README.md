@@ -76,7 +76,9 @@
 
 وعلى آيفون ثبّت التطبيق على الشاشة الرئيسية من زر المشاركة، لأن سفاري يمسح بيانات المواقع اللي ما تنفتح فترة والتطبيق المثبّت ما ينطبق عليه هالمسح.
 
-والتنبيهات تشوفها أول ما تفتح التطبيق، وتقدر تصدّر المواعيد لتقويم جهازك فيجيك تنبيهها الساعة 9 الصبح، لأن تطبيق الويب بدون سيرفر ما يقدر يرسل إشعار وهو مسكّر، وتطبيقات آيفون وأندرويد الجاية بتطلّع تنبيهات من الجهاز نفسه بدون أي سيرفر.
+والتنبيهات على أندرويد وكروم تشتغل حتى والتطبيق مسكّر إذا ثبّته وفعّلها من الإعدادات، لأن المتصفح يصحّي التطبيق مرة أو مرتين باليوم فيفحص المستحق على جهازك وينبهك بدون أي سيرفر، أما على آيفون فتطبيق الويب ما ينبه وهو مسكّر إلا عن طريق سيرفر فتصدّر المواعيد لتقويم جهازك لين ينزل تطبيق آيفون بتنبيهاته.
+
+والتطبيق يعرف دولتك من المنطقة الزمنية لجهازك فيضبط العملة ورمز الدولة، بدون ما يطلب موقعك وبدون ما يتصل بأي جهة.
 
 وللتقنيين، البيانات في localStorage وصور الفواتير في IndexedDB، والنسخة الاحتياطية مشفّرة بـ AES-256-GCM بمفتاح مشتق من كلمة السر عن طريق PBKDF2-SHA256 بـ 600,000 دورة، وسياسة أمان المحتوى ما تسمح إلا بنفس المصدر، والخطوط مستضافة مع التطبيق.
 
@@ -134,7 +136,9 @@ Because no copy of your data exists anywhere else, clearing your browser data or
 
 On iPhone, add the app to your home screen from the Share button: Safari clears data for websites you have not opened for a while, and installed web apps are exempt.
 
-Reminders appear when you open the app, and you can export your dates to your phone's calendar for a 9 am alert. Without a server the web app cannot notify you while it is closed; the upcoming iPhone and Android apps schedule notifications on the device itself, still with no server.
+On Android and in Chrome, reminders work even while the app is closed once it is installed and reminders are turned on in Settings: the browser wakes the app once or twice a day, it checks what is due on the device, and alerts you with no server involved. On iPhone a web app can only notify while closed through a push server, so export your dates to the calendar until the iPhone app arrives with its own reminders.
+
+The app picks your country from the device time zone to set the currency and dialling code, without asking for your location and without contacting anyone.
 
 Technical details: data in localStorage and receipt photos in IndexedDB, backups encrypted with AES-256-GCM using a key derived from the passphrase with PBKDF2-SHA256 at 600,000 iterations, a same-origin content security policy, and self-hosted fonts.
 

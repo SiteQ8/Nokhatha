@@ -80,7 +80,15 @@ const COUNTRIES = {
 };
 const country = () => COUNTRIES[state.settings.country] || COUNTRIES.KW;
 
+// The device's time zone names the country without asking for location and without any network call.
+const ZONES = { 'Asia/Kuwait': 'KW', 'Asia/Riyadh': 'SA', 'Asia/Dubai': 'AE', 'Asia/Qatar': 'QA', 'Asia/Bahrain': 'BH', 'Asia/Muscat': 'OM' };
 function guessCountry() {
+  try {
+    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (ZONES[zone]) return ZONES[zone];
+  } catch {
+    /* no time zone support */
+  }
   for (const l of navigator.languages || [navigator.language || '']) {
     const region = (String(l).split('-')[1] || '').toUpperCase();
     if (COUNTRIES[region]) return region;
@@ -297,11 +305,12 @@ ${x.s.note ? `<p class="ask-note">${esc(x.s.note)}</p>` : ''}
 <div class="ask-b"><button class="btn" data-act="sub-yes" data-id="${id}">${t('ask.yes')}</button><button class="btn btn-quiet" data-act="sub-no" data-id="${id}">${t('ask.no')}</button></div></div>`;
 }
 
+const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isInstalled = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+
 // Safari on iPhone clears storage of sites left unopened for a while; installed web apps are exempt.
 function installTip() {
-  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const installed = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
-  if (!ios || installed || state.settings.installTipOff) return '';
+  if (!isIOS() || isInstalled() || state.settings.installTipOff) return '';
   return `<div class="install">${icon('upload')}<div><p class="install-t">${t('tip.install_title')}</p><p class="install-b">${t('tip.install_body')}</p>
 <button class="btn btn-quiet" data-act="install-ok">${t('act.got_it')}</button></div></div>`;
 }
@@ -506,12 +515,22 @@ function viewSettings() {
 <div class="sec sec-sm"><h3>${t('settings.calendar')}</h3></div>
 <p class="lede small">${t('settings.calendar_body')}</p>
 <button class="btn btn-block" data-act="ics">${icon('calendar')}<span>${t('act.ics')}</span></button>
+${notifySection()}
 <div class="sec sec-sm"><h3>${t('settings.backup')}</h3></div>
 <p class="lede small">${t('settings.backup_body')}</p>
 <p class="backup-when">${icon(st.lastBackup ? 'done' : 'info')}<span>${st.lastBackup ? t('settings.last_backup', { date: dateText(st.lastBackup) }) : t('settings.no_backup')}</span></p>
 <div class="actions two"><button class="btn" data-act="backup">${icon('lock')}<span>${t('act.backup')}</span></button><button class="btn" data-act="restore">${icon('upload')}<span>${t('act.restore')}</span></button></div>
 <div class="sec sec-sm"><h3>${t('settings.data')}</h3></div>
 <div class="actions two"><button class="btn" data-act="demo">${icon('spark')}<span>${t('welcome.demo')}</span></button><button class="btn btn-danger" data-act="wipe">${icon('trash')}<span>${t('act.wipe')}</span></button></div>`;
+}
+
+function notifySection() {
+  const s = notifyState || 'unsupported';
+  const button = s === 'on'
+    ? `<button class="btn btn-block" data-act="notify-off">${icon('snooze')}<span>${t('notify.off')}</span></button>`
+    : s === 'ready' ? `<button class="btn btn-primary btn-block" data-act="notify-on">${icon('bell')}<span>${t('notify.on')}</span></button>` : '';
+  const last = notifyLast ? `<p class="fine">${t('notify.last', { date: `${dateText(notifyLast.slice(0, 10))} ${notifyLast.slice(11, 16)}` })}</p>` : '';
+  return `<div class="sec sec-sm"><h3>${t('settings.notify')}</h3></div><p class="lede small">${t('notify.state_' + s)}</p>${button}${s === 'on' ? last : ''}`;
 }
 
 function viewAbout() {
@@ -637,6 +656,93 @@ function render() {
   }
 }
 
+// Reminders without a server. The page writes what is due into a cache on this device,
+// and the service worker reads it when Chrome wakes an installed app with periodicsync.
+const DIGEST = 'nokhatha-digest';
+let notifyState = null;
+let notifyLast = null;
+let digestTimer = null;
+
+function scheduleDigest() {
+  clearTimeout(digestTimer);
+  digestTimer = setTimeout(writeDigest, 300);
+}
+
+async function writeDigest() {
+  if (!('caches' in window) || !D || !state) return;
+  try {
+    const list = items().filter((e) => e.due && e.days <= 60)
+      .map((e) => ({ date: e.due, title: e.asset ? `${itemTitle(e)}${comma()}${e.asset.name}` : itemTitle(e) }));
+    for (const x of state.subs.map(evalSub)) {
+      if (x.s.cancelled || x.days > 60) continue;
+      const before = E.addDays(x.next, -2);
+      list.push({ date: before < TODAY ? x.next : before, title: t('ask.q', { name: x.s.name }) });
+    }
+    for (const w of state.warranties.map(evalWarranty)) {
+      if (w.days != null && w.days >= 0 && w.days <= 60) list.push({ date: E.addDays(w.end, -14) < TODAY ? w.end : E.addDays(w.end, -14), title: t('ics.warranty', { name: w.w.name }) });
+    }
+    list.sort((a, b) => a.date.localeCompare(b.date));
+    const payload = {
+      v: 1, lang: L(), dir: L() === 'ar' ? 'rtl' : 'ltr', notify: !!state.settings.notify, items: list,
+      titleNow: t('notify.title_now'), titleToday: t('notify.title_today'), more: t('notify.more'), sep: '\n',
+    };
+    const cache = await caches.open(DIGEST);
+    await cache.put('digest.json', new Response(JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } }));
+  } catch {
+    /* storage unavailable, reminders simply do not run */
+  }
+}
+
+async function refreshNotify() {
+  let s;
+  const reg = 'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration().catch(() => null) : null;
+  if (!('Notification' in window) || !reg || !('periodicSync' in reg)) s = isIOS() ? 'ios' : 'unsupported';
+  else if (Notification.permission === 'denied') s = 'blocked';
+  else if (state.settings.notify) s = 'on';
+  else if (!isInstalled()) s = 'install';
+  else s = 'ready';
+  try {
+    const seen = await caches.open(DIGEST).then((c) => c.match('seen.json')).then((r) => (r ? r.json() : null));
+    notifyLast = seen && seen.ran ? new Date(seen.ran).toLocaleString('sv').replace(' ', 'T') : null;
+  } catch {
+    notifyLast = null;
+  }
+  if (s !== notifyState) {
+    notifyState = s;
+    if (route().name === 'settings' && !$('#sheet-root')) render();
+  }
+}
+
+async function notifyOn() {
+  if ((await Notification.requestPermission()) !== 'granted') {
+    toast(t('notify.denied'));
+    return refreshNotify();
+  }
+  const reg = await navigator.serviceWorker.ready;
+  try {
+    const perm = await navigator.permissions.query({ name: 'periodic-background-sync' });
+    if (perm.state !== 'granted') throw new Error('periodic sync');
+    await reg.periodicSync.register('nokhatha-daily', { minInterval: 12 * 60 * 60 * 1000 });
+  } catch {
+    toast(t('notify.psync'));
+    return refreshNotify();
+  }
+  state.settings.notify = true;
+  commit();
+  await writeDigest();
+  reg.showNotification(t('notify.on_title'), { body: t('notify.on_body'), tag: 'nokhatha-on', lang: L(), dir: L() === 'ar' ? 'rtl' : 'ltr', icon: '../assets/icons/icon-192.png' });
+  refreshNotify();
+}
+
+async function notifyOff() {
+  const reg = await navigator.serviceWorker.getRegistration().catch(() => null);
+  if (reg && reg.periodicSync) await reg.periodicSync.unregister('nokhatha-daily').catch(() => {});
+  state.settings.notify = false;
+  commit();
+  await writeDigest();
+  refreshNotify();
+}
+
 let persistAsked = false;
 function keepStorage() {
   if (persistAsked || !navigator.storage || !navigator.storage.persist) return;
@@ -647,6 +753,7 @@ function keepStorage() {
 function commit(silent) {
   if (!S.save(state)) toast(t('err.storage'));
   if (hasAnything()) keepStorage();
+  scheduleDigest();
   if (!silent) render();
 }
 
@@ -1041,6 +1148,8 @@ async function onClick(e) {
   switch (act) {
     case 'close': closeSheet(); break;
     case 'install-ok': state.settings.installTipOff = true; commit(); break;
+    case 'notify-on': await notifyOn(); break;
+    case 'notify-off': await notifyOff(); break;
     case 'close-nav': closeSheet(true); break;
     case 'undo': if (undoFn) { const f = undoFn; undoFn = null; $('#toast')?.remove(); f(); } break;
     case 'update': if (swWaiting) swWaiting.postMessage('skip'); break;
@@ -1354,6 +1463,8 @@ async function onClick(e) {
     case 'wipe': {
       if (!el.dataset.confirmed) return confirmSheet(t('confirm.wipe'), 'wipe', '', t('act.wipe'));
       const lang = L();
+      if (state.settings.notify) await notifyOff();
+      if ('caches' in window) await caches.delete(DIGEST).catch(() => {});
       S.wipe();
       await S.clearReceipts().catch(() => {});
       state = S.blank(lang);
@@ -1559,12 +1670,16 @@ async function boot() {
     const now = nowISO();
     if (now !== TODAY) {
       TODAY = now;
+      writeDigest();
       if (!$('#sheet-root')) render();
     }
   }, 60000);
   if (!state.settings.onboarded && !location.hash.startsWith('#/welcome')) location.replace('#/welcome');
   render();
   registerSW();
+  writeDigest();
+  refreshNotify();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.ready.then(refreshNotify).catch(() => {});
 }
 
 boot();

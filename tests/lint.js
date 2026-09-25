@@ -71,6 +71,7 @@ const families = {
   'last.': ['unknown', 'month', 'm3', 'm6', 'year'],
   'spend.': ['home', 'car', 'things', 'subs'],
   'setup.every_': ['1', '3', '6', '12'],
+  'notify.state_': ['on', 'ready', 'install', 'blocked', 'ios', 'unsupported'],
   'empty.': ['home', 'car', 'thing'],
   'act.add_': ['home', 'car', 'thing'],
   'country.': ['KW', 'SA', 'AE', 'QA', 'BH', 'OM'],

@@ -9,7 +9,7 @@
 //   * Every function here is pure. "today" is always passed in.
 // tests/vectors.json is the contract every port must satisfy.
 
-export const VERSION = '0.3.0';
+export const VERSION = '0.4.0';
 
 // A seasonal task done within this many days of its anchor is not due again
 // until the anchor of the following year.

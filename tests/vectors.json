@@ -1,5 +1,5 @@
 {
- "engine": "0.3.0",
+ "engine": "0.4.0",
  "about": "Shared contract for the web, iOS and Android engines. \"$seasons\" means the seasons array of docs/data/seasons.json and \"$bawarih\" its bawarih window. Expected values were worked out by hand from the calendar, not produced by the engine.",
  "cases": [
   {
