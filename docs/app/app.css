@@ -442,3 +442,10 @@ select.input { appearance: none; background-image: none; cursor: pointer; }
 .install .btn { min-height: 38px; padding: 0 12px; margin-inline-start: -12px; }
 .backup-when { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); }
 .backup-when .ic { width: 18px; height: 18px; color: var(--ok); }
+
+.add-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
+.add-row .input { min-width: 0; }
+.add-row select.input { width: auto; padding-inline: 12px; }
+.add-row .btn { min-height: 48px; padding: 0 14px; }
+.chip small { font-size: 12px; opacity: .75; font-weight: 500; }
+.chip .x { width: 15px; height: 15px; opacity: .8; }

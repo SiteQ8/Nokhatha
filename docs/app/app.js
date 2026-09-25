@@ -58,6 +58,8 @@ async function loadData() {
   D.tpl = Object.fromEntries(D.templates.map((x) => [x.id, x]));
   D.season = Object.fromEntries(D.seasons.map((x) => [x.id, x]));
   D.trade = Object.fromEntries(D.trades.map((x) => [x.id, x]));
+  D.thingTypes = tasks.thingTypes;
+  D.thingType = Object.fromEntries(D.thingTypes.map((x) => [x.id, x]));
 }
 
 const CATS = [
@@ -88,7 +90,8 @@ function guessCountry() {
 
 /* ------------------------------------------------------------ evaluation */
 
-const findAsset = (id) => state.homes.find((h) => h.id === id) || state.cars.find((c) => c.id === id);
+const findAsset = (id) => state.homes.find((h) => h.id === id) || state.cars.find((c) => c.id === id) || state.things.find((x) => x.id === id);
+const hasAnything = () => state.homes.length || state.cars.length || state.things.length || state.subs.length;
 const tplOf = (it) => (it.tpl ? D.tpl[it.tpl] : null);
 const everyOf = (it) => it.every || (tplOf(it) || {}).every || { months: 6 };
 
@@ -179,9 +182,9 @@ function pageHead(title, band, extra = '', back = false) {
 <div class="ph"><h1 class="h1">${esc(title)}</h1></div>${extra}<div class="band band-${band}" aria-hidden="true"></div>`;
 }
 
-function assetChips(list, cur, kind) {
+function assetChips(list, cur, kind, act = kind) {
   return `<div class="chips">${list.map((a) => `<a class="chip${a.id === cur.id ? ' on' : ''}" href="#/${kind}/${esc(a.id)}"${a.id === cur.id ? ' aria-current="page"' : ''}>${esc(a.name)}</a>`).join('')}
-<button class="chip chip-add" data-act="add-${kind}">${icon('plus')}<span>${t('act.add_' + kind)}</span></button></div>`;
+<button class="chip chip-add" data-act="add-${act}">${icon('plus')}<span>${t('act.add_' + act)}</span></button></div>`;
 }
 
 function everyText(e) {
@@ -241,7 +244,7 @@ function techLinks(tech) {
 /* ---------------------------------------------------------------- views */
 
 function viewToday() {
-  if (!state.homes.length && !state.cars.length && !state.subs.length) {
+  if (!hasAnything()) {
     return `<div class="empty big">${mark('mark-lg')}<p>${t('today.empty')}</p><a class="btn btn-primary" href="#/welcome/2">${t('act.setup')}</a></div>`;
   }
   const evs = items();
@@ -304,7 +307,7 @@ function installTip() {
 }
 
 function emptyAsset(kind) {
-  return `<div class="empty big">${icon(kind === 'home' ? 'home' : 'car', 'ic-xl')}<p>${t('empty.' + kind)}</p><button class="btn btn-primary" data-act="add-${kind}">${icon('plus')}<span>${t('act.add_' + kind)}</span></button></div>`;
+  return `<div class="empty big">${icon({ home: 'home', car: 'car' }[kind] || 'box', 'ic-xl')}<p>${t('empty.' + kind)}</p><button class="btn btn-primary" data-act="add-${kind}">${icon('plus')}<span>${t('act.add_' + kind)}</span></button></div>`;
 }
 
 function groupedRows(evs, areas) {
@@ -341,6 +344,18 @@ ${groupedRows(evs, D.areas.car)}
 <button class="btn btn-quiet" data-act="edit-car" data-id="${esc(cur.id)}">${icon('edit')}<span>${t('act.edit_car')}</span></button></div>`;
 }
 
+function viewThings(r) {
+  const head = (extra) => pageHead(t('more.things'), 'more', extra, true);
+  if (!state.things.length) return head('') + emptyAsset('thing');
+  const cur = state.things.find((x) => x.id === r.id) || state.things[0];
+  const evs = items((i) => i.asset === cur.id);
+  const tt = D.thingType[cur.type] || D.thingType.other;
+  return `${head(assetChips(state.things, cur, 'things', 'thing'))}
+${evs.length ? groupedRows(evs, D.areas.thing) : `<div class="empty">${icon(tt.icon, 'ic-xl')}<p>${t('things.no_tasks')}</p></div>`}
+<div class="actions"><button class="btn" data-act="add-task" data-id="${esc(cur.id)}">${icon('plus')}<span>${t('act.add_task')}</span></button>
+<button class="btn btn-quiet" data-act="edit-thing" data-id="${esc(cur.id)}">${icon('edit')}<span>${t('act.edit_thing')}</span></button></div>`;
+}
+
 function subRow(x) {
   let meta;
   if (x.s.cancelled) meta = `<span class="rel">${t('sub.cancelled')}</span>`;
@@ -374,6 +389,7 @@ ${talk.map(askCard).join('')}
 
 function viewMore() {
   const entries = [
+    ['things', 'box', 'more.things', state.things.length || null],
     ['warranties', 'seal', 'more.warranties', state.warranties.length || null],
     ['techs', 'wrench', 'more.techs', state.techs.length || null],
     ['travel', 'plane', 'more.travel', state.travel.done.length ? `${state.travel.done.length}/${D.travel.length}` : null],
@@ -434,7 +450,7 @@ function viewSpend(r) {
   const upto = E.minISO(to, TODAY);
   const sums = {};
   const add = (cur, cat, v) => {
-    const s = (sums[cur] ||= { home: 0, car: 0, subs: 0, projected: 0 });
+    const s = (sums[cur] ||= { home: 0, car: 0, things: 0, subs: 0, projected: 0 });
     s[cat] += v;
   };
   const logs = [];
@@ -442,7 +458,7 @@ function viewSpend(r) {
     for (const l of it.log || []) {
       if (l.cost == null || l.date < from || l.date > to) continue;
       const asset = findAsset(it.asset);
-      add(l.cur || state.settings.currency, asset && asset.kind === 'car' ? 'car' : 'home', l.cost);
+      add(l.cur || state.settings.currency, asset && asset.kind === 'car' ? 'car' : asset && asset.kind === 'thing' ? 'things' : 'home', l.cost);
       logs.push({ l, ev: { it, tpl: tplOf(it) }, asset });
     }
   }
@@ -455,13 +471,13 @@ function viewSpend(r) {
   }
   logs.sort((a, b) => b.l.date.localeCompare(a.l.date));
   const blocks = Object.entries(sums).map(([cur, s]) => {
-    const total = s.home + s.car + s.subs;
-    const max = Math.max(s.home, s.car, s.subs, 1);
+    const total = s.home + s.car + s.things + s.subs;
+    const max = Math.max(s.home, s.car, s.things, s.subs, 1);
     const bar = (k, ic) => `<div class="bar"><span class="bar-l">${icon(ic)}${t('spend.' + k)}</span><span class="bar-v">${esc(money(s[k], cur))}</span>
 <span class="bar-t"><i data-p="${(s[k] / max).toFixed(3)}"></i></span></div>`;
     return `<div class="total"><span class="total-l">${t('spend.total', { year })}</span><span class="big">${esc(money(total, cur))}</span>
-${year === E.parseISO(TODAY).y ? `<span class="total-s">${t('spend.projected', { amount: money(s.projected + s.home + s.car, cur) })}</span>` : ''}
-<div class="bars">${bar('home', 'home')}${bar('car', 'car')}${bar('subs', 'repeat')}</div></div>`;
+${year === E.parseISO(TODAY).y ? `<span class="total-s">${t('spend.projected', { amount: money(s.projected + s.home + s.car + s.things, cur) })}</span>` : ''}
+<div class="bars">${bar('home', 'home')}${bar('car', 'car')}${s.things ? bar('things', 'box') : ''}${bar('subs', 'repeat')}</div></div>`;
   }).join('');
   return `${pageHead(t('more.spend'), 'more', '', true)}
 <div class="year-nav"><a class="btn btn-quiet" href="#/spend/${year - 1}">${icon('back', 'flip')}<span>${year - 1}</span></a><strong>${year}</strong>
@@ -532,7 +548,7 @@ ${seg('lang', L(), [['ar', 'عربي'], ['en', 'English']])}
 }
 
 function newDraft() {
-  return { type: 'house', name: '', features: { central_ac: false, tank: true, filter: false }, car: true, carName: '', km: '' };
+  return { type: 'house', name: '', features: { central_ac: false, tank: true, filter: false }, car: true, carName: '', km: '', extras: [], extraName: '', extraEvery: '6', things: [], otherName: '' };
 }
 
 function viewSetup() {
@@ -546,9 +562,16 @@ function viewSetup() {
 <div class="field"><span>${t('setup.type')}</span><div class="chips wrap">${S.HOME_TYPES.map((ty) => `<button class="chip${draft.type === ty ? ' on' : ''}" data-act="draft-type" data-v="${ty}">${t('type.' + ty)}</button>`).join('')}</div></div>
 <label class="field"><span>${t('setup.name')}</span><input class="input" data-draft="name" value="${esc(draft.name)}" placeholder="${esc(t('type.' + draft.type))}" autocomplete="off"></label>
 <div class="field"><span>${t('setup.has')}</span><div class="switches">${sw('central_ac', t('feat.central_ac'))}${sw('tank', t('feat.tank'))}${sw('filter', t('feat.filter'))}</div></div>
+<div class="field"><span>${t('setup.extra')}</span>
+${draft.extras.length ? `<div class="chips wrap">${draft.extras.map((x, i) => `<button class="chip on" data-act="extra-remove" data-v="${i}" aria-label="${esc(t('act.remove'))} ${esc(x.title)}"><span>${esc(x.title)}</span><small>${t('setup.every_' + x.months)}</small>${icon('close', 'x')}</button>`).join('')}</div>` : ''}
+<div class="add-row"><input class="input" data-draft="extraName" value="${esc(draft.extraName)}" placeholder="${esc(t('setup.extra_ph'))}" autocomplete="off" aria-label="${esc(t('setup.extra'))}">
+<select class="input" data-draft="extraEvery" aria-label="${esc(t('int.every'))}">${[1, 3, 6, 12].map((n) => `<option value="${n}"${String(n) === String(draft.extraEvery) ? ' selected' : ''}>${t('setup.every_' + n)}</option>`).join('')}</select>
+<button class="btn" data-act="extra-add" aria-label="${esc(t('act.add'))}">${icon('plus')}</button></div></div>
 <div class="field"><span>${t('setup.car')}</span><div class="switches"><label class="switch-row"><span>${t('setup.has_car')}</span><input type="checkbox" class="switch" data-draft-car${draft.car ? ' checked' : ''}></label></div></div>
 ${draft.car ? `<div class="grid2"><label class="field"><span>${t('car.name')}</span><input class="input" data-draft="carName" value="${esc(draft.carName)}" placeholder="${esc(t('car.default'))}" autocomplete="off"></label>
 <label class="field"><span>${t('car.km_now')}</span><input class="input ltr" data-draft="km" value="${esc(draft.km)}" inputmode="numeric" placeholder="84000"></label></div>` : ''}
+<div class="field"><span>${t('setup.things')}</span><div class="chips wrap">${D.thingTypes.map((tt) => `<button class="chip${draft.things.includes(tt.id) ? ' on' : ''}" data-act="draft-thing" data-v="${tt.id}" aria-pressed="${draft.things.includes(tt.id)}">${icon(tt.icon)}<span>${esc(nm(tt))}</span></button>`).join('')}</div></div>
+${draft.things.includes('other') ? `<label class="field"><span>${t('setup.other')}</span><input class="input" data-draft="otherName" value="${esc(draft.otherName)}" placeholder="${esc(t('setup.other_ph'))}" autocomplete="off"></label>` : ''}
 <button class="btn btn-primary btn-block" data-act="setup-next">${t('act.next')}</button>
 <a class="btn btn-quiet btn-block" href="#/welcome">${t('act.back')}</a>
 </div>`;
@@ -601,7 +624,7 @@ function render() {
     const v = r.id === '2' ? viewSetup() : r.id === '3' ? viewLast() : viewWelcome();
     out = `<main class="onb" id="main">${v}</main>`;
   } else {
-    const V = { today: viewToday, home: viewHome, car: viewCar, subs: viewSubs, more: viewMore, warranties: viewWarranties, techs: viewTechs, travel: viewTravel, spend: viewSpend, settings: viewSettings, about: viewAbout }[r.name] || viewToday;
+    const V = { today: viewToday, home: viewHome, car: viewCar, subs: viewSubs, more: viewMore, things: viewThings, warranties: viewWarranties, techs: viewTechs, travel: viewTravel, spend: viewSpend, settings: viewSettings, about: viewAbout }[r.name] || viewToday;
     out = shell(r, V(r));
   }
   $('#app').innerHTML = out;
@@ -623,7 +646,7 @@ function keepStorage() {
 
 function commit(silent) {
   if (!S.save(state)) toast(t('err.storage'));
-  if (state.homes.length || state.cars.length || state.subs.length) keepStorage();
+  if (hasAnything()) keepStorage();
   if (!silent) render();
 }
 
@@ -803,7 +826,7 @@ function addTaskSheet(assetId) {
   const asset = findAsset(assetId);
   const kind = asset.kind;
   const have = new Set(state.items.filter((i) => i.asset === assetId && i.enabled !== false).map((i) => i.tpl));
-  const avail = D.templates.filter((x) => x.kind === kind && !have.has(x.id));
+  const avail = D.templates.filter((x) => x.kind === kind && (kind !== 'thing' || x.for === asset.type) && !have.has(x.id));
   openSheet(`<h2 class="sh-title">${t('act.add_task')}</h2>
 ${avail.length ? `<p class="lede small">${t('add.from_list')}</p><div class="chips wrap">${avail.map((x) => `<button class="chip" data-act="add-tpl" data-id="${esc(assetId)}" data-v="${esc(x.id)}">${icon(x.icon)}<span>${esc(nm(x))}</span></button>`).join('')}</div>` : ''}
 <h3 class="sh-h">${t('add.custom')}</h3>
@@ -899,6 +922,17 @@ function techSheet(id) {
 <label class="field"><span>${t('tech.note')}</span><input class="input" name="note" value="${esc(x ? x.note || '' : '')}" autocomplete="off"></label>
 <button class="btn btn-primary btn-block" data-act="save-tech" data-id="${esc(id || '')}">${t('act.save')}</button>
 ${x ? `<button class="btn btn-quiet btn-danger btn-block" data-act="delete-tech" data-id="${esc(id)}">${icon('trash')}<span>${t('act.delete')}</span></button>` : ''}`, t('act.add_tech'));
+}
+
+function thingSheet(id) {
+  const x = id ? state.things.find((y) => y.id === id) : null;
+  const type = x ? x.type : 'boat';
+  openSheet(`<h2 class="sh-title">${x ? t('act.edit_thing') : t('act.add_thing')}</h2>
+${x ? '' : `<div class="field"><span>${t('thing.type')}</span><div class="chips wrap">${D.thingTypes.map((tt) => `<button class="chip${tt.id === type ? ' on' : ''}" data-act="set" data-name="ttype" data-v="${tt.id}">${icon(tt.icon)}<span>${esc(nm(tt))}</span></button>`).join('')}</div><input type="hidden" name="ttype" value="${type}"></div>`}
+<label class="field"><span>${t('thing.name')}</span><input class="input" name="name" value="${esc(x ? x.name : '')}" placeholder="${esc(nm(D.thingType[type]))}" autocomplete="off"></label>
+${x ? '' : `<p class="fine">${t('thing.hint')}</p>`}
+<button class="btn btn-primary btn-block" data-act="save-thing" data-id="${esc(id || '')}">${t('act.save')}</button>
+${x ? `<button class="btn btn-quiet btn-danger btn-block" data-act="delete-asset" data-id="${esc(id)}">${icon('trash')}<span>${t('act.delete_thing')}</span></button>` : ''}`, t('act.add_thing'));
 }
 
 function backupSheet() {
@@ -1137,6 +1171,26 @@ async function onClick(e) {
       commit();
       break;
     case 'odo': odoSheet(id); break;
+    case 'add-thing': thingSheet(null); break;
+    case 'edit-thing': thingSheet(id); break;
+    case 'save-thing': {
+      let thing;
+      let fresh = false;
+      if (id) {
+        thing = state.things.find((x) => x.id === id);
+        thing.name = val('name') || thing.name;
+      } else {
+        const type = val('ttype') || 'other';
+        thing = S.addThing(state, { type, name: val('name') || nm(D.thingType[type]) }, D.templates);
+        S.spreadNew(state, [thing.id], TODAY, D.templates);
+        fresh = !state.items.some((i) => i.asset === thing.id);
+      }
+      closeSheet(true);
+      location.hash = `#/things/${thing.id}`;
+      commit();
+      if (fresh) addTaskSheet(thing.id);
+      break;
+    }
     case 'save-odo': {
       const car = state.cars.find((x) => x.id === id);
       const km = num(val('km'));
@@ -1163,6 +1217,10 @@ async function onClick(e) {
       });
       const hidden = $(`#sheet-root input[type="hidden"][name="${name}"]`);
       if (hidden) hidden.value = el.dataset.v;
+      if (name === 'ttype') {
+        const nameInput = $('#sheet-root [name="name"]');
+        if (nameInput) nameInput.placeholder = nm(D.thingType[el.dataset.v]);
+      }
       if (name === 'type') {
         const nameInput = $('#sheet-root [name="name"]');
         if (nameInput) nameInput.placeholder = t('type.' + el.dataset.v);
@@ -1285,7 +1343,7 @@ async function onClick(e) {
     case 'restore': restoreSheet(); break;
     case 'do-restore': await doRestore(); break;
     case 'demo': {
-      const has = state.homes.length || state.cars.length || state.subs.length;
+      const has = hasAnything();
       if (has && !el.dataset.confirmed) return confirmSheet(t('confirm.sample'), 'demo', '', t('act.replace'));
       state = S.sample(L(), TODAY, D.templates);
       closeSheet(true);
@@ -1306,6 +1364,25 @@ async function onClick(e) {
       break;
     }
     case 'draft-type': draft.type = el.dataset.v; draft.features.tank = el.dataset.v !== 'flat'; render(); break;
+    case 'draft-thing': {
+      const v = el.dataset.v;
+      draft.things = draft.things.includes(v) ? draft.things.filter((x) => x !== v) : [...draft.things, v];
+      render();
+      break;
+    }
+    case 'extra-add': {
+      const title = (draft.extraName || '').trim();
+      if (!title) {
+        toast(t('err.title'));
+        break;
+      }
+      draft.extras.push({ title, months: Number(draft.extraEvery) || 6 });
+      draft.extraName = '';
+      render();
+      $('[data-draft="extraName"]')?.focus();
+      break;
+    }
+    case 'extra-remove': draft.extras.splice(Number(el.dataset.v), 1); render(); break;
     case 'draft-country':
       state.settings.country = el.dataset.v;
       state.settings.currency = COUNTRIES[el.dataset.v].cur;
@@ -1316,10 +1393,15 @@ async function onClick(e) {
       for (const a of draft.created || []) S.removeAsset(state, a);
       const home = S.addHome(state, { type: draft.type, name: draft.name.trim() || t('type.' + draft.type), features: draft.features }, D.templates);
       draft.created = [home.id];
+      for (const x of draft.extras) S.addCustom(state, home.id, x.title, { months: x.months });
       if (draft.car) {
         const km = num(draft.km);
         const car = S.addCar(state, { name: draft.carName.trim() || t('car.default'), km, date: TODAY, dailyKm: 40 }, D.templates);
         draft.created.push(car.id);
+      }
+      for (const type of draft.things) {
+        const name = type === 'other' ? (draft.otherName || '').trim() || nm(D.thingType.other) : nm(D.thingType[type]);
+        draft.created.push(S.addThing(state, { type, name }, D.templates).id);
       }
       draft.last = {};
       S.save(state);
@@ -1395,6 +1477,11 @@ function onInput(e) {
 }
 
 function onKey(e) {
+  if (e.key === 'Enter' && e.target.matches && e.target.matches('[data-draft="extraName"]')) {
+    e.preventDefault();
+    $('[data-act="extra-add"]')?.click();
+    return;
+  }
   const root = $('#sheet-root');
   if (!root) return;
   if (e.key === 'Escape') {

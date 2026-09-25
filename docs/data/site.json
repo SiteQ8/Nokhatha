@@ -69,7 +69,8 @@
     "q4": "What if I change phones or clear my browser data?",
     "a4": "Your data goes with it, because no copy exists anywhere else. Save an encrypted backup from Settings and open it on the new device with your passphrase.",
     "q5": "I use it on an iPhone, what should I do?",
-    "a5": "Add it to your home screen from the Share button, then Add to Home Screen. Safari clears data for websites you have not opened for a while, and installed web apps are exempt."
+    "a5": "Add it to your home screen from the Share button, then Add to Home Screen. Safari clears data for websites you have not opened for a while, and installed web apps are exempt.",
+    "x_things": "Anything else you want to track, like a boat, a generator, a pool, a garden or a camp, or something you name yourself with your own tasks"
   },
   "dyn": {
     "ar": {

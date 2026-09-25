@@ -69,11 +69,12 @@ const families = {
   'type.': ['house', 'flat', 'chalet', 'farm', 'jakhoor'],
   'feat.': ['central_ac', 'tank', 'filter'],
   'last.': ['unknown', 'month', 'm3', 'm6', 'year'],
-  'spend.': ['home', 'car', 'subs'],
-  'empty.': ['home', 'car'],
-  'act.add_': ['home', 'car'],
+  'spend.': ['home', 'car', 'things', 'subs'],
+  'setup.every_': ['1', '3', '6', '12'],
+  'empty.': ['home', 'car', 'thing'],
+  'act.add_': ['home', 'car', 'thing'],
   'country.': ['KW', 'SA', 'AE', 'QA', 'BH', 'OM'],
-  'title.': ['home', 'car', 'subs', 'more', 'warranties', 'techs', 'travel', 'spend', 'settings', 'about'],
+  'title.': ['home', 'car', 'subs', 'more', 'things', 'warranties', 'techs', 'travel', 'spend', 'settings', 'about'],
 };
 for (const [p, list] of Object.entries(families)) for (const s of list) if (!(p + s in strings.ar)) bad(`strings.json: missing "${p + s}"`);
 const engineSrc = read('docs/engine/nokhatha.js');
@@ -119,7 +120,11 @@ const tasks = json('docs/data/tasks.json');
 walkStrings('tasks.json', tasks);
 const icons = read('docs/app/icons.js');
 const iconNames = new Set([...icons.matchAll(/^\s{2}(\w+): '/gm)].map((m) => m[1]));
-const areaIds = new Set([...tasks.areas.home, ...tasks.areas.car].map((a) => a.id));
+const areaIds = new Set([...tasks.areas.home, ...tasks.areas.car, ...tasks.areas.thing].map((a) => a.id));
+const thingTypes = new Set(tasks.thingTypes.map((x) => x.id));
+for (const x of tasks.thingTypes) {
+  if (!x.ar || !x.en) bad(`tasks.json: thing type ${x.id} needs Arabic and English`);
+}
 const tradeIds = new Set(tasks.trades.map((t) => t.id));
 const seasonIds = new Set(seasons.seasons.map((s) => s.id));
 const seenTpl = new Set();
@@ -127,7 +132,8 @@ for (const t of tasks.templates) {
   if (seenTpl.has(t.id)) bad(`tasks.json: template ${t.id} repeats`);
   seenTpl.add(t.id);
   for (const k of ['ar', 'en', 'why_ar', 'why_en']) if (!t[k]) bad(`tasks.json: ${t.id} is missing ${k}`);
-  if (!['home', 'car'].includes(t.kind)) bad(`tasks.json: ${t.id} has kind ${t.kind}`);
+  if (!['home', 'car', 'thing'].includes(t.kind)) bad(`tasks.json: ${t.id} has kind ${t.kind}`);
+  if (t.kind === 'thing' && !thingTypes.has(t.for)) bad(`tasks.json: ${t.id} is for unknown thing ${t.for}`);
   if (!areaIds.has(t.area)) bad(`tasks.json: ${t.id} has unknown area ${t.area}`);
   if (t.trade && !tradeIds.has(t.trade)) bad(`tasks.json: ${t.id} has unknown trade ${t.trade}`);
   if (!iconNames.has(t.icon)) bad(`tasks.json: ${t.id} uses missing icon ${t.icon}`);
@@ -139,6 +145,7 @@ for (const t of tasks.templates) {
 }
 for (const x of tasks.travel) if (!x.ar || !x.en || !x.id) bad(`tasks.json: travel item ${x.id} is incomplete`);
 for (const m of app.matchAll(/icon\('(\w+)'/g)) if (!iconNames.has(m[1])) bad(`app.js uses missing icon ${m[1]}`);
+for (const x of tasks.thingTypes) if (!iconNames.has(x.icon)) bad(`tasks.json: thing type ${x.id} uses missing icon ${x.icon}`);
 for (const m of html.matchAll(/data-icon="(\w+)"/g)) if (!iconNames.has(m[1])) bad(`index.html uses missing icon ${m[1]}`);
 
 /* ---------------------------------------------------- pages and security */

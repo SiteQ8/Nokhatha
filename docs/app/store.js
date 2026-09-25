@@ -16,6 +16,7 @@ export function blank(lang) {
     settings: { lang, country: 'KW', theme: 'auto', currency: 'KWD', lead: 7, onboarded: false },
     homes: [],
     cars: [],
+    things: [],
     items: [],
     subs: [],
     warranties: [],
@@ -27,7 +28,7 @@ export function blank(lang) {
 export function normalize(s) {
   const b = blank((s && s.settings && s.settings.lang) || 'ar');
   const out = { ...b, ...(s || {}), settings: { ...b.settings, ...((s && s.settings) || {}) }, travel: { ...b.travel, ...((s && s.travel) || {}) } };
-  for (const k of ['homes', 'cars', 'items', 'subs', 'warranties', 'techs']) if (!Array.isArray(out[k])) out[k] = [];
+  for (const k of ['homes', 'cars', 'things', 'items', 'subs', 'warranties', 'techs']) if (!Array.isArray(out[k])) out[k] = [];
   if (!Array.isArray(out.travel.done)) out.travel.done = [];
   return out;
 }
@@ -93,6 +94,14 @@ export function addCar(state, { name, km, date, dailyKm }, templates) {
   return car;
 }
 
+// Anything else a person wants to keep track of: a boat, a generator, a garden, or something of their own.
+export function addThing(state, { type, name }, templates) {
+  const thing = { id: uid(), kind: 'thing', type, name };
+  state.things.push(thing);
+  for (const t of templates) if (t.kind === 'thing' && t.for === type && t.default) state.items.push(newItem(thing.id, t.id));
+  return thing;
+}
+
 export function addItem(state, asset, tplId) {
   const existing = state.items.find((i) => i.asset === asset && i.tpl === tplId);
   if (existing) {
@@ -128,6 +137,7 @@ export function spreadNew(state, assetIds, today, templates) {
 export function removeAsset(state, id) {
   state.homes = state.homes.filter((h) => h.id !== id);
   state.cars = state.cars.filter((c) => c.id !== id);
+  state.things = state.things.filter((x) => x.id !== id);
   state.items = state.items.filter((i) => i.asset !== id);
 }
 
@@ -245,7 +255,11 @@ export function sample(lang, today, templates) {
     { id: uid(), name: T('الثلاجة', 'Fridge'), store: T('معرض الأجهزة', 'Appliance store'), bought: ago(300), months: 24 },
     { id: uid(), name: T('مكيف الصالة', 'Living room AC'), store: T('وكيل المكيفات', 'AC dealer'), bought: addMonths(addDays(today, 26), -24), months: 24 },
   ];
-  spreadNew(s, [home.id, chalet.id, car.id], today, templates);
+  const boat = addThing(s, { type: 'boat', name: T('الطراد', 'The boat') }, templates);
+  set(boat.id, 'boat_engine', { lastDone: ago(150), log: [cost(150, 45000)] });
+  set(boat.id, 'boat_hull', { lastDone: ago(70) });
+  set(boat.id, 'boat_license', { due: addDays(today, 45) });
+  spreadNew(s, [home.id, chalet.id, car.id, boat.id], today, templates);
   s.techs = [
     { id: uid(), name: T('أبو محمد', 'Abu Mohammed'), trade: 'ac', phone: '12345678' },
     { id: uid(), name: T('أبو علي', 'Abu Ali'), trade: 'plumber', phone: '12345679' },
