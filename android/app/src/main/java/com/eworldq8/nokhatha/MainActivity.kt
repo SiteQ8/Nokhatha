@@ -25,6 +25,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
@@ -66,6 +76,7 @@ class AppModel(private val ctx: Context, intent: Intent?) {
             }
             intent?.getBooleanExtra("sample", false) == true -> state = Brain.sample(catalog, lang0 ?: deviceLang, today)
             file.exists() -> state = runCatching { AppState.fromJson(JSONObject(file.readText())) }.getOrNull()
+            lang0 != null -> state = AppState(settings = Settings(lang = lang0))
         }
     }
 
@@ -260,19 +271,7 @@ fun Tabs(model: AppModel) {
     BackHandler(enabled = sub != null || model.tab != "today") { if (sub != null) sub = null else model.tab = "today" }
     Scaffold(
         containerColor = p.bg,
-        bottomBar = {
-            NavigationBar(containerColor = p.surface) {
-                for ((key, icon) in listOf("today" to "today", "home" to "home", "car" to "car", "subs" to "repeat", "more" to "more")) {
-                    NavigationBarItem(
-                        selected = model.tab == key,
-                        onClick = { model.tab = key; sub = null },
-                        icon = { Ico(icon, if (model.tab == key) p.ink else p.ink3, 24.dp) },
-                        label = { Text(model.t("tab.$key"), style = body(12, if (model.tab == key) FontWeight.Bold else FontWeight.Normal)) },
-                        colors = NavigationBarItemDefaults.colors(indicatorColor = p.ink.copy(alpha = 0.08f), selectedTextColor = p.ink, unselectedTextColor = p.ink3),
-                    )
-                }
-            }
-        },
+        bottomBar = { TabBar(model) { sub = null } },
     ) { pad ->
         Box(Modifier.padding(pad).fillMaxSize()) {
             when {
@@ -284,6 +283,47 @@ fun Tabs(model: AppModel) {
                 else -> MoreScreen(model) { sub = it }
             }
         }
+    }
+}
+
+/** The tab bar. Every label keeps to one line: it measures itself and shrinks to fit its tab,
+ *  so "Subscriptions" never breaks, on a small phone or with the device's font size turned up. */
+@Composable
+fun TabBar(model: AppModel, onPick: () -> Unit) {
+    val p = pal()
+    Column(Modifier.fillMaxWidth().background(p.surface)) {
+        HorizontalDivider(color = p.line)
+        Row(Modifier.fillMaxWidth().navigationBarsPadding().height(66.dp)) {
+            for ((key, icon) in listOf("today" to "today", "home" to "home", "car" to "car", "subs" to "repeat", "more" to "more")) {
+                val on = model.tab == key
+                val label = model.t("tab.$key")
+                Column(
+                    Modifier.weight(1f).fillMaxHeight()
+                        .clickable(role = Role.Tab) { model.tab = key; onPick() }
+                        .semantics { selected = on; contentDescription = label },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Box(Modifier.width(56.dp).height(30.dp).clip(RoundedCornerShape(15.dp)).background(if (on) p.ink.copy(alpha = 0.08f) else Color.Transparent),
+                        contentAlignment = Alignment.Center) { Ico(icon, if (on) p.ink else p.ink3, 23.dp) }
+                    Spacer(Modifier.height(3.dp))
+                    FitText(label, body(if (model.isArabic) 12 else 11, if (on) FontWeight.Bold else FontWeight.Normal), if (on) p.ink else p.ink3,
+                        Modifier.fillMaxWidth().padding(horizontal = 2.dp).clearAndSetSemantics { })
+                }
+            }
+        }
+    }
+}
+
+/** One line of text that shrinks its font until it fits the width it is given, down to 8sp. */
+@Composable
+fun FitText(text: String, style: TextStyle, color: Color, modifier: Modifier = Modifier) {
+    val measurer = rememberTextMeasurer()
+    BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
+        val max = constraints.maxWidth
+        val natural = remember(text, style) { measurer.measure(text, style, softWrap = false, maxLines = 1).size.width }
+        val size = if (natural <= max || natural == 0) style.fontSize else (style.fontSize * (max.toFloat() / natural) * 0.98f).let { if (it.value < 8f) 8.sp else it }
+        Text(text, style = style.copy(fontSize = size, lineHeight = size * 1.3f), color = color, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
     }
 }
 

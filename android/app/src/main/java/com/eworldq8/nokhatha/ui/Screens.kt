@@ -88,7 +88,7 @@ fun TaskRow(model: AppModel, e: Evaluated, showAsset: Boolean) {
                     .clickable(role = Role.Button) { model.done(e) }
                     .semantics { contentDescription = model.t("act.done_label", mapOf("title" to e.title(model.lang))) },
                 contentAlignment = Alignment.Center,
-            ) { Ico("check", p.ink3, 20.dp) }
+            ) { Ico("done", p.ink3, 20.dp) }
         }
     }
     if (open) TaskSheet(model, e) { open = false }

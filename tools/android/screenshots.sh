@@ -19,10 +19,12 @@ for lang in ar en; do
     adb exec-out screencap -p > "shots/$lang-$tab.png"
   done
 done
-adb shell am start -S -W -n "$PKG/.MainActivity" --es screen setup --es lang ar
-sleep 6
-adb exec-out screencap -p > shots/ar-setup.png
-adb shell am start -S -W -n "$PKG/.MainActivity" --es lang ar
-sleep 6
-adb exec-out screencap -p > shots/ar-welcome.png
+for lang in ar en; do
+  adb shell am start -S -W -n "$PKG/.MainActivity" --es screen setup --es lang "$lang"
+  sleep 6
+  adb exec-out screencap -p > "shots/$lang-setup.png"
+  adb shell am start -S -W -n "$PKG/.MainActivity" --es lang "$lang"
+  sleep 6
+  adb exec-out screencap -p > "shots/$lang-welcome.png"
+done
 ls -la shots

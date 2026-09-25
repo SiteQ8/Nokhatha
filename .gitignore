@@ -5,3 +5,4 @@ node_modules/
 *.xcodeproj/xcuserdata/
 ios/build/
 DerivedData/
+__pycache__/
