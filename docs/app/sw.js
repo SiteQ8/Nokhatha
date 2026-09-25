@@ -1,9 +1,10 @@
 // Offline support, and reminders from the device itself.
 // One cache per version, the app shell answers every navigation.
-const VERSION = '0.4.0';
+const VERSION = '0.5.0';
 const CACHE = `nokhatha-${VERSION}`;
 // Written by the page: what is due in the coming weeks, already worded in the person's language.
 const DIGEST = 'nokhatha-digest';
+importScripts('weather.js');
 const FILES = [
   './',
   'index.html',
@@ -13,11 +14,13 @@ const FILES = [
   'dial.js',
   'store.js',
   'backup.js',
+  'weather.js',
   'manifest.webmanifest',
   '../engine/nokhatha.js',
   '../data/seasons.json',
   '../data/tasks.json',
   '../data/strings.json',
+  '../data/places.json',
   '../assets/base.css',
   '../assets/favicon.svg',
   '../assets/icons/icon-192.png',
@@ -83,11 +86,13 @@ async function remind() {
   const quiet = now.getHours() < 7 || now.getHours() >= 22;
   if (!d.notify || seen.notified === today || quiet) return save({ ...seen, ran: now.toISOString() });
   const due = d.items.filter((x) => x.date <= today);
-  if (!due.length) return save({ ...seen, ran: now.toISOString() });
+  const sky = await weatherLine(d, today);
+  if (!due.length && !sky) return save({ ...seen, ran: now.toISOString() });
   const late = due.some((x) => x.date < today);
-  const body = due.slice(0, 3).map((x) => x.title).join(d.sep) + (due.length > 3 ? d.sep + d.more : '');
+  const lines = (sky ? [sky] : []).concat(due.slice(0, 3).map((x) => x.title));
+  const body = lines.join(d.sep) + (due.length > 3 ? d.sep + d.more : '');
   try {
-    await self.registration.showNotification(late ? d.titleNow : d.titleToday, {
+    await self.registration.showNotification(due.length ? (late ? d.titleNow : d.titleToday) : d.weather.title, {
       body, tag: 'nokhatha-due', lang: d.lang, dir: d.dir,
       icon: '../assets/icons/icon-192.png', badge: '../assets/icons/favicon-64.png', data: { url: './#/today' },
     });
@@ -96,6 +101,19 @@ async function remind() {
     return save({ ...seen, ran: now.toISOString(), blocked: true });
   }
   return save({ ran: now.toISOString(), notified: today });
+}
+
+// Only when the person turned weather alerts on: the forecast for their approximate area.
+async function weatherLine(d, today) {
+  if (!d.weather || !self.NokhathaWeather) return null;
+  try {
+    const sum = await self.NokhathaWeather.fetchWeather(d.weather.lat, d.weather.lon, fetch, 8000);
+    const a = self.NokhathaWeather.alerts(sum, today)[0];
+    if (!a) return null;
+    return d.weather.texts[a.kind].replace('{day}', a.day === 0 ? d.weather.day0 : d.weather.day1).replace('{t}', a.value == null ? '' : a.value);
+  } catch {
+    return null;
+  }
 }
 
 self.addEventListener('notificationclick', (event) => {

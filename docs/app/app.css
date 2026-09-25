@@ -449,3 +449,15 @@ select.input { appearance: none; background-image: none; cursor: pointer; }
 .add-row .btn { min-height: 48px; padding: 0 14px; }
 .chip small { font-size: 12px; opacity: .75; font-weight: 500; }
 .chip .x { width: 15px; height: 15px; opacity: .8; }
+
+/* weather */
+.wx { position: relative; display: grid; gap: 6px; margin: 4px 0 14px; padding: 14px 16px 26px; border-radius: 18px;
+  background: color-mix(in srgb, var(--rutab) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--rutab) 30%, var(--line)); }
+.wx.calm { display: flex; align-items: flex-start; gap: 10px; padding-bottom: 26px; background: var(--surface); border-color: var(--line); color: var(--ink-2); font-size: 14.5px; line-height: 1.7; }
+.wx.calm > .ic { color: var(--ok); margin-top: 3px; }
+.wx-a { display: flex; align-items: flex-start; gap: 10px; margin: 0; font-size: 14.5px; font-weight: 600; line-height: 1.7; }
+.wx-a .ic { flex: none; margin-top: 3px; color: var(--soon-ink); }
+.wx-a.wx-dust_heavy .ic, .wx-a.wx-rain .ic, .wx-a.wx-wind .ic { color: var(--overdue); }
+.wx-a.wx-cold .ic { color: var(--ok); }
+.wx-src { position: absolute; inset-inline-end: 14px; bottom: 7px; font-size: 11px; color: var(--ink-3); text-decoration: none; }
+.wx-src:hover { text-decoration: underline; }

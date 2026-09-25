@@ -1,0 +1,245 @@
+{
+ "about": "Gulf areas for weather alerts, the first of each country is its default. Coordinates are rounded to one decimal, about 10 km.",
+ "places": [
+  {
+   "id": "kw-kuwait",
+   "country": "KW",
+   "ar": "مدينة الكويت",
+   "en": "Kuwait City",
+   "lat": 29.4,
+   "lon": 48.0
+  },
+  {
+   "id": "kw-jahra",
+   "country": "KW",
+   "ar": "الجهراء",
+   "en": "Jahra",
+   "lat": 29.3,
+   "lon": 47.7
+  },
+  {
+   "id": "kw-ahmadi",
+   "country": "KW",
+   "ar": "الأحمدي",
+   "en": "Ahmadi",
+   "lat": 29.1,
+   "lon": 48.1
+  },
+  {
+   "id": "kw-khiran",
+   "country": "KW",
+   "ar": "الخيران",
+   "en": "Khiran",
+   "lat": 28.7,
+   "lon": 48.3
+  },
+  {
+   "id": "sa-riyadh",
+   "country": "SA",
+   "ar": "الرياض",
+   "en": "Riyadh",
+   "lat": 24.7,
+   "lon": 46.7
+  },
+  {
+   "id": "sa-jeddah",
+   "country": "SA",
+   "ar": "جدة",
+   "en": "Jeddah",
+   "lat": 21.5,
+   "lon": 39.2
+  },
+  {
+   "id": "sa-makkah",
+   "country": "SA",
+   "ar": "مكة",
+   "en": "Makkah",
+   "lat": 21.4,
+   "lon": 39.8
+  },
+  {
+   "id": "sa-madinah",
+   "country": "SA",
+   "ar": "المدينة",
+   "en": "Madinah",
+   "lat": 24.5,
+   "lon": 39.6
+  },
+  {
+   "id": "sa-dammam",
+   "country": "SA",
+   "ar": "الدمام",
+   "en": "Dammam",
+   "lat": 26.4,
+   "lon": 50.1
+  },
+  {
+   "id": "sa-qassim",
+   "country": "SA",
+   "ar": "القصيم",
+   "en": "Qassim",
+   "lat": 26.3,
+   "lon": 44.0
+  },
+  {
+   "id": "sa-hail",
+   "country": "SA",
+   "ar": "حائل",
+   "en": "Hail",
+   "lat": 27.5,
+   "lon": 41.7
+  },
+  {
+   "id": "sa-abha",
+   "country": "SA",
+   "ar": "أبها",
+   "en": "Abha",
+   "lat": 18.2,
+   "lon": 42.5
+  },
+  {
+   "id": "sa-tabuk",
+   "country": "SA",
+   "ar": "تبوك",
+   "en": "Tabuk",
+   "lat": 28.4,
+   "lon": 36.6
+  },
+  {
+   "id": "ae-abudhabi",
+   "country": "AE",
+   "ar": "أبوظبي",
+   "en": "Abu Dhabi",
+   "lat": 24.5,
+   "lon": 54.4
+  },
+  {
+   "id": "ae-dubai",
+   "country": "AE",
+   "ar": "دبي",
+   "en": "Dubai",
+   "lat": 25.2,
+   "lon": 55.3
+  },
+  {
+   "id": "ae-sharjah",
+   "country": "AE",
+   "ar": "الشارقة",
+   "en": "Sharjah",
+   "lat": 25.3,
+   "lon": 55.4
+  },
+  {
+   "id": "ae-alain",
+   "country": "AE",
+   "ar": "العين",
+   "en": "Al Ain",
+   "lat": 24.2,
+   "lon": 55.7
+  },
+  {
+   "id": "ae-rak",
+   "country": "AE",
+   "ar": "رأس الخيمة",
+   "en": "Ras Al Khaimah",
+   "lat": 25.8,
+   "lon": 55.9
+  },
+  {
+   "id": "ae-fujairah",
+   "country": "AE",
+   "ar": "الفجيرة",
+   "en": "Fujairah",
+   "lat": 25.1,
+   "lon": 56.3
+  },
+  {
+   "id": "qa-doha",
+   "country": "QA",
+   "ar": "الدوحة",
+   "en": "Doha",
+   "lat": 25.3,
+   "lon": 51.5
+  },
+  {
+   "id": "qa-wakrah",
+   "country": "QA",
+   "ar": "الوكرة",
+   "en": "Al Wakrah",
+   "lat": 25.2,
+   "lon": 51.6
+  },
+  {
+   "id": "qa-khor",
+   "country": "QA",
+   "ar": "الخور",
+   "en": "Al Khor",
+   "lat": 25.7,
+   "lon": 51.5
+  },
+  {
+   "id": "bh-manama",
+   "country": "BH",
+   "ar": "المنامة",
+   "en": "Manama",
+   "lat": 26.2,
+   "lon": 50.6
+  },
+  {
+   "id": "bh-muharraq",
+   "country": "BH",
+   "ar": "المحرق",
+   "en": "Muharraq",
+   "lat": 26.3,
+   "lon": 50.6
+  },
+  {
+   "id": "bh-riffa",
+   "country": "BH",
+   "ar": "الرفاع",
+   "en": "Riffa",
+   "lat": 26.1,
+   "lon": 50.6
+  },
+  {
+   "id": "om-muscat",
+   "country": "OM",
+   "ar": "مسقط",
+   "en": "Muscat",
+   "lat": 23.6,
+   "lon": 58.4
+  },
+  {
+   "id": "om-sohar",
+   "country": "OM",
+   "ar": "صحار",
+   "en": "Sohar",
+   "lat": 24.3,
+   "lon": 56.7
+  },
+  {
+   "id": "om-nizwa",
+   "country": "OM",
+   "ar": "نزوى",
+   "en": "Nizwa",
+   "lat": 22.9,
+   "lon": 57.5
+  },
+  {
+   "id": "om-sur",
+   "country": "OM",
+   "ar": "صور",
+   "en": "Sur",
+   "lat": 22.6,
+   "lon": 59.5
+  },
+  {
+   "id": "om-salalah",
+   "country": "OM",
+   "ar": "صلالة",
+   "en": "Salalah",
+   "lat": 17.0,
+   "lon": 54.1
+  }
+ ]
+}

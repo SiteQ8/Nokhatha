@@ -5,6 +5,9 @@ import { icon, mark } from './icons.js';
 import { dialSVG } from './dial.js';
 import * as S from './store.js';
 import { encryptBackup, decryptBackup, blobToB64, b64ToBlob } from './backup.js';
+import './weather.js';
+
+const W = globalThis.NokhathaWeather;
 
 const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
@@ -50,7 +53,7 @@ async function loadData() {
     if (!r.ok) throw new Error(n);
     return r.json();
   });
-  const [seasons, tasks, strings] = await Promise.all([get('seasons'), get('tasks'), get('strings')]);
+  const [seasons, tasks, strings, places] = await Promise.all([get('seasons'), get('tasks'), get('strings'), get('places')]);
   D = {
     seasons: seasons.seasons, groups: seasons.groups, bawarih: seasons.bawarih,
     templates: tasks.templates, areas: tasks.areas, trades: tasks.trades, travel: tasks.travel, strings,
@@ -59,6 +62,8 @@ async function loadData() {
   D.season = Object.fromEntries(D.seasons.map((x) => [x.id, x]));
   D.trade = Object.fromEntries(D.trades.map((x) => [x.id, x]));
   D.thingTypes = tasks.thingTypes;
+  D.places = places.places;
+  D.place = Object.fromEntries(D.places.map((x) => [x.id, x]));
   D.thingType = Object.fromEntries(D.thingTypes.map((x) => [x.id, x]));
 }
 
@@ -280,6 +285,7 @@ function viewToday() {
 </section>
 <section class="today-list">
 ${installTip()}
+${weatherCard()}
 <div class="sec"><h2>${t('today.now')}</h2>${now.length ? `<span class="count">${now.length}</span>` : ''}</div>
 ${now.length ? `<ul class="list">${now.map((e) => row(e, true)).join('')}</ul>` : `<div class="empty">${icon('done')}<p>${t('today.clear')}</p></div>`}
 ${talk.length ? askCard(talk[0]) : ''}
@@ -516,12 +522,107 @@ function viewSettings() {
 <p class="lede small">${t('settings.calendar_body')}</p>
 <button class="btn btn-block" data-act="ics">${icon('calendar')}<span>${t('act.ics')}</span></button>
 ${notifySection()}
+${weatherSection()}
 <div class="sec sec-sm"><h3>${t('settings.backup')}</h3></div>
 <p class="lede small">${t('settings.backup_body')}</p>
 <p class="backup-when">${icon(st.lastBackup ? 'done' : 'info')}<span>${st.lastBackup ? t('settings.last_backup', { date: dateText(st.lastBackup) }) : t('settings.no_backup')}</span></p>
 <div class="actions two"><button class="btn" data-act="backup">${icon('lock')}<span>${t('act.backup')}</span></button><button class="btn" data-act="restore">${icon('upload')}<span>${t('act.restore')}</span></button></div>
 <div class="sec sec-sm"><h3>${t('settings.data')}</h3></div>
 <div class="actions two"><button class="btn" data-act="demo">${icon('spark')}<span>${t('welcome.demo')}</span></button><button class="btn btn-danger" data-act="wipe">${icon('trash')}<span>${t('act.wipe')}</span></button></div>`;
+}
+
+/* ---------------------------------------------------------------- weather */
+
+// Opt-in only. The one connection the app makes outside the device: an approximate
+// location sent to Open-Meteo for the forecast. The result is kept on the device.
+const WX_KEY = 'nokhatha.weather';
+const WX_ICON = { dust: 'dust', dust_heavy: 'dust', rain: 'rain', wind: 'air', heat: 'thermo', cold: 'snow' };
+let wxBusy = false;
+
+function wxCache() {
+  try {
+    return JSON.parse(localStorage.getItem(WX_KEY) || 'null');
+  } catch {
+    return null;
+  }
+}
+
+function wxPlaces() {
+  return D.places.filter((p) => p.country === (state.settings.country || 'KW'));
+}
+
+function wxPlaceName(w) {
+  return w.place === 'gps' ? t('wx.mine') : nm(D.place[w.place]) || '';
+}
+
+function wxText(a) {
+  return t('wx.' + a.kind, { day: t(a.day === 0 ? 'wx.day0' : 'wx.day1'), t: a.value ?? '' });
+}
+
+async function refreshWeather(force) {
+  const w = state.settings.weather;
+  if (!w || !w.on || wxBusy || (typeof navigator.onLine === 'boolean' && !navigator.onLine)) return;
+  const c = wxCache();
+  const fresh = c && c.lat === w.lat && c.lon === w.lon && Date.now() - c.at < 3 * 3600 * 1000;
+  if (fresh && !force) return;
+  wxBusy = true;
+  try {
+    const sum = await W.fetchWeather(w.lat, w.lon, fetch.bind(window), 12000);
+    localStorage.setItem(WX_KEY, JSON.stringify({ at: Date.now(), lat: w.lat, lon: w.lon, sum }));
+    if (['today', 'settings'].includes(route().name) && !$('#sheet-root')) render();
+  } catch {
+    if (force) toast(t('wx.failed'));
+  } finally {
+    wxBusy = false;
+  }
+}
+
+function weatherCard() {
+  const w = state.settings.weather;
+  const c = wxCache();
+  if (!w || !w.on || !c || c.lat !== w.lat || c.lon !== w.lon) return '';
+  const list = W.alerts(c.sum, TODAY).slice(0, 2);
+  const src = '<a class="wx-src" href="https://open-meteo.com" target="_blank" rel="noopener noreferrer">Open-Meteo</a>';
+  if (!list.length) return `<div class="wx calm">${icon('sun')}<span>${esc(t('wx.calm', { place: wxPlaceName(w) }))}</span>${src}</div>`;
+  return `<div class="wx">${list.map((a) => `<p class="wx-a wx-${a.kind}">${icon(WX_ICON[a.kind])}<span>${esc(wxText(a))}</span></p>`).join('')}${src}</div>`;
+}
+
+function weatherSection() {
+  const w = state.settings.weather || {};
+  const places = wxPlaces();
+  const current = w.place || (places[0] && places[0].id);
+  const c = wxCache();
+  const when = w.on && c && c.lat === w.lat ? `<p class="fine">${t('wx.updated', { date: new Date(c.at).toLocaleString(L() === 'ar' ? 'ar-KW-u-nu-latn' : 'en-GB', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) })}</p>` : '';
+  return `<div class="sec sec-sm"><h3>${t('settings.weather')}</h3></div>
+<p class="lede small">${t('wx.explain')}</p>
+<div class="setting"><span class="setting-l">${icon('globe')}${t('wx.place')}</span>
+<select class="input" data-act="wx-place" aria-label="${esc(t('wx.place'))}">${places.map((p) => `<option value="${p.id}"${p.id === current ? ' selected' : ''}>${esc(nm(p))}</option>`).join('')}<option value="gps"${current === 'gps' ? ' selected' : ''}>${t('wx.gps')}</option></select></div>
+${w.on ? `<button class="btn btn-block" data-act="wx-off">${icon('close')}<span>${t('wx.off')}</span></button>` : `<button class="btn btn-primary btn-block" data-act="wx-on">${icon('sun')}<span>${t('wx.on')}</span></button>`}
+${when}<p class="fine">${t('wx.source')}</p>`;
+}
+
+function wxSetPlace(id, lat, lon) {
+  const w = (state.settings.weather ||= { on: false });
+  w.place = id;
+  if (id !== 'gps') {
+    const p = D.place[id];
+    w.lat = p.lat;
+    w.lon = p.lon;
+  } else {
+    w.lat = lat;
+    w.lon = lon;
+  }
+}
+
+function wxLocate() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject(new Error('none'));
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve([Math.round(pos.coords.latitude * 10) / 10, Math.round(pos.coords.longitude * 10) / 10]),
+      reject,
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 6 * 3600 * 1000 },
+    );
+  });
 }
 
 function notifySection() {
@@ -685,7 +786,14 @@ async function writeDigest() {
     const payload = {
       v: 1, lang: L(), dir: L() === 'ar' ? 'rtl' : 'ltr', notify: !!state.settings.notify, items: list,
       titleNow: t('notify.title_now'), titleToday: t('notify.title_today'), more: t('notify.more'), sep: '\n',
+      weather: null,
     };
+    const w = state.settings.weather;
+    if (w && w.on && w.lat != null) {
+      const texts = {};
+      for (const k of Object.keys(WX_ICON)) texts[k] = t('wx.' + k);
+      payload.weather = { lat: w.lat, lon: w.lon, day0: t('wx.day0'), day1: t('wx.day1'), title: t('notify.title_weather'), texts };
+    }
     const cache = await caches.open(DIGEST);
     await cache.put('digest.json', new Response(JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } }));
   } catch {
@@ -1149,6 +1257,21 @@ async function onClick(e) {
     case 'close': closeSheet(); break;
     case 'install-ok': state.settings.installTipOff = true; commit(); break;
     case 'notify-on': await notifyOn(); break;
+    case 'wx-on': {
+      const w = state.settings.weather || {};
+      if (w.lat == null) {
+        const first = wxPlaces()[0];
+        wxSetPlace(first.id);
+      }
+      state.settings.weather.on = true;
+      commit();
+      await refreshWeather(true);
+      break;
+    }
+    case 'wx-off':
+      state.settings.weather.on = false;
+      commit();
+      break;
     case 'notify-off': await notifyOff(); break;
     case 'close-nav': closeSheet(true); break;
     case 'undo': if (undoFn) { const f = undoFn; undoFn = null; $('#toast')?.remove(); f(); } break;
@@ -1465,6 +1588,11 @@ async function onClick(e) {
       const lang = L();
       if (state.settings.notify) await notifyOff();
       if ('caches' in window) await caches.delete(DIGEST).catch(() => {});
+      try {
+        localStorage.removeItem(WX_KEY);
+      } catch {
+        /* nothing kept */
+      }
       S.wipe();
       await S.clearReceipts().catch(() => {});
       state = S.blank(lang);
@@ -1559,7 +1687,30 @@ function onChange(e) {
     const before = country();
     state.settings.country = el.value;
     if (state.settings.currency === before.cur) state.settings.currency = COUNTRIES[el.value].cur;
+    const w = state.settings.weather;
+    if (w && w.place && w.place !== 'gps' && D.place[w.place].country !== el.value) {
+      wxSetPlace(wxPlaces()[0].id);
+      if (w.on) refreshWeather(true);
+    }
     commit();
+    return;
+  }
+  if (el.matches('[data-act="wx-place"]')) {
+    const choice = el.value;
+    if (choice === 'gps') {
+      wxLocate().then(([lat, lon]) => {
+        wxSetPlace('gps', lat, lon);
+        commit();
+        refreshWeather(true);
+      }).catch(() => {
+        toast(t('wx.gps_denied'));
+        render();
+      });
+      return;
+    }
+    wxSetPlace(choice);
+    commit();
+    refreshWeather(true);
     return;
   }
   if (el.matches('[data-act="currency"]')) {
@@ -1668,6 +1819,7 @@ async function boot() {
   document.addEventListener('keydown', onKey);
   setInterval(() => {
     const now = nowISO();
+    if (document.visibilityState === 'visible') refreshWeather();
     if (now !== TODAY) {
       TODAY = now;
       writeDigest();
@@ -1679,6 +1831,7 @@ async function boot() {
   registerSW();
   writeDigest();
   refreshNotify();
+  refreshWeather();
   if ('serviceWorker' in navigator) navigator.serviceWorker.ready.then(refreshNotify).catch(() => {});
 }
 

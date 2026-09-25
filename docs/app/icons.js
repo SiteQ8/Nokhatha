@@ -77,6 +77,8 @@ const P = {
   paw: '<circle cx="6.5" cy="10" r="1.8"/><circle cx="10" cy="6.5" r="1.8"/><circle cx="14.5" cy="6.5" r="1.8"/><circle cx="18" cy="10" r="1.8"/><path d="M7.5 17.5c0-2.8 2.2-5.3 4.8-5.3s4.8 2.5 4.8 5.3c0 1.9-1.6 2.6-3.2 2-1.1-.4-2.1-.4-3.2 0-1.6.6-3.2-.1-3.2-2Z"/>',
   box: '<path d="M12 3 20 7.5v9L12 21l-8-4.5v-9Z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/>',
   bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15Z"/><path d="M10 21h4"/>',
+  dust: '<path d="M3 8h9M3 12h13M3 16h8"/><circle cx="15.5" cy="8" r="1.1" class="fill"/><circle cx="19.5" cy="12" r="1.1" class="fill"/><circle cx="14" cy="16" r="1.1" class="fill"/><circle cx="18" cy="16.5" r="1.1" class="fill"/><circle cx="19" cy="7" r="1.1" class="fill"/>',
+  rain: '<path d="M7 15a4 4 0 0 1-.5-8 5.5 5.5 0 0 1 10.6-1.3A4 4 0 0 1 17.5 15Z"/><path d="m8.5 18-1 2.5M12.5 18l-1 2.5M16.5 18l-1 2.5"/>',
 };
 
 export const ICONS = Object.keys(P);

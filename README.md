@@ -41,6 +41,8 @@
 
 **أشيائي**، أي شي ثاني تبي تتابعه مثل الطراد أو الدراجة النارية أو المولد أو المسبح أو الحديقة أو المخيم أو الحيوان الأليف مع مهامه المقترحة، أو شي تسميه بنفسك وتحط له مهامك ومددها، وفي شاشة "شنو عندك؟" تقدر تضيف أي شي ثاني في البيت مثل صيانة المصعد وتحدد كل متى.
 
+**الطقس**، أي تنبيهات الغبار والمطر والرياح والحر والبرد لمنطقتك مع شي تسويه، مثل تنظيف الفلاتر بعد الغبار وفحص المزاريب قبل المطر، وهي اختيارية.
+
 **وغيرها**، أي الضمانات مع صورة الفاتورة وتذكير قبل نهايتها بشهر، ودفتر الفنيين بالاتصال والواتساب جنب المهام اللي تخصهم، وقائمة قبل سفرة الصيف، ومصاريف السنة، وتصدير المواعيد لتقويم جهازك مع تنبيه الساعة 9 الصبح، ونسخة احتياطية مشفّرة.
 
 ## مواسم الخليج في التطبيق
@@ -68,7 +70,9 @@
 
 نُوخذة ما يطلب منك تسجيل ولا إيميل ولا رقم تلفون، لأن التطبيق ما يرسل بياناتك لأي مكان فما يحتاج يعرف منو أنت، وكل اللي تسجله من مهام واشتراكات وصور فواتير ينحفظ داخل جهازك، والمواعيد تنحسب على جهازك نفسه فهو اللي يتابع صيانتك مو سيرفر عندنا.
 
-ولما نقول "بلا تتبع" نقصد إن التطبيق ما فيه أدوات إحصاء ولا إعلانات تراقب شنو تسوي، فإحنا ما نعرف منو يستخدمه ولا شنو سجل فيه، والتطبيق مقفول بسياسة أمان تمنعه يتصل بأي موقع ثاني.
+ولما نقول "بلا تتبع" نقصد إن التطبيق ما فيه أدوات إحصاء ولا إعلانات تراقب شنو تسوي، فإحنا ما نعرف منو يستخدمه ولا شنو سجل فيه، والتطبيق مقفول بسياسة أمان تمنعه يتصل بأي موقع ثاني إلا خدمة الطقس إذا فعّلتها بنفسك.
+
+وتنبيهات الطقس اختيارية، فإذا فعّلتها يرسل التطبيق موقع تقريبي بحدود 10 كيلو لخدمة Open-Meteo المجانية حتى يجيب توقعات الغبار والمطر والرياح والحر والبرد، والغبار ينقاس على المعتاد في منطقتك نفسها لأن غبار الكويت والرياض المعتاد أعلى من مسقط بعشر مرات، وتقدر تختار منطقتك من قائمة بدل ما تعطي موقعك.
 
 والملفات نفسها تنزل من GitHub Pages أول مرة مثل أي موقع فيشوف GitHub طلب التحميل بس ما يشوف بياناتك، وبعدها يشتغل التطبيق من جهازك حتى بدون إنترنت.
 
@@ -122,13 +126,16 @@ AC filters come every month and every two weeks during the Bawarih, AC servicing
 - **Car**: oil and filters by kilometres or time, whichever comes first, an odometer estimated from your readings, tires, pressure and rotation, battery, car AC, coolant, brake fluid and wipers, and registration, insurance and inspection before they expire.
 - **Subscriptions**: what you pay per month and per year in each currency, a "still using it?" question a week before every renewal so you can cancel before the money leaves, and a reminder before free trials end.
 - **My things**: anything else you want to keep track of, such as a boat, a motorbike, a generator, a pool, a garden, a camp or a pet with suggested tasks, or something you name yourself with your own tasks and intervals. The setup screen also takes anything else at home, like lift maintenance, with how often it is due.
+- **Weather**: optional dust, rain, wind, heat and cold alerts for your area, each with something to do, like cleaning the filters after dust or checking the drains before rain.
 - **And more**: warranties with a receipt photo, your technicians with call and WhatsApp next to their tasks, a pre-travel checklist, yearly spend, calendar export with a 9 am alert, and encrypted backups.
 
 ## Privacy
 
 Nokhatha never asks you to sign up, because nothing you enter is sent anywhere and so it has no need to know who you are. Tasks, subscriptions and receipt photos are stored on your device, and the dates are calculated on your device too, so your phone is what keeps track of your maintenance, not a server of ours.
 
-"No tracking" means there are no analytics, trackers or ads watching what you do. We cannot see who uses the app or what they record, and a strict content security policy stops the app from contacting any other site.
+"No tracking" means there are no analytics, trackers or ads watching what you do. We cannot see who uses the app or what they record, and a strict content security policy stops the app from contacting any other site, except the weather service if you turn it on.
+
+Weather alerts are optional. When on, the app sends a location rounded to about 10 km to the free Open-Meteo service for dust, rain, wind, heat and cold forecasts. Dust is judged against what is usual in your own area, because Kuwait and Riyadh normally carry ten times the dust of Muscat, and you can pick your area from a list instead of sharing your location.
 
 The files themselves download from GitHub Pages on the first visit like any website, so GitHub sees that download but never your data. After that the app runs from your device, even offline.
 

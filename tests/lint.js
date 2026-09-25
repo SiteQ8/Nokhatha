@@ -72,6 +72,7 @@ const families = {
   'spend.': ['home', 'car', 'things', 'subs'],
   'setup.every_': ['1', '3', '6', '12'],
   'notify.state_': ['on', 'ready', 'install', 'blocked', 'ios', 'unsupported'],
+  'wx.': ['dust', 'dust_heavy', 'rain', 'wind', 'heat', 'cold', 'day0', 'day1'],
   'empty.': ['home', 'car', 'thing'],
   'act.add_': ['home', 'car', 'thing'],
   'country.': ['KW', 'SA', 'AE', 'QA', 'BH', 'OM'],
@@ -116,6 +117,19 @@ for (const s of seasons.seasons) {
   if (!(s.group in seasons.groups)) bad(`seasons.json: ${s.id} has an unknown group`);
   for (const k of ['ar', 'en', 'note_ar', 'note_en', 'hint_ar', 'hint_en']) if (!s[k]) bad(`seasons.json: ${s.id} is missing ${k}`);
 }
+
+const places = json('docs/data/places.json');
+const placeIds = new Set();
+for (const p of places.places) {
+  if (placeIds.has(p.id)) bad(`places.json: ${p.id} repeats`);
+  placeIds.add(p.id);
+  if (!p.ar || !p.en) bad(`places.json: ${p.id} needs Arabic and English`);
+  if (!['KW', 'SA', 'AE', 'QA', 'BH', 'OM'].includes(p.country)) bad(`places.json: ${p.id} has country ${p.country}`);
+  if (!(p.lat >= 12 && p.lat <= 32 && p.lon >= 34 && p.lon <= 60)) bad(`places.json: ${p.id} is outside the Gulf`);
+  if (Math.round(p.lat * 10) !== p.lat * 10 || Math.round(p.lon * 10) !== p.lon * 10) bad(`places.json: ${p.id} is more precise than one decimal`);
+}
+for (const c of ['KW', 'SA', 'AE', 'QA', 'BH', 'OM']) if (!places.places.some((p) => p.country === c)) bad(`places.json: no area for ${c}`);
+walkStrings('places.json', places);
 
 const tasks = json('docs/data/tasks.json');
 walkStrings('tasks.json', tasks);
@@ -163,6 +177,18 @@ for (const page of ['docs/index.html', 'docs/app/index.html']) {
     if (/\ssrc="https?:/.test(m[0])) bad(`${page}: loads ${m[1]} from outside`);
   }
 }
+// The app may reach exactly these hosts and nothing else. The two weather hosts are opt-in.
+const HOSTS = new Set(['wa.me', 'github.com', '3li.info', 'nokhatha.3li.info', 'open-meteo.com', 'api.open-meteo.com', 'air-quality-api.open-meteo.com', 'www.w3.org']);
+for (const f of textFiles.filter((x) => /^docs\/.*\.(js|html)$/.test(rel(x)))) {
+  for (const m of readFileSync(f, 'utf8').matchAll(/https?:\/\/([a-z0-9.-]+)/gi)) {
+    if (!HOSTS.has(m[1].toLowerCase())) bad(`${rel(f)}: refers to ${m[1]}, which is not on the allowed list`);
+  }
+}
+const csp = (page) => /content="(default-src[^"]+)"/.exec(read(page))[1];
+const connect = (page) => (/connect-src ([^;]+)/.exec(csp(page)) || [])[1];
+if (connect('docs/app/index.html') !== "'self' https://api.open-meteo.com https://air-quality-api.open-meteo.com") bad('app policy: connect-src must be self and the two weather hosts only');
+if (connect('docs/index.html') !== "'self'") bad('site policy: connect-src must be self only');
+
 for (const f of textFiles.filter((x) => /^docs\/.*\.(js|html)$/.test(rel(x)))) {
   const s = readFileSync(f, 'utf8');
   if (/\sstyle="/.test(s)) bad(`${rel(f)}: inline style attribute, blocked by the policy`);
@@ -182,7 +208,7 @@ for (const m of list.matchAll(/'([^']+)'/g)) {
   const p = join(ROOT, 'docs/app', m[1]);
   if (m[1] !== './' && !existsSync(p)) bad(`sw.js caches a missing file ${m[1]}`);
 }
-const appFiles = ['docs/app/app.js', 'docs/app/app.css', 'docs/app/dial.js', 'docs/app/icons.js', 'docs/app/store.js', 'docs/app/backup.js', 'docs/engine/nokhatha.js', 'docs/data/strings.json', 'docs/data/tasks.json', 'docs/data/seasons.json', 'docs/assets/base.css'];
+const appFiles = ['docs/app/app.js', 'docs/app/app.css', 'docs/app/dial.js', 'docs/app/icons.js', 'docs/app/store.js', 'docs/app/backup.js', 'docs/app/weather.js', 'docs/engine/nokhatha.js', 'docs/data/strings.json', 'docs/data/tasks.json', 'docs/data/seasons.json', 'docs/data/places.json', 'docs/assets/base.css'];
 for (const f of appFiles) {
   const fromApp = relative(join(ROOT, 'docs/app'), join(ROOT, f)).split('\\').join('/');
   if (!list.includes(`'${fromApp}'`)) bad(`sw.js does not cache ${fromApp}`);

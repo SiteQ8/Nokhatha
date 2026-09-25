@@ -43,7 +43,7 @@
     "p2_title": "Encrypted backups",
     "p2_body": "Backups are encrypted with AES-256-GCM using a key derived from your passphrase, so nobody else can open them.",
     "p3_title": "Sealed in",
-    "p3_body": "A strict content security policy stops the app from talking to any other site, and every font and image is served from the same origin.",
+    "p3_body": "A strict content security policy stops the app from contacting any other site except the weather service if you turn it on, and every font and image is served from the same origin.",
     "p4_title": "Open source",
     "p4_body": "The full code is published under the MIT licence, so you can review it yourself, build it and improve it.",
     "platforms_title": "On your devices",
@@ -65,12 +65,15 @@
     "q2": "With no server, how does it keep track of my dates and remind me?",
     "a2": "Your device works out each date from the last time you logged the task and from the Gulf's seasons, so you see what is due as soon as you open the app. On Android and in Chrome, install the app and turn on reminders in Settings, and your device itself alerts you even when the app is closed. On iPhone, export the dates to your calendar until the iPhone app arrives with its own reminders.",
     "q3": "What does no tracking mean?",
-    "a3": "No analytics, trackers or ads watch what you do, so we cannot see who uses the app or what they record. The files download from GitHub on your first visit like any website, but your data never leaves your device.",
+    "a3": "No analytics, trackers or ads watch what you do, so we cannot see who uses the app or what they record. The files download from GitHub on your first visit like any website, but your data never leaves your device, apart from an approximate location for the weather service if you turn it on.",
     "q4": "What if I change phones or clear my browser data?",
     "a4": "Your data goes with it, because no copy exists anywhere else. Save an encrypted backup from Settings and open it on the new device with your passphrase.",
     "q5": "I use it on an iPhone, what should I do?",
     "a5": "Add it to your home screen from the Share button, then Add to Home Screen. Safari clears data for websites you have not opened for a while, and installed web apps are exempt.",
-    "x_things": "Anything else you want to track, like a boat, a generator, a pool, a garden or a camp, or something you name yourself with your own tasks"
+    "x_things": "Anything else you want to track, like a boat, a generator, a pool, a garden or a camp, or something you name yourself with your own tasks",
+    "q6": "How do weather alerts know my area?",
+    "a6": "You pick your area from the list or let the app find your location, which is rounded to about 10 km before it is sent to Open-Meteo for the dust, rain and heat forecast. Dust is judged against what is usual for your own area, and the connection only happens if you turn weather on.",
+    "x_weather": "Dust, rain and heat alerts for your area, with dust judged against what is usual there"
   },
   "dyn": {
     "ar": {

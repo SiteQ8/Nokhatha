@@ -2,6 +2,9 @@
 // node tests/run.js
 import { readFileSync } from 'node:fs';
 import * as E from '../docs/engine/nokhatha.js';
+import '../docs/app/weather.js';
+
+const Wx = globalThis.NokhathaWeather;
 
 const root = new URL('..', import.meta.url);
 const read = (p) => JSON.parse(readFileSync(new URL(p, root), 'utf8'));
@@ -159,6 +162,42 @@ pass++;
 const long = E.toICS([{ uid: 'x', date: '2026-10-01', title: 'تنظيف المزاريب وفحص عزل السطح قبل الوسم في البيت والشاليه والمزرعة'.repeat(2), note: 'a, b; c\nd', lead: 7 }], { stamp: '20260925T090000Z', calName: 'نُوخذة' });
 ok(long.split('\r\n').every((l) => new TextEncoder().encode(l).length <= 75), 'ics line length');
 ok(long.endsWith('END:VCALENDAR\r\n'), 'ics ends with CRLF');
+
+/* ---------------------------------------------------------------- weather */
+
+// A made up place whose last 60 days of dust ran 100 to 159: the dusty line is the 90th
+// percentile (153), heavy is the larger of 97th percentile (157) and 1.25 x 153 (191).
+function place(todayDust, tomorrowDust, extra = {}, historyDays = 60) {
+  const today = '2026-09-25';
+  const time = [];
+  const pm10 = [];
+  for (let i = historyDays; i >= 1; i--) {
+    time.push(`${E.addDays(today, -i)}T12:00`);
+    pm10.push(100 + (historyDays - i));
+  }
+  time.push(`${today}T12:00`, `${E.addDays(today, 1)}T12:00`, `${E.addDays(today, 2)}T12:00`);
+  pm10.push(todayDust, tomorrowDust, 120);
+  const daily = {
+    time: [today, E.addDays(today, 1), E.addDays(today, 2)],
+    temperature_2m_max: extra.tmax || [44, 44, 44],
+    temperature_2m_min: extra.tmin || [30, 30, 30],
+    precipitation_sum: extra.rain || [0, 0, 0],
+    precipitation_probability_max: extra.chance || [0, 0, 0],
+    wind_gusts_10m_max: extra.gust || [30, 30, 30],
+  };
+  return Wx.summarize({ daily }, { hourly: { time, pm10 } });
+}
+const kinds = (sum) => Wx.alerts(sum, '2026-09-25').map((a) => `${a.day}:${a.kind}${a.value != null ? '=' + a.value : ''}`).join(' ');
+const s1 = place(160, 250, { tmax: [49, 44, 44], rain: [0, 2, 0], gust: [30, 70, 30] });
+ok(s1.dusty === 153 && s1.heavy === 191, `weather thresholds ${s1.dusty} ${s1.heavy}`);
+ok(kinds(s1) === '0:dust 0:heat=49 1:dust_heavy 1:rain 1:wind', `weather alerts: ${kinds(s1)}`);
+ok(kinds(place(120, 130)) === '', `calm weather: ${kinds(place(120, 130))}`);
+ok(kinds(place(160, 250, {}, 10)) === '', 'no dust alert without enough history');
+ok(kinds(place(120, 120, { tmin: [30, 3, 30], chance: [60, 0, 0] })) === '0:rain 1:cold=3', `rain chance and cold: ${kinds(place(120, 120, { tmin: [30, 3, 30], chance: [60, 0, 0] }))}`);
+const clean = place(149, 149);
+ok(clean.dusty >= 150 && kinds(clean) === '', 'dust never flagged under the floor');
+ok(Wx.nextDay('2026-12-31') === '2027-01-01' && Wx.nextDay('2028-02-28') === '2028-02-29', 'weather next day');
+ok(/latitude=29\.4&longitude=48/.test(Wx.urls(29.4, 48).forecast) && /past_days=60/.test(Wx.urls(29.4, 48).air), 'weather urls');
 
 console.log(`${vectorCount} vectors and ${pass + fail - vectorCount} property checks: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
