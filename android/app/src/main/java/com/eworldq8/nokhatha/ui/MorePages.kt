@@ -228,7 +228,7 @@ fun AboutScreen(model: AppModel) {
         }
         Lede(model.t("about.name"))
         SmallHead(model.t("about.privacy_h"))
-        Lede(model.t("about.privacy"))
+        Lede(model.t("about.privacy_app"))
         Lede(model.t("about.keep"))
         SmallHead(model.t("about.open_h"))
         Lede(model.t("about.open"))

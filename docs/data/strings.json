@@ -372,7 +372,8 @@
     "notify.ios_ready": "جهازك ينبهك الساعة 9 الصبح في كل يوم عليك فيه شي، والتنبيهات تنجدول على جهازك نفسه بدون أي سيرفر.",
     "notify.android_ready": "جوالك ينبهك الساعة 9 الصبح في كل يوم عليك فيه شي، والتنبيهات تنحسب على جوالك نفسه بدون أي سيرفر.",
     "w.receipt_pick": "اختار من الصور",
-    "err.open": "ما قدرنا نفتحه على هالجهاز."
+    "err.open": "ما قدرنا نفتحه على هالجهاز.",
+    "about.privacy_app": "ما تحتاج حساب لأن بياناتك ما تطلع من جهازك أصلاً، فالمهام والاشتراكات وصور الفواتير كلها محفوظة على جهازك نفسه، وما في إحصاء ولا إعلانات ولا تتبع، والتطبيق ما عنده صلاحية إنترنت من الأساس."
   },
   "en": {
     "app.name": "Nokhatha",
@@ -747,6 +748,7 @@
     "notify.ios_ready": "Your iPhone alerts you at 9 am on each day something is due, scheduled on the device itself with no server.",
     "notify.android_ready": "Your phone alerts you at 9 am on each day something is due, worked out on the phone itself with no server.",
     "w.receipt_pick": "Choose a photo",
-    "err.open": "This device couldn't open it."
+    "err.open": "This device couldn't open it.",
+    "about.privacy_app": "You need no account because your data never leaves your device: tasks, subscriptions and receipt photos are all kept on the device itself, with no analytics, no ads and no tracking, and the app has no internet permission at all."
   }
 }
