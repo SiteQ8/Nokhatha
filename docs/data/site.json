@@ -37,9 +37,9 @@
     "shot_home_cap": "Home",
     "shot_subs_cap": "Subscriptions",
     "privacy_title": "Your data stays on your device",
-    "privacy_lead": "No account, no server, no tracking and no ads, and the app works offline after the first visit.",
+    "privacy_lead": "No account needed because your data never leaves your device, no analytics or ads watch what you do, and the app works offline after the first visit.",
     "p1_title": "Only on your device",
-    "p1_body": "Tasks, subscriptions and receipt photos are kept in your browser or on your phone, and none of it reaches us because there is no server at all.",
+    "p1_body": "Tasks, subscriptions and receipt photos stay in your browser or on your phone and the dates are worked out on the device itself, and none of it reaches us because we have no server that receives data at all.",
     "p2_title": "Encrypted backups",
     "p2_body": "Backups are encrypted with AES-256-GCM using a key derived from your passphrase, so nobody else can open them.",
     "p3_title": "Sealed in",
@@ -58,7 +58,18 @@
     "meaning": "The nokhatha was the captain of the pearling ship and answered for everything aboard, and this app makes you the nokhatha of your home.",
     "links_label": "Links",
     "license": "MIT licence",
-    "copyright": "© 2026 Ali AlEnezi"
+    "copyright": "© 2026 Ali AlEnezi",
+    "faq_title": "Common questions",
+    "q1": "With no account, where is my data kept?",
+    "a1": "On your device, in the browser's or the app's storage, and it never leaves it, so we have no need to know who you are.",
+    "q2": "With no server, how does it keep track of my dates and remind me?",
+    "a2": "Your device works out each date from the last time you logged the task and from Kuwait's seasons, so you see what is due as soon as you open the app. You can export the dates to your phone's calendar for a 9 am alert, and the upcoming iPhone and Android apps will send device notifications with no server.",
+    "q3": "What does no tracking mean?",
+    "a3": "No analytics, trackers or ads watch what you do, so we cannot see who uses the app or what they record. The files download from GitHub on your first visit like any website, but your data never leaves your device.",
+    "q4": "What if I change phones or clear my browser data?",
+    "a4": "Your data goes with it, because no copy exists anywhere else. Save an encrypted backup from Settings and open it on the new device with your passphrase.",
+    "q5": "I use it on an iPhone, what should I do?",
+    "a5": "Add it to your home screen from the Share button, then Add to Home Screen. Safari clears data for websites you have not opened for a while, and installed web apps are exempt."
   },
   "dyn": {
     "ar": {

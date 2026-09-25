@@ -218,7 +218,7 @@
     "about.version": "الإصدار {v}",
     "about.name": "النوخذة ربان سفينة الغوص والمسؤول عن كل شي فيها من الطاقم إلى المؤونة إلى الطريق، وهذا التطبيق يخليك نوخذة بيتك.",
     "about.privacy_h": "خصوصيتك",
-    "about.privacy": "ما في حساب ولا سيرفر ولا تتبع ولا إعلانات، وكل بياناتك وصور فواتيرك تبقى على جهازك، والنسخة الاحتياطية تطلع مشفّرة بكلمة سرك فما يقدر أحد يفتحها غيرك.",
+    "about.privacy": "ما تحتاج حساب لأن بياناتك ما تطلع من جهازك أصلاً، فالمهام والاشتراكات وصور الفواتير كلها محفوظة هني والمواعيد تنحسب على جهازك نفسه، وما في إحصاء ولا إعلانات تراقب استخدامك.",
     "about.open_h": "مفتوح المصدر",
     "about.open": "الكود كامل منشور بترخيص MIT، فتقدر تشوف بنفسك شنو يسوي التطبيق وتبنيه وتطوّره.",
     "about.source": "الكود على GitHub",
@@ -293,7 +293,14 @@
     "err.photo": "ما قدرنا نحفظ الصورة.",
     "ask.q_trial": "بتكمل مع {name} بعد التجربة؟",
     "today.more_asks": "في اشتراكات ثانية قرب تجديدها",
-    "dial.late": "{n} فات موعدها"
+    "dial.late": "{n} فات موعدها",
+    "about.remind": "والتنبيهات تشوفها أول ما تفتح التطبيق، وتقدر تصدّر المواعيد لتقويم جهازك من الإعدادات فيجيك تنبيهها الساعة 9 الصبح.",
+    "about.keep": "وعشان ما في نسخة من بياناتك عند أحد، احفظ نسخة احتياطية مشفّرة من الإعدادات قبل ما تغير جهازك أو تمسح بيانات المتصفح.",
+    "tip.install_title": "ثبّته على الشاشة الرئيسية",
+    "tip.install_body": "سفاري يمسح بيانات المواقع اللي ما تنفتح فترة، فثبّت نُوخذة من زر المشاركة ثم إضافة إلى الشاشة الرئيسية حتى تبقى بياناتك.",
+    "act.got_it": "تمام",
+    "settings.last_backup": "آخر نسخة احتياطية سويتها {date}",
+    "settings.no_backup": "ما سويت نسخة احتياطية للحين."
   },
   "en": {
     "app.name": "Nokhatha",
@@ -514,7 +521,7 @@
     "about.version": "Version {v}",
     "about.name": "The nokhatha was the captain of the pearling ship, responsible for everything aboard from the crew to the supplies to the course, and this app makes you the nokhatha of your home.",
     "about.privacy_h": "Your privacy",
-    "about.privacy": "No account, no server, no tracking and no ads, every record and receipt photo stays on your device, and backups leave it encrypted with your passphrase so nobody else can open them.",
+    "about.privacy": "You don't need an account because your data never leaves this device: tasks, subscriptions and receipt photos all stay here, the dates are worked out on the device itself, and no analytics or ads watch what you do.",
     "about.open_h": "Open source",
     "about.open": "The full code is published under the MIT licence, so you can see for yourself what the app does, build it and improve it.",
     "about.source": "Code on GitHub",
@@ -589,6 +596,13 @@
     "err.photo": "Couldn't save the photo.",
     "ask.q_trial": "Keep {name} after the trial?",
     "today.more_asks": "More subscriptions renew soon",
-    "dial.late": "{n} overdue"
+    "dial.late": "{n} overdue",
+    "about.remind": "You see what is due when you open the app, and you can export the dates to your phone's calendar from Settings for a 9 am alert.",
+    "about.keep": "Because no copy of your data exists anywhere else, save an encrypted backup from Settings before you change devices or clear your browser data.",
+    "tip.install_title": "Add it to your home screen",
+    "tip.install_body": "Safari clears data for websites you have not opened for a while, so add Nokhatha from the Share button, then Add to Home Screen, to keep your data.",
+    "act.got_it": "Got it",
+    "settings.last_backup": "Last backup saved on {date}",
+    "settings.no_backup": "No backup saved yet."
   }
 }

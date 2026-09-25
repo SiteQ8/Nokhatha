@@ -66,7 +66,19 @@
 
 ## خصوصيتك
 
-ما في حساب ولا سيرفر ولا تتبع ولا إعلانات، وكل البيانات محفوظة في المتصفح أو الجهاز وصور الفواتير في IndexedDB على جهازك، والنسخة الاحتياطية تنشفّر بـ AES-256-GCM بمفتاح مشتق من كلمة سرك عن طريق PBKDF2-SHA256 بـ 600,000 دورة، وسياسة أمان المحتوى تمنع التطبيق من الاتصال بأي موقع ثاني، والخطوط مستضافة مع التطبيق نفسه.
+نُوخذة ما يطلب منك تسجيل ولا إيميل ولا رقم تلفون، لأن التطبيق ما يرسل بياناتك لأي مكان فما يحتاج يعرف منو أنت، وكل اللي تسجله من مهام واشتراكات وصور فواتير ينحفظ داخل جهازك، والمواعيد تنحسب على جهازك نفسه فهو اللي يتابع صيانتك مو سيرفر عندنا.
+
+ولما نقول "بلا تتبع" نقصد إن التطبيق ما فيه أدوات إحصاء ولا إعلانات تراقب شنو تسوي، فإحنا ما نعرف منو يستخدمه ولا شنو سجل فيه، والتطبيق مقفول بسياسة أمان تمنعه يتصل بأي موقع ثاني.
+
+والملفات نفسها تنزل من GitHub Pages أول مرة مثل أي موقع فيشوف GitHub طلب التحميل بس ما يشوف بياناتك، وبعدها يشتغل التطبيق من جهازك حتى بدون إنترنت.
+
+وعشان ما في نسخة من بياناتك عند أحد، إذا غيرت جهازك أو مسحت بيانات المتصفح تروح بياناتك إلا إذا حفظت نسخة احتياطية من الإعدادات، والنسخة ملف تحفظه أنت وتفتحه في الجهاز الجديد وهو مشفّر بكلمة سر تختارها فلو وصل لأحد ثاني ما يقدر يقراه.
+
+وعلى آيفون ثبّت التطبيق على الشاشة الرئيسية من زر المشاركة، لأن سفاري يمسح بيانات المواقع اللي ما تنفتح فترة والتطبيق المثبّت ما ينطبق عليه هالمسح.
+
+والتنبيهات تشوفها أول ما تفتح التطبيق، وتقدر تصدّر المواعيد لتقويم جهازك فيجيك تنبيهها الساعة 9 الصبح، لأن تطبيق الويب بدون سيرفر ما يقدر يرسل إشعار وهو مسكّر، وتطبيقات آيفون وأندرويد الجاية بتطلّع تنبيهات من الجهاز نفسه بدون أي سيرفر.
+
+وللتقنيين، البيانات في localStorage وصور الفواتير في IndexedDB، والنسخة الاحتياطية مشفّرة بـ AES-256-GCM بمفتاح مشتق من كلمة السر عن طريق PBKDF2-SHA256 بـ 600,000 دورة، وسياسة أمان المحتوى ما تسمح إلا بنفس المصدر، والخطوط مستضافة مع التطبيق.
 
 ## التشغيل والتطوير
 
@@ -111,7 +123,19 @@ AC filters come every month and every two weeks during the Bawarih, AC servicing
 
 ## Privacy
 
-No account, no server, no tracking and no ads. Everything is stored in your browser or on your device and receipt photos in IndexedDB. Backups are encrypted with AES-256-GCM using a key derived from your passphrase with PBKDF2-SHA256 at 600,000 iterations. A strict content security policy keeps the app from talking to any other site, and the fonts are served with the app.
+Nokhatha never asks you to sign up, because nothing you enter is sent anywhere and so it has no need to know who you are. Tasks, subscriptions and receipt photos are stored on your device, and the dates are calculated on your device too, so your phone is what keeps track of your maintenance, not a server of ours.
+
+"No tracking" means there are no analytics, trackers or ads watching what you do. We cannot see who uses the app or what they record, and a strict content security policy stops the app from contacting any other site.
+
+The files themselves download from GitHub Pages on the first visit like any website, so GitHub sees that download but never your data. After that the app runs from your device, even offline.
+
+Because no copy of your data exists anywhere else, clearing your browser data or changing devices loses it unless you saved a backup from Settings. The backup is a file you keep yourself, encrypted with a passphrase you choose.
+
+On iPhone, add the app to your home screen from the Share button: Safari clears data for websites you have not opened for a while, and installed web apps are exempt.
+
+Reminders appear when you open the app, and you can export your dates to your phone's calendar for a 9 am alert. Without a server the web app cannot notify you while it is closed; the upcoming iPhone and Android apps schedule notifications on the device itself, still with no server.
+
+Technical details: data in localStorage and receipt photos in IndexedDB, backups encrypted with AES-256-GCM using a key derived from the passphrase with PBKDF2-SHA256 at 600,000 iterations, a same-origin content security policy, and self-hosted fonts.
 
 ## Run and test
 

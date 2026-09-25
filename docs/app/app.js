@@ -249,6 +249,7 @@ function viewToday() {
 <p class="tip">${icon('spark')}<span>${esc(D.season[season.id]['hint_' + L()])}</span></p>
 </section>
 <section class="today-list">
+${installTip()}
 <div class="sec"><h2>${t('today.now')}</h2>${now.length ? `<span class="count">${now.length}</span>` : ''}</div>
 ${now.length ? `<ul class="list">${now.map((e) => row(e, true)).join('')}</ul>` : `<div class="empty">${icon('done')}<p>${t('today.clear')}</p></div>`}
 ${talk.length ? askCard(talk[0]) : ''}
@@ -272,6 +273,15 @@ ${x.s.note ? `<p class="ask-note">${esc(x.s.note)}</p>` : ''}
     : (x.days === 0 ? t('sub.renews_today') : t('sub.renews', { rel: rel(x.days) }));
   return `<div class="ask${x.trial ? ' trial' : ''}"><p class="ask-q">${t(x.trial ? 'ask.q_trial' : 'ask.q', { name })}</p><p class="ask-d">${when}${comma()}${esc(money(x.s.amount, x.s.currency))}</p>
 <div class="ask-b"><button class="btn" data-act="sub-yes" data-id="${id}">${t('ask.yes')}</button><button class="btn btn-quiet" data-act="sub-no" data-id="${id}">${t('ask.no')}</button></div></div>`;
+}
+
+// Safari on iPhone clears storage of sites left unopened for a while; installed web apps are exempt.
+function installTip() {
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const installed = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  if (!ios || installed || state.settings.installTipOff) return '';
+  return `<div class="install">${icon('upload')}<div><p class="install-t">${t('tip.install_title')}</p><p class="install-b">${t('tip.install_body')}</p>
+<button class="btn btn-quiet" data-act="install-ok">${t('act.got_it')}</button></div></div>`;
 }
 
 function emptyAsset(kind) {
@@ -461,6 +471,7 @@ function viewSettings() {
 <button class="btn btn-block" data-act="ics">${icon('calendar')}<span>${t('act.ics')}</span></button>
 <div class="sec sec-sm"><h3>${t('settings.backup')}</h3></div>
 <p class="lede small">${t('settings.backup_body')}</p>
+<p class="backup-when">${icon(st.lastBackup ? 'done' : 'info')}<span>${st.lastBackup ? t('settings.last_backup', { date: dateText(st.lastBackup) }) : t('settings.no_backup')}</span></p>
 <div class="actions two"><button class="btn" data-act="backup">${icon('lock')}<span>${t('act.backup')}</span></button><button class="btn" data-act="restore">${icon('upload')}<span>${t('act.restore')}</span></button></div>
 <div class="sec sec-sm"><h3>${t('settings.data')}</h3></div>
 <div class="actions two"><button class="btn" data-act="demo">${icon('spark')}<span>${t('welcome.demo')}</span></button><button class="btn btn-danger" data-act="wipe">${icon('trash')}<span>${t('act.wipe')}</span></button></div>`;
@@ -472,6 +483,8 @@ function viewAbout() {
 <p class="lede">${t('about.name')}</p>
 <div class="sec sec-sm"><h3>${t('about.privacy_h')}</h3></div>
 <p class="lede">${t('about.privacy')}</p>
+<p class="lede">${t('about.remind')}</p>
+<p class="lede">${t('about.keep')}</p>
 <div class="sec sec-sm"><h3>${t('about.open_h')}</h3></div>
 <p class="lede">${t('about.open')}</p>
 <div class="actions two"><a class="btn" href="https://github.com/SiteQ8/Nokhatha" target="_blank" rel="noopener noreferrer">${icon('code')}<span>${t('about.source')}</span></a>
@@ -579,8 +592,16 @@ function render() {
   }
 }
 
+let persistAsked = false;
+function keepStorage() {
+  if (persistAsked || !navigator.storage || !navigator.storage.persist) return;
+  persistAsked = true;
+  navigator.storage.persisted().then((yes) => yes || navigator.storage.persist()).catch(() => {});
+}
+
 function commit(silent) {
   if (!S.save(state)) toast(t('err.storage'));
+  if (state.homes.length || state.cars.length || state.subs.length) keepStorage();
   if (!silent) render();
 }
 
@@ -920,7 +941,10 @@ async function doBackup() {
     for (const r of await S.allReceipts().catch(() => [])) receipts[r.id] = { type: r.blob.type, data: await blobToB64(r.blob) };
     const file = await encryptBackup({ state, receipts }, pass);
     download(JSON.stringify(file), `nokhatha-backup-${TODAY}.json`, 'application/json');
-    closeSheet();
+    state.settings.lastBackup = TODAY;
+    S.save(state);
+    closeSheet(true);
+    render();
     toast(t('backup.done'));
   } catch {
     btn.disabled = false;
@@ -960,6 +984,7 @@ async function onClick(e) {
   if (el.tagName === 'INPUT') return;
   switch (act) {
     case 'close': closeSheet(); break;
+    case 'install-ok': state.settings.installTipOff = true; commit(); break;
     case 'close-nav': closeSheet(true); break;
     case 'undo': if (undoFn) { const f = undoFn; undoFn = null; $('#toast')?.remove(); f(); } break;
     case 'update': if (swWaiting) swWaiting.postMessage('skip'); break;

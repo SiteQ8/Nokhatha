@@ -1,5 +1,5 @@
 // Offline support. One cache per version, the app shell answers every navigation.
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 const CACHE = `nokhatha-${VERSION}`;
 const FILES = [
   './',
