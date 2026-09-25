@@ -64,6 +64,19 @@ import java.util.Locale
 
 data class Toast(val text: String, val undo: AppState?, val id: Long = System.nanoTime())
 
+data class WxCache(val at: Long, val lat: Double, val lon: Double, val sum: Weather.Summary) {
+    fun save(prefs: android.content.SharedPreferences) {
+        prefs.edit().putString("cache", JSONObject().put("at", at).put("lat", lat).put("lon", lon).put("sum", Weather.toJson(sum)).toString()).apply()
+    }
+
+    companion object {
+        fun load(prefs: android.content.SharedPreferences): WxCache? = runCatching {
+            val o = JSONObject(prefs.getString("cache", null) ?: return null)
+            WxCache(o.getLong("at"), o.getDouble("lat"), o.getDouble("lon"), Weather.fromJson(o.getJSONObject("sum")))
+        }.getOrNull()
+    }
+}
+
 sealed class Onboarding {
     object Setup : Onboarding()
     data class Last(val created: List<String>) : Onboarding()
@@ -80,6 +93,10 @@ class AppModel(private val ctx: Context, intent: Intent?) {
     var page by mutableStateOf<String?>(null)
     private val file = File(ctx.filesDir, "nokhatha.json")
     private val receipts = File(ctx.filesDir, "receipts")
+    private val wxPrefs = ctx.getSharedPreferences("weather", Context.MODE_PRIVATE)
+    /** The last weather fetched for the chosen area, kept for three hours. */
+    var wx by mutableStateOf(WxCache.load(wxPrefs))
+    private var wxBusy = false
 
     init {
         val lang0 = intent?.getStringExtra("lang")
@@ -275,6 +292,72 @@ class AppModel(private val ctx: Context, intent: Intent?) {
 
     val version: String get() = runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "1.0"
 
+    // ---------------------------------------------------------------- weather
+
+    fun clock(millis: Long): String {
+        val c = java.util.Calendar.getInstance().apply { timeInMillis = millis }
+        val d = Day.of(c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH) + 1, c.get(java.util.Calendar.DAY_OF_MONTH))
+        fun p(n: Int) = if (n < 10) "0$n" else n.toString()
+        return "${words.date(d, today)} ${p(c.get(java.util.Calendar.HOUR_OF_DAY))}:${p(c.get(java.util.Calendar.MINUTE))}"
+    }
+
+    fun wxPlaces(): List<Place> = catalog.places.filter { it.country == (state?.settings?.country ?: "KW") }
+
+    fun wxPlaceName(): String = state?.settings?.weather?.place?.let { id -> catalog.places.firstOrNull { it.id == id }?.name(lang) } ?: ""
+
+    fun setWeatherPlace(id: String) {
+        val p = catalog.places.firstOrNull { it.id == id } ?: return
+        update { b -> b.state = b.state.copy(settings = b.state.settings.copy(weather = (b.state.settings.weather ?: WeatherSetting()).copy(place = id, lat = p.lat, lon = p.lon))) }
+    }
+
+    fun setWeather(on: Boolean) {
+        val w = state?.settings?.weather
+        if (on && (w?.place == null || w.lat == null)) wxPlaces().firstOrNull()?.let { setWeatherPlace(it.id) }
+        update { b -> b.state = b.state.copy(settings = b.state.settings.copy(weather = (b.state.settings.weather ?: WeatherSetting()).copy(on = on))) }
+    }
+
+    /** Alerts for today and tomorrow when the weather is on and the cache is for the chosen area. */
+    fun weatherAlerts(): List<Weather.Alert> {
+        val w = state?.settings?.weather ?: return emptyList()
+        val c = wx ?: return emptyList()
+        if (!w.on || c.lat != w.lat || c.lon != w.lon) return emptyList()
+        return Weather.alerts(c.sum, today)
+    }
+
+    val weatherShown: Boolean get() = state?.settings?.weather?.let { it.on && wx?.lat == it.lat && wx?.lon == it.lon } == true
+
+    suspend fun refreshWeather(force: Boolean = false) {
+        val w = state?.settings?.weather ?: return
+        val lat = w.lat ?: return
+        val lon = w.lon ?: return
+        if (!w.on || wxBusy) return
+        val c = wx
+        if (!force && c != null && c.lat == lat && c.lon == lon && System.currentTimeMillis() - c.at < 3 * 3600_000L) return
+        wxBusy = true
+        try {
+            val (fu, au) = Weather.urls(lat, lon)
+            val sum = withContext(Dispatchers.IO) { Weather.summarize(JSONObject(fetchText(fu)), JSONObject(fetchText(au))) }
+            wx = WxCache(System.currentTimeMillis(), lat, lon, sum).also { it.save(wxPrefs) }
+        } catch (e: Exception) {
+            if (force) say("wx.failed")
+        } finally {
+            wxBusy = false
+        }
+    }
+
+    private fun fetchText(url: String): String {
+        val c = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+        c.connectTimeout = 12_000
+        c.readTimeout = 12_000
+        c.setRequestProperty("Accept", "application/json")
+        try {
+            if (c.responseCode != 200) error("weather ${c.responseCode}")
+            return c.inputStream.bufferedReader().use { it.readText() }
+        } finally {
+            c.disconnect()
+        }
+    }
+
     companion object {
         val deviceLang: String get() = if (Locale.getDefault().language == "ar") "ar" else "en"
 
@@ -324,6 +407,14 @@ object Reminders {
             lines += "${e.title(state.settings.lang)}${words.comma}${e.asset.name}"
         }
         for (s in brain.subs()) if (s.ask && s.days <= 2) lines += words.t("ask.q", mapOf("name" to s.sub.name))
+        state.settings.weather?.let { w ->
+            val c = WxCache.load(ctx.getSharedPreferences("weather", Context.MODE_PRIVATE))
+            if (w.on && c != null && c.lat == w.lat && c.lon == w.lon && System.currentTimeMillis() - c.at < 20 * 3600_000L) {
+                Weather.alerts(c.sum, today).firstOrNull { it.day == 0 }?.let { a ->
+                    lines += words.t("wx.${a.kind}", mapOf("day" to words.t("wx.day0"), "t" to (a.value?.toString() ?: "")))
+                }
+            }
+        }
         if (lines.isEmpty()) return
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
         val nm = ctx.getSystemService(NotificationManager::class.java)

@@ -36,7 +36,9 @@ data class Named(val id: String, val ar: String, val en: String, val icon: Strin
     fun name(lang: String) = if (lang == "ar") ar else en
 }
 
-data class Place(val id: String, val country: String, val ar: String, val en: String, val lat: Double, val lon: Double)
+data class Place(val id: String, val country: String, val ar: String, val en: String, val lat: Double, val lon: Double) {
+    fun name(lang: String) = if (lang == "ar") ar else en
+}
 
 class Catalog(
     val seasons: List<Season>, val bawarih: Window, val templates: List<Template>, val areas: Map<String, List<Named>>,
@@ -109,7 +111,7 @@ data class Tech(val id: String, val name: String, val trade: String, val phone: 
 data class Settings(
     val lang: String = "ar", val country: String = "KW", val theme: String = "auto", val currency: String = "KWD",
     val lead: Int = 7, val onboarded: Boolean = false, val notify: Boolean? = null, val lastBackup: String? = null,
-    val extra: JSONObject? = null,
+    val weather: WeatherSetting? = null, val extra: JSONObject? = null,
 )
 
 data class AppState(
@@ -124,7 +126,7 @@ data class AppState(
         val s = JSONObject(settings.extra?.toString() ?: "{}")
             .put("lang", settings.lang).put("country", settings.country).put("theme", settings.theme)
             .put("currency", settings.currency).put("lead", settings.lead).put("onboarded", settings.onboarded)
-            .opt("notify", settings.notify).opt("lastBackup", settings.lastBackup)
+            .opt("notify", settings.notify).opt("lastBackup", settings.lastBackup).opt("weather", settings.weather?.toJson())
         return JSONObject().put("v", v).put("settings", s)
             .put("homes", JSONArray(homes.map { h ->
                 JSONObject().put("id", h.id).put("kind", "home").put("type", h.type).put("name", h.name).put("features", JSONObject(h.features as Map<*, *>))
@@ -159,7 +161,7 @@ data class AppState(
             return AppState(
                 v = o.int("v") ?: 1,
                 settings = Settings(s.str("lang") ?: "ar", s.str("country") ?: "KW", s.str("theme") ?: "auto", s.str("currency") ?: "KWD",
-                    s.int("lead") ?: 7, s.bool("onboarded") ?: false, s.bool("notify"), s.str("lastBackup"), s),
+                    s.int("lead") ?: 7, s.bool("onboarded") ?: false, s.bool("notify"), s.str("lastBackup"), WeatherSetting.fromJson(s.optJSONObject("weather")), s),
                 homes = o.arr("homes").map { h ->
                     val f = if (h.has("features") && !h.isNull("features")) h.getJSONObject("features") else JSONObject()
                     Home(h.getString("id"), h.str("type") ?: "house", h.getString("name"), f.keys().asSequence().associateWith { f.getBoolean(it) })

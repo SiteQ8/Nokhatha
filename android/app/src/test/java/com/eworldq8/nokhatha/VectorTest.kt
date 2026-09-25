@@ -261,3 +261,40 @@ class ExtrasTest {
         assertTrue(ics.startsWith("BEGIN:VCALENDAR\r\n") && ics.contains("DTSTAMP:19700101T000000Z"))
     }
 }
+
+class WeatherTest {
+    private val today = Day.parse("2026-09-25")!!
+
+    private fun place(todayDust: Int, tomorrowDust: Int, tmax: List<Int>? = null, tmin: List<Int>? = null, rain: List<Int>? = null,
+                      chance: List<Int>? = null, gust: List<Int>? = null, historyDays: Int = 60): Weather.Summary {
+        val time = JSONArray(); val pm10 = JSONArray()
+        for (i in historyDays downTo 1) { time.put("${today.plus(-i).iso}T12:00"); pm10.put(100 + (historyDays - i)) }
+        for ((k, v) in listOf(0 to todayDust, 1 to tomorrowDust, 2 to 120)) { time.put("${today.plus(k).iso}T12:00"); pm10.put(v) }
+        val daily = JSONObject().put("time", JSONArray(listOf(today.iso, today.plus(1).iso, today.plus(2).iso)))
+            .put("temperature_2m_max", JSONArray(tmax ?: listOf(44, 44, 44))).put("temperature_2m_min", JSONArray(tmin ?: listOf(30, 30, 30)))
+            .put("precipitation_sum", JSONArray(rain ?: listOf(0, 0, 0))).put("precipitation_probability_max", JSONArray(chance ?: listOf(0, 0, 0)))
+            .put("wind_gusts_10m_max", JSONArray(gust ?: listOf(30, 30, 30)))
+        return Weather.summarize(JSONObject().put("daily", daily), JSONObject().put("hourly", JSONObject().put("time", time).put("pm10", pm10)))
+    }
+
+    private fun kinds(s: Weather.Summary) = Weather.alerts(s, today).joinToString(" ") { "${it.day}:${it.kind}${it.value?.let { v -> "=$v" } ?: ""}" }
+
+    @Test
+    fun sameAlertsAsTheWeb() {
+        val s1 = place(160, 250, tmax = listOf(49, 44, 44), rain = listOf(0, 2, 0), gust = listOf(30, 70, 30))
+        assertEquals(153, s1.dusty)
+        assertEquals(191, s1.heavy)
+        assertEquals("0:dust 0:heat=49 1:dust_heavy 1:rain 1:wind", kinds(s1))
+        assertEquals("", kinds(place(120, 130)))
+        assertEquals("", kinds(place(160, 250, historyDays = 10)))
+        assertEquals("0:rain 1:cold=3", kinds(place(120, 120, tmin = listOf(30, 3, 30), chance = listOf(60, 0, 0))))
+        val clean = place(149, 149)
+        assertTrue(clean.dusty >= 150 && kinds(clean).isEmpty())
+        val (forecast, air) = Weather.urls(29.4, 48.0)
+        assertTrue(forecast.contains("latitude=29.4&longitude=48&") && air.contains("past_days=60"))
+        val back = Weather.fromJson(JSONObject(Weather.toJson(s1).toString()))
+        assertEquals(s1, back)
+        val st = AppState(settings = Settings(weather = WeatherSetting(true, "kw_city", 29.37, 47.98)))
+        assertEquals(st.settings.weather, AppState.fromJson(JSONObject(st.toJson().toString())).settings.weather)
+    }
+}

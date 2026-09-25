@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- No INTERNET permission: the app cannot reach any server, by construction. -->
+<!-- INTERNET is used for one thing: the weather for the area the person chose, from Open-Meteo,
+     and only after they turn it on in Settings. Nothing else leaves the device. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 

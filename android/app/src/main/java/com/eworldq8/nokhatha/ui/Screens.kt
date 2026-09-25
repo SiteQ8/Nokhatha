@@ -187,6 +187,8 @@ fun TodayScreen(model: AppModel) {
                 Row { Ico("spark", p.sadu, 18.dp, Modifier.padding(top = 3.dp)); Spacer(Modifier.width(10.dp)); Text(hint, style = body(14), color = p.ink2) }
             }
         }
+        LaunchedEffect(model.state?.settings?.weather) { model.refreshWeather() }
+        WeatherCard(model)
         SectionTitle(model.t("today.now"), now.size)
         if (now.isEmpty()) CardBox { EmptyNote("done", model.t("today.clear")) } else TaskList(model, now, true)
         talk.firstOrNull()?.let { Spacer(Modifier.height(10.dp)); AskCard(model, it) }
@@ -214,6 +216,34 @@ fun TodayScreen(model: AppModel) {
             SectionTitle(model.t("today.later"))
             TaskList(model, later, true)
         }
+    }
+}
+
+/** Dust, rain, wind, heat and cold for the chosen area, from the cache the app keeps. */
+@Composable
+fun WeatherCard(model: AppModel) {
+    if (!model.weatherShown) return
+    val p = pal()
+    val list = model.weatherAlerts().take(2)
+    Spacer(Modifier.height(10.dp))
+    CardBox(padding = 14.dp) {
+        if (list.isEmpty()) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Ico("sun", p.ok, 20.dp); Spacer(Modifier.width(10.dp))
+                Text(model.t("wx.calm", mapOf("place" to model.wxPlaceName())), style = body(14), color = p.ink2, modifier = Modifier.weight(1f))
+            }
+        } else {
+            list.forEachIndexed { i, a ->
+                if (i > 0) Spacer(Modifier.height(10.dp))
+                Row {
+                    Ico(Weather.icons[a.kind] ?: "sun", if (a.kind == "dust_heavy" || a.kind == "heat") p.overdue else p.soonInk, 20.dp, Modifier.padding(top = 2.dp))
+                    Spacer(Modifier.width(10.dp))
+                    Text(model.t("wx.${a.kind}", mapOf("day" to model.t(if (a.day == 0) "wx.day0" else "wx.day1"), "t" to (a.value?.toString() ?: ""))),
+                        style = body(14, FontWeight.SemiBold), color = p.ink, modifier = Modifier.weight(1f))
+                }
+            }
+        }
+        Text("Open-Meteo", style = body(12), color = p.ink3, modifier = Modifier.padding(top = 8.dp).clickable { model.openUrl("https://open-meteo.com") })
     }
 }
 

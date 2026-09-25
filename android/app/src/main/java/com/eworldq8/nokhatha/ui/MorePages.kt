@@ -120,6 +120,25 @@ fun SettingsScreen(model: AppModel) {
             }
         }
 
+        SmallHead(model.t("settings.weather"))
+        Lede(model.t("wx.explain"), small = true)
+        Spacer(Modifier.height(8.dp))
+        val wxOn = s.weather?.on == true
+        val places = model.wxPlaces()
+        ListCard {
+            SettingRow("globe", model.t("wx.place")) {
+                Select(s.weather?.place ?: places.firstOrNull()?.id ?: "", places.map { it.id to it.name(model.lang) }) { model.setWeatherPlace(it) }
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        if (wxOn) WideButton(model.t("wx.off"), primary = false, icon = "close") { model.setWeather(false) }
+        else WideButton(model.t("wx.on"), icon = "sun") { model.setWeather(true); scope.launch { model.refreshWeather(true) } }
+        LaunchedEffect(wxOn, s.weather?.place) { if (wxOn) model.refreshWeather() }
+        model.wx?.takeIf { wxOn && it.lat == s.weather?.lat }?.let { c ->
+            Text(model.t("wx.updated", mapOf("date" to model.clock(c.at))), style = body(13), color = p.ink3, modifier = Modifier.padding(top = 8.dp))
+        }
+        Text(model.t("wx.source"), style = body(13), color = p.ink3, modifier = Modifier.padding(top = 6.dp))
+
         SmallHead(model.t("settings.backup"))
         Lede(model.t("settings.backup_body"), small = true)
         Row(Modifier.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -228,7 +247,7 @@ fun AboutScreen(model: AppModel) {
         }
         Lede(model.t("about.name"))
         SmallHead(model.t("about.privacy_h"))
-        Lede(model.t("about.privacy_app"))
+        Lede(model.t("about.privacy"))
         Lede(model.t("about.keep"))
         SmallHead(model.t("about.open_h"))
         Lede(model.t("about.open"))
