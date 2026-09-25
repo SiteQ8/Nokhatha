@@ -1,5 +1,5 @@
 {
-  "about": "Maintenance templates tuned for Kuwait. every: {days}, {months}, {km, months} whichever comes first, {season, offset} once a year relative to a season start, or {fixed} for dates the person sets. bawarih shortens a day interval during the Bawarih winds.",
+  "about": "Maintenance templates tuned for the Gulf climate. every: {days}, {months}, {km, months} whichever comes first, {season, offset} once a year relative to a season start, or {fixed} for dates the person sets. bawarih shortens a day interval during the Bawarih winds.",
   "areas": {
     "home": [
       { "id": "ac", "ar": "المكيفات", "en": "Air conditioning" },

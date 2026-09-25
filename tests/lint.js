@@ -72,6 +72,7 @@ const families = {
   'spend.': ['home', 'car', 'subs'],
   'empty.': ['home', 'car'],
   'act.add_': ['home', 'car'],
+  'country.': ['KW', 'SA', 'AE', 'QA', 'BH', 'OM'],
   'title.': ['home', 'car', 'subs', 'more', 'warranties', 'techs', 'travel', 'spend', 'settings', 'about'],
 };
 for (const [p, list] of Object.entries(families)) for (const s of list) if (!(p + s in strings.ar)) bad(`strings.json: missing "${p + s}"`);
@@ -94,6 +95,11 @@ walkStrings('site.json dyn.ar', site.dyn.ar);
 for (const m of html.matchAll(/data-i18n="\w+">([^<]+)</g)) arabicPeriods('index.html', m[1]);
 for (const m of html.matchAll(/content="([^"]+)"/g)) arabicPeriods('index.html meta', m[1]);
 for (const m of read('docs/app/index.html').matchAll(/content="([^"]+)"/g)) arabicPeriods('app/index.html meta', m[1]);
+
+// The app serves the whole Gulf: copy must not describe the seasons or the year as Kuwait's alone.
+for (const f of textFiles.filter((x) => /\.(json|html|md|webmanifest)$/.test(rel(x)) && !rel(x).startsWith('tests/'))) {
+  if (/مواسم الكويت|سنة الكويت|Kuwait's (?:seasons|year)/.test(readFileSync(f, 'utf8'))) bad(`${rel(f)}: describes the seasons as Kuwait's only, the app is for the Gulf`);
+}
 
 /* ------------------------------------------------------------------ data */
 

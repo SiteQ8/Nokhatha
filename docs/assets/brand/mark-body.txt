@@ -1,0 +1,1 @@
+<g transform="translate(-3.31 0.36) scale(0.27478) rotate(-7 128 128)"><path class="mk-sail" d="M76 18 214 120Q160 146 96 138Q82 80 76 18Z"/><path class="mk-hull" d="M18 132A114.78 114.78 0 0 0 238 132A186.06 186.06 0 0 1 18 132Z"/><circle class="mk-pearl" cx="206" cy="46" r="21"/></g>

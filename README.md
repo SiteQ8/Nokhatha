@@ -1,16 +1,14 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo-dark.svg">
-    <img src="docs/assets/logo.svg" alt="نُوخذة" width="112" height="112">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/brand/lockup-stacked-dark.svg">
+    <img src="docs/assets/brand/lockup-stacked.svg" alt="نُوخذة Nokhatha" width="260">
   </picture>
 </p>
 
-<h1 align="center">نُوخذة &nbsp;·&nbsp; Nokhatha</h1>
-
 <p align="center">
   <b>خلك نوخذة بيتك.</b><br>
-  صيانة البيت والسيارة والاشتراكات على مواسم الكويت<br>
-  Home, car and subscription reminders set to Kuwait's seasons
+  صيانة البيت والسيارة والاشتراكات على مواسم الخليج<br>
+  Home, car and subscription reminders set to the Gulf's seasons
 </p>
 
 <p align="center">
@@ -29,7 +27,7 @@
 
 ## عن نُوخذة
 
-النوخذة ربان سفينة الغوص والمسؤول عن كل شي فيها من الطاقم إلى المؤونة إلى الطريق، ونُوخذة تطبيق يخليك نوخذة بيتك فيذكرك بصيانة البيت والسيارة ويراقب اشتراكاتك الصامتة، وكل مواعيده مبنية على سنة الكويت من سهيل إلى الكليبين بدل تقويم عام ما يعرف حرنا ولا بوارحنا.
+النوخذة ربان سفينة الغوص والمسؤول عن كل شي فيها من الطاقم إلى المؤونة إلى الطريق، ونُوخذة تطبيق يخليك نوخذة بيتك فيذكرك بصيانة البيت والسيارة ويراقب اشتراكاتك الصامتة، وكل مواعيده مبنية على سنة الخليج من سهيل إلى الكليبين بدل تقويم عام ما يعرف حرنا ولا بوارحنا، وتقدر تستخدمه في الكويت والسعودية والإمارات وقطر والبحرين وعُمان بعملتك ورمز دولتك.
 
 فتنظيف فلاتر المكيفات يصير كل شهر ويقرب لكل أسبوعين وقت البوارح، وغسيل المكيفات يجي قبل الكنة بأربع أسابيع، وفحص السطح والمزاريب قبل الوسم، والسخان قبل المربعانية، والتواير والبطارية ومكيف السيارة قبل القيظ.
 
@@ -43,7 +41,7 @@
 
 **وغيرها**، أي الضمانات مع صورة الفاتورة وتذكير قبل نهايتها بشهر، ودفتر الفنيين بالاتصال والواتساب جنب المهام اللي تخصهم، وقائمة قبل سفرة الصيف، ومصاريف السنة، وتصدير المواعيد لتقويم جهازك مع تنبيه الساعة 9 الصبح، ونسخة احتياطية مشفّرة.
 
-## مواسم الكويت في التطبيق
+## مواسم الخليج في التطبيق
 
 | الموسم | يبدأ | المجموعة |
 | --- | --- | --- |
@@ -62,7 +60,7 @@
 | المرزم | 29 يوليو | القيظ |
 | الكليبين | 11 أغسطس | القيظ |
 
-والبوارح من 7 يونيو إلى 28 يوليو، والتطبيق يرسم السنة كلها في دائرة تبدأ من اليوم، أي اللؤلؤة فوق هي اليوم والوقت يمشي مع عقارب الساعة وكل موسم قطعة بحجم أيامه.
+والتواريخ على التقويم المتداول في الكويت والخليج وممكن تختلف البداية يوم أو يومين من منطقة لمنطقة، والبوارح من 7 يونيو إلى 28 يوليو، والتطبيق يرسم السنة كلها في دائرة تبدأ من اليوم، أي اللؤلؤة فوق هي اليوم والوقت يمشي مع عقارب الساعة وكل موسم قطعة بحجم أيامه.
 
 ## خصوصيتك
 
@@ -110,7 +108,7 @@ npm test
 
 ## About
 
-A nokhatha was the captain of a Kuwaiti pearling ship, answerable for everything aboard. Nokhatha makes you the captain of your home: it reminds you to look after the house and the car, keeps an eye on your silent subscriptions, and builds every date on Kuwait's traditional year from Suhail to Al-Kulaibain instead of a generic calendar that knows nothing about the Gulf summer or the Bawarih winds.
+A nokhatha was the captain of a Gulf pearling ship, answerable for everything aboard. Nokhatha makes you the captain of your home: it reminds you to look after the house and the car, keeps an eye on your silent subscriptions, and builds every date on the Gulf's traditional year from Suhail to Al-Kulaibain instead of a generic calendar that knows nothing about the Gulf summer or the Bawarih winds. It works in Kuwait, Saudi Arabia, the UAE, Qatar, Bahrain and Oman, with your currency and your country's dialling code.
 
 AC filters come every month and every two weeks during the Bawarih, AC servicing lands four weeks before Al-Kinna, the roof and drains get checked before Al-Wasm, the water heater before Al-Murabbaniya, and tires, battery and the car's AC before the summer.
 

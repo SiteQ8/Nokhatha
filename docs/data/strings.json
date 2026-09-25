@@ -88,7 +88,7 @@
     "cat.phone": "خط تلفون",
     "cat.apps": "تطبيقات",
     "cat.other": "غيرها",
-    "empty.home": "أضف بيتك، ونجهز لك تذكيرات المكيفات والماي والسطح على مواسم الكويت.",
+    "empty.home": "أضف بيتك، ونجهز لك تذكيرات المكيفات والماي والسطح على مواسم الخليج.",
     "empty.car": "أضف سيارتك، ونتابع لك الزيت والتواير والبطارية والدفتر.",
     "empty.subs": "سجّل اشتراكاتك، ونذكرك قبل كل تجديد ونسألك إذا للحين تستخدمها.",
     "empty.warranties": "ما عندك ضمانات مسجلة.",
@@ -224,7 +224,7 @@
     "about.source": "الكود على GitHub",
     "about.copyright": "© 2026 علي العنزي",
     "welcome.tag": "خلك نوخذة بيتك.",
-    "welcome.body": "تذكيرات لصيانة البيت والسيارة واشتراكاتك، مضبوطة على مواسم الكويت من سهيل إلى الكليبين.",
+    "welcome.body": "تذكيرات لصيانة البيت والسيارة واشتراكاتك، مضبوطة على مواسم الخليج من سهيل إلى الكليبين.",
     "welcome.start": "يلا نبدأ",
     "welcome.demo": "جرّب ببيانات تجريبية",
     "welcome.private": "بلا حساب، وكل شي يبقى على جهازك.",
@@ -300,7 +300,15 @@
     "tip.install_body": "سفاري يمسح بيانات المواقع اللي ما تنفتح فترة، فثبّت نُوخذة من زر المشاركة ثم إضافة إلى الشاشة الرئيسية حتى تبقى بياناتك.",
     "act.got_it": "تمام",
     "settings.last_backup": "آخر نسخة احتياطية سويتها {date}",
-    "settings.no_backup": "ما سويت نسخة احتياطية للحين."
+    "settings.no_backup": "ما سويت نسخة احتياطية للحين.",
+    "settings.country": "الدولة",
+    "setup.country": "وين ساكن؟",
+    "country.KW": "الكويت",
+    "country.SA": "السعودية",
+    "country.AE": "الإمارات",
+    "country.QA": "قطر",
+    "country.BH": "البحرين",
+    "country.OM": "عُمان"
   },
   "en": {
     "app.name": "Nokhatha",
@@ -391,7 +399,7 @@
     "cat.phone": "Phone line",
     "cat.apps": "Apps",
     "cat.other": "Other",
-    "empty.home": "Add your home to get reminders for the ACs, the water and the roof, set to Kuwait's seasons.",
+    "empty.home": "Add your home to get reminders for the ACs, the water and the roof, set to the Gulf's seasons.",
     "empty.car": "Add your car to keep track of oil, tires, battery and registration.",
     "empty.subs": "Add your subscriptions to get a reminder before every renewal, and a question about whether you still use them.",
     "empty.warranties": "No warranties saved yet.",
@@ -527,7 +535,7 @@
     "about.source": "Code on GitHub",
     "about.copyright": "© 2026 Ali AlEnezi",
     "welcome.tag": "Be the captain of your home.",
-    "welcome.body": "Reminders for your home, your car and your subscriptions, set to Kuwait's seasons from Suhail to Al-Kulaibain.",
+    "welcome.body": "Reminders for your home, your car and your subscriptions, set to the Gulf's seasons from Suhail to Al-Kulaibain.",
     "welcome.start": "Let's start",
     "welcome.demo": "Try it with sample data",
     "welcome.private": "No account, and everything stays on your device.",
@@ -603,6 +611,14 @@
     "tip.install_body": "Safari clears data for websites you have not opened for a while, so add Nokhatha from the Share button, then Add to Home Screen, to keep your data.",
     "act.got_it": "Got it",
     "settings.last_backup": "Last backup saved on {date}",
-    "settings.no_backup": "No backup saved yet."
+    "settings.no_backup": "No backup saved yet.",
+    "settings.country": "Country",
+    "setup.country": "Where do you live?",
+    "country.KW": "Kuwait",
+    "country.SA": "Saudi Arabia",
+    "country.AE": "UAE",
+    "country.QA": "Qatar",
+    "country.BH": "Bahrain",
+    "country.OM": "Oman"
   }
 }

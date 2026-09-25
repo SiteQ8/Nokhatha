@@ -67,6 +67,25 @@ const CATS = [
 const catIcon = (c) => (CATS.find((x) => x[0] === c) || CATS[CATS.length - 1])[1];
 const CYCLES = ['weekly', 'monthly', 'quarterly', 'semiannual', 'yearly'];
 
+// The six Gulf countries: dialling code, local mobile length without the leading zero, currency.
+const COUNTRIES = {
+  KW: { cc: '965', len: 8, cur: 'KWD' },
+  SA: { cc: '966', len: 9, cur: 'SAR' },
+  AE: { cc: '971', len: 9, cur: 'AED' },
+  QA: { cc: '974', len: 8, cur: 'QAR' },
+  BH: { cc: '973', len: 8, cur: 'BHD' },
+  OM: { cc: '968', len: 8, cur: 'OMR' },
+};
+const country = () => COUNTRIES[state.settings.country] || COUNTRIES.KW;
+
+function guessCountry() {
+  for (const l of navigator.languages || [navigator.language || '']) {
+    const region = (String(l).split('-')[1] || '').toUpperCase();
+    if (COUNTRIES[region]) return region;
+  }
+  return 'KW';
+}
+
 /* ------------------------------------------------------------ evaluation */
 
 const findAsset = (id) => state.homes.find((h) => h.id === id) || state.cars.find((c) => c.id === id);
@@ -204,13 +223,13 @@ function techFor(trade) {
   return trade ? state.techs.find((x) => x.trade === trade) : null;
 }
 
+// A local number becomes international with the dialling code of the chosen country.
 function phoneDigits(p) {
-  let d = String(p || '').replace(/[^\d+]/g, '');
-  d = E.normalizeDigits(d);
-  if (d.startsWith('+')) d = d.slice(1);
-  if (d.startsWith('00')) d = d.slice(2);
-  if (d.length === 8) d = '965' + d;
-  return d;
+  let d = E.normalizeDigits(String(p || '')).replace(/[^\d+]/g, '');
+  if (d.startsWith('+')) return d.slice(1);
+  if (d.startsWith('00')) return d.slice(2);
+  d = d.replace(/^0+/, '');
+  return d.length === country().len ? country().cc + d : d;
 }
 
 function techLinks(tech) {
@@ -461,8 +480,10 @@ function seg(name, value, options) {
 function viewSettings() {
   const st = state.settings;
   return `${pageHead(t('more.settings'), 'more', '', true)}
-<div class="setting"><span class="setting-l">${icon('globe')}${t('settings.lang')}</span>${seg('lang', st.lang, [['ar', 'عربي'], ['en', 'English']])}</div>
+<div class="setting"><span class="setting-l">${icon('chat')}${t('settings.lang')}</span>${seg('lang', st.lang, [['ar', 'عربي'], ['en', 'English']])}</div>
 <div class="setting"><span class="setting-l">${icon('sun')}${t('settings.theme')}</span>${seg('theme', st.theme, [['auto', t('settings.auto')], ['light', t('settings.light')], ['dark', t('settings.dark')]])}</div>
+<div class="setting"><span class="setting-l">${icon('globe')}${t('settings.country')}</span>
+<select class="input" data-act="country" aria-label="${esc(t('settings.country'))}">${Object.keys(COUNTRIES).map((c) => `<option value="${c}"${c === st.country ? ' selected' : ''}>${esc(t('country.' + c))}</option>`).join('')}</select></div>
 <div class="setting"><span class="setting-l">${icon('wallet')}${t('settings.currency')}</span>
 <select class="input" data-act="currency" aria-label="${esc(t('settings.currency'))}">${Object.keys(E.CURRENCIES).map((c) => `<option value="${c}"${c === st.currency ? ' selected' : ''}>${c} ${esc(t('cur.' + c))}</option>`).join('')}</select></div>
 <div class="setting"><span class="setting-l">${icon('snooze')}${t('settings.lead')}</span>${seg('lead', st.lead, [[3, dayCount(3)], [7, dayCount(7)], [14, dayCount(14)]])}</div>
@@ -521,6 +542,7 @@ function viewSetup() {
   return `<div class="welcome setup">
 <p class="step">${t('setup.step', { n: 1, of: 2 })}</p>
 <h1 class="h1">${t('setup.title')}</h1>
+<div class="field"><span>${t('setup.country')}</span><div class="chips wrap">${Object.keys(COUNTRIES).map((c) => `<button class="chip${state.settings.country === c ? ' on' : ''}" data-act="draft-country" data-v="${c}">${t('country.' + c)}</button>`).join('')}</div></div>
 <div class="field"><span>${t('setup.type')}</span><div class="chips wrap">${S.HOME_TYPES.map((ty) => `<button class="chip${draft.type === ty ? ' on' : ''}" data-act="draft-type" data-v="${ty}">${t('type.' + ty)}</button>`).join('')}</div></div>
 <label class="field"><span>${t('setup.name')}</span><input class="input" data-draft="name" value="${esc(draft.name)}" placeholder="${esc(t('type.' + draft.type))}" autocomplete="off"></label>
 <div class="field"><span>${t('setup.has')}</span><div class="switches">${sw('central_ac', t('feat.central_ac'))}${sw('tank', t('feat.tank'))}${sw('filter', t('feat.filter'))}</div></div>
@@ -873,7 +895,7 @@ function techSheet(id) {
   openSheet(`<h2 class="sh-title">${x ? esc(x.name) : t('act.add_tech')}</h2>
 <label class="field"><span>${t('tech.name')}</span><input class="input" name="name" value="${esc(x ? x.name : '')}" autocomplete="off"></label>
 <div class="field"><span>${t('tech.trade')}</span><div class="chips wrap">${D.trades.map((tr) => `<button class="chip${tr.id === trade ? ' on' : ''}" data-act="set" data-name="trade" data-v="${tr.id}">${esc(nm(tr))}</button>`).join('')}</div><input type="hidden" name="trade" value="${trade}"></div>
-<label class="field"><span>${t('tech.phone')}</span><input class="input ltr" name="phone" type="tel" inputmode="tel" value="${esc(x ? x.phone : '')}" placeholder="+965"></label>
+<label class="field"><span>${t('tech.phone')}</span><input class="input ltr" name="phone" type="tel" inputmode="tel" value="${esc(x ? x.phone : '')}" placeholder="+${country().cc}"></label>
 <label class="field"><span>${t('tech.note')}</span><input class="input" name="note" value="${esc(x ? x.note || '' : '')}" autocomplete="off"></label>
 <button class="btn btn-primary btn-block" data-act="save-tech" data-id="${esc(id || '')}">${t('act.save')}</button>
 ${x ? `<button class="btn btn-quiet btn-danger btn-block" data-act="delete-tech" data-id="${esc(id)}">${icon('trash')}<span>${t('act.delete')}</span></button>` : ''}`, t('act.add_tech'));
@@ -1284,6 +1306,12 @@ async function onClick(e) {
       break;
     }
     case 'draft-type': draft.type = el.dataset.v; draft.features.tank = el.dataset.v !== 'flat'; render(); break;
+    case 'draft-country':
+      state.settings.country = el.dataset.v;
+      state.settings.currency = COUNTRIES[el.dataset.v].cur;
+      S.save(state);
+      render();
+      break;
     case 'setup-next': {
       for (const a of draft.created || []) S.removeAsset(state, a);
       const home = S.addHome(state, { type: draft.type, name: draft.name.trim() || t('type.' + draft.type), features: draft.features }, D.templates);
@@ -1332,6 +1360,13 @@ function onChange(e) {
     commit(true);
     const p = $('.progress-l');
     if (p) p.textContent = t('travel.progress', { n: state.travel.done.length, of: D.travel.length });
+    return;
+  }
+  if (el.matches('[data-act="country"]')) {
+    const before = country();
+    state.settings.country = el.value;
+    if (state.settings.currency === before.cur) state.settings.currency = COUNTRIES[el.value].cur;
+    commit();
     return;
   }
   if (el.matches('[data-act="currency"]')) {
@@ -1416,7 +1451,12 @@ async function boot() {
   }
   TODAY = nowISO();
   const lang = (navigator.language || 'ar').toLowerCase().startsWith('ar') ? 'ar' : 'en';
-  state = S.load() || S.blank(lang);
+  state = S.load();
+  if (!state) {
+    state = S.blank(lang);
+    state.settings.country = guessCountry();
+    state.settings.currency = COUNTRIES[state.settings.country].cur;
+  }
   const params = new URLSearchParams(location.search);
   if (params.get('lang') === 'ar' || params.get('lang') === 'en') state.settings.lang = params.get('lang');
   if (params.has('sample') && !state.homes.length && !state.cars.length) state = S.sample(state.settings.lang, TODAY, D.templates);

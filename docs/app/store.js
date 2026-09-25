@@ -13,7 +13,7 @@ export function uid() {
 export function blank(lang) {
   return {
     v: 1,
-    settings: { lang, theme: 'auto', currency: 'KWD', lead: 7, onboarded: false },
+    settings: { lang, country: 'KW', theme: 'auto', currency: 'KWD', lead: 7, onboarded: false },
     homes: [],
     cars: [],
     items: [],

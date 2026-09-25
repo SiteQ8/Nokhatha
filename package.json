@@ -1,9 +1,9 @@
 {
   "name": "nokhatha",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Home, car and subscription reminders set to Kuwait's seasons",
+  "description": "Home, car and subscription reminders set to the Gulf's seasons",
   "license": "MIT",
   "author": "Ali AlEnezi",
   "scripts": {

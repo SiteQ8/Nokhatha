@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<style>.r{stroke:#1C2340}.h{fill:#1C2340}.s{fill:#A4262C}.w{stroke:#127A74}.p{fill:#C98A1B}
-@media (prefers-color-scheme:dark){.r{stroke:#EEF1F4}.h{fill:#EEF1F4}.s{fill:#D8474D}.w{stroke:#41B8AC}.p{fill:#E7AF4B}}</style>
-<circle cx="32" cy="32" r="26.5" fill="none" stroke-width="3.4" class="r"/><path class="s" d="M47.2 30.2C40.6 22.4 31.8 15.2 20.4 10.6c1.9 7.1 3.4 14.3 3.9 21.6Z"/><path class="h" d="M11.8 35.4 52.6 32.2c-1.7 4.6-4.5 8.3-8.6 10.6-7.9 2.5-17.6 2.7-25.4.7-3.3-1.9-5.6-4.8-6.8-8.1Z"/><path class="w" fill="none" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" d="m15.5 50.2 3.4-3.4 3.4 3.4 3.4-3.4 3.4 3.4 3.4-3.4 3.4 3.4 3.4-3.4 3.4 3.4 3.4-3.4 3.4 3.4"/><circle class="p" cx="45.3" cy="9.1" r="4.4"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="Nokhatha"><style>.h{fill:#161C35}.s{fill:#A4262C}.p{fill:#C98A1B}@media (prefers-color-scheme:dark){.h{fill:#EEF1F4}.s{fill:#D8474D}.p{fill:#E7AF4B}}</style><g transform="translate(-13.22 1.42) scale(1.09910) rotate(-7 128 128)"><path class="s" d="M76 18 214 120Q160 146 96 138Q82 80 76 18Z"/><path class="h" d="M18 132A114.78 114.78 0 0 0 238 132A186.06 186.06 0 0 1 18 132Z"/><circle class="p" cx="206" cy="46" r="21"/></g></svg>

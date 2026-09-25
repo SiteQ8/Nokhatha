@@ -136,10 +136,8 @@ a { color: inherit; }
 
 /* the mark */
 .mark { width: 32px; height: 32px; flex: none; }
-.mk-ring { fill: none; stroke: var(--ink); stroke-width: 3.4; }
 .mk-sail { fill: var(--sadu); }
 .mk-hull { fill: var(--ink); }
-.mk-sea { fill: none; stroke: var(--ok); stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; }
 .mk-pearl { fill: var(--soon); }
 
 /* buttons */
