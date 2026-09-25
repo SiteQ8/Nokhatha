@@ -1,0 +1,171 @@
+{
+  "about": "The Kuwaiti seasonal calendar: 14 seasons over 365 days, starting with the rising of Suhail on 24 August. Each season ends the day before the next one starts, so leap days fall inside Al-Aqarib.",
+  "seasons": [
+    {
+      "id": "suhail",
+      "start": "08-24",
+      "group": "safari",
+      "ar": "سهيل",
+      "en": "Suhail",
+      "note_ar": "طلع سهيل فبرد الليل وبدا الحر ينكسر شوي شوي.",
+      "note_en": "Suhail has risen, the nights cool and the heat slowly breaks.",
+      "hint_ar": "نظّف المزاريب وبدّل المساحات قبل أول مطرة.",
+      "hint_en": "Clear the drains and replace the wipers before the first rain."
+    },
+    {
+      "id": "wasm",
+      "start": "10-15",
+      "group": "safari",
+      "ar": "الوسم",
+      "en": "Al-Wasm",
+      "note_ar": "أول المطر وأحلى الجو.",
+      "note_en": "The first rains and the best weather of the year.",
+      "hint_ar": "افحص المكيفات بعد القيظ، ونظّف السخان قبل البرد.",
+      "hint_en": "Check the ACs after summer, and flush the water heater before the cold."
+    },
+    {
+      "id": "murabbaniya",
+      "start": "12-06",
+      "group": "shita",
+      "ar": "المربعانية",
+      "en": "Al-Murabbaniya",
+      "note_ar": "أربعين يوم من أشد البرد.",
+      "note_en": "Forty days of the hardest cold.",
+      "hint_ar": "انتبه لخرطوم الغاز والدفايات، والسخان شغال طول الوقت.",
+      "hint_en": "Mind the gas hose and the heaters, the water heater runs all day."
+    },
+    {
+      "id": "shabt",
+      "start": "01-15",
+      "group": "shita",
+      "ar": "الشبط",
+      "en": "Al-Shabt",
+      "note_ar": "برد رطب يدخل العظم.",
+      "note_en": "A damp cold that gets into your bones.",
+      "hint_ar": "راقب الرطوبة والتسريبات بعد الأمطار.",
+      "hint_en": "Watch for damp and leaks after the rains."
+    },
+    {
+      "id": "aqarib",
+      "start": "02-10",
+      "group": "shita",
+      "ar": "العقارب",
+      "en": "Al-Aqarib",
+      "note_ar": "آخر البرد وتقلباته.",
+      "note_en": "The last of the cold, and its mood swings.",
+      "hint_ar": "وقت زين لرش الحشرات قبل ما يدفى الجو.",
+      "hint_en": "A good time for pest control before it warms up."
+    },
+    {
+      "id": "hamim",
+      "start": "03-08",
+      "group": "rabi",
+      "ar": "الحميم",
+      "en": "Al-Hamim",
+      "note_ar": "دفا بالنهار وبرد بالليل.",
+      "note_en": "Warm days and chilly nights.",
+      "hint_ar": "احجز غسيل المكيفات قبل لا ينشغل الفنيين.",
+      "hint_en": "Book the AC wash before the technicians get busy."
+    },
+    {
+      "id": "thiraan",
+      "start": "04-03",
+      "group": "rabi",
+      "ar": "الذرعان",
+      "en": "Al-Thiraan",
+      "note_ar": "آخر الربيع والحر يدق الباب.",
+      "note_en": "Late spring, and the heat is knocking.",
+      "hint_ar": "افحص مكيف السيارة وماي الردياتير.",
+      "hint_en": "Check the car AC and the coolant."
+    },
+    {
+      "id": "kinna",
+      "start": "04-29",
+      "group": "qaith",
+      "ar": "الكنّة",
+      "en": "Al-Kinna",
+      "note_ar": "يبدأ الحر وتختفي الثريا.",
+      "note_en": "The heat begins and the Pleiades hide.",
+      "hint_ar": "البطارية والتواير قبل الحر، وعوازل الدرايش قبل البوارح.",
+      "hint_en": "Battery and tires before the heat, window seals before the Bawarih."
+    },
+    {
+      "id": "thurayya",
+      "start": "06-07",
+      "group": "qaith",
+      "ar": "الثريا",
+      "en": "Al-Thurayya",
+      "note_ar": "أول البوارح وأول الغبار.",
+      "note_en": "The first Bawarih winds and the first dust.",
+      "hint_ar": "بدت البوارح، فنظّف فلاتر المكيفات كل أسبوعين.",
+      "hint_en": "The Bawarih have begun, so clean the AC filters every two weeks."
+    },
+    {
+      "id": "tuwaibi",
+      "start": "06-20",
+      "group": "qaith",
+      "ar": "التويبع",
+      "en": "Al-Tuwaibi",
+      "note_ar": "بوارح وحر يزيد.",
+      "note_en": "Bawarih winds and rising heat.",
+      "hint_ar": "افحص ضغط التواير الصبح والتواير باردة.",
+      "hint_en": "Check tire pressure in the morning while the tires are cold."
+    },
+    {
+      "id": "jawza1",
+      "start": "07-03",
+      "group": "qaith",
+      "ar": "الجوزاء الأولى",
+      "en": "First Jawza",
+      "note_ar": "سموم وحر شديد.",
+      "note_en": "Scorching winds and fierce heat.",
+      "hint_ar": "لا تخلي السيارة بالشمس، وراقب حرارة المكينة.",
+      "hint_en": "Keep the car out of the sun and watch the engine temperature."
+    },
+    {
+      "id": "jawza2",
+      "start": "07-16",
+      "group": "qaith",
+      "ar": "الجوزاء الثانية",
+      "en": "Second Jawza",
+      "note_ar": "آخر البوارح.",
+      "note_en": "The last of the Bawarih winds.",
+      "hint_ar": "قبل سفرة الصيف، مر على قائمة السفر.",
+      "hint_en": "Before the summer trip, go through the travel checklist."
+    },
+    {
+      "id": "marzam",
+      "start": "07-29",
+      "group": "qaith",
+      "ar": "المرزم",
+      "en": "Al-Marzam",
+      "note_ar": "جمرة القيظ.",
+      "note_en": "The very peak of summer heat.",
+      "hint_ar": "راجع المكيفات أول ما تحس إن التبريد ضعف.",
+      "hint_en": "Check the ACs as soon as the cooling feels weaker."
+    },
+    {
+      "id": "kulaibain",
+      "start": "08-11",
+      "group": "qaith",
+      "ar": "الكليبين",
+      "en": "Al-Kulaibain",
+      "note_ar": "حر ورطوبة عالية قبل طلعة سهيل.",
+      "note_en": "Heat and heavy humidity before Suhail rises.",
+      "hint_ar": "الرطوبة عالية، فشيّك تصريف المكيفات والتسريبات.",
+      "hint_en": "Humidity is high, so check the AC drains and look for leaks."
+    }
+  ],
+  "groups": {
+    "safari": { "ar": "الصفري", "en": "Autumn" },
+    "shita": { "ar": "الشتاء", "en": "Winter" },
+    "rabi": { "ar": "الربيع", "en": "Spring" },
+    "qaith": { "ar": "القيظ", "en": "Summer" }
+  },
+  "bawarih": {
+    "start": "06-07",
+    "end": "07-28",
+    "ar": "البوارح",
+    "en": "the Bawarih winds"
+  }
+}

@@ -1,0 +1,265 @@
+{
+  "about": "Maintenance templates tuned for Kuwait. every: {days}, {months}, {km, months} whichever comes first, {season, offset} once a year relative to a season start, or {fixed} for dates the person sets. bawarih shortens a day interval during the Bawarih winds.",
+  "areas": {
+    "home": [
+      { "id": "ac", "ar": "المكيفات", "en": "Air conditioning" },
+      { "id": "water", "ar": "الماي", "en": "Water" },
+      { "id": "roof", "ar": "السطح والدرايش", "en": "Roof and windows" },
+      { "id": "safety", "ar": "السلامة", "en": "Safety" },
+      { "id": "kitchen", "ar": "المطبخ", "en": "Kitchen" },
+      { "id": "pests", "ar": "الحشرات", "en": "Pests" },
+      { "id": "electrical", "ar": "الكهرباء", "en": "Electrical" },
+      { "id": "custom", "ar": "مهامك", "en": "Your tasks" }
+    ],
+    "car": [
+      { "id": "engine", "ar": "المكينة", "en": "Engine" },
+      { "id": "cool", "ar": "التبريد والمكيف", "en": "Cooling and AC" },
+      { "id": "wheels", "ar": "التواير والفرامل", "en": "Tires and brakes" },
+      { "id": "care", "ar": "البطارية والمساحات", "en": "Battery and wipers" },
+      { "id": "papers", "ar": "الأوراق", "en": "Papers" },
+      { "id": "custom", "ar": "مهامك", "en": "Your tasks" }
+    ]
+  },
+  "trades": [
+    { "id": "ac", "ar": "فني مكيفات", "en": "AC technician" },
+    { "id": "plumber", "ar": "سبّاك", "en": "Plumber" },
+    { "id": "electrician", "ar": "كهربائي", "en": "Electrician" },
+    { "id": "pest", "ar": "مكافحة حشرات", "en": "Pest control" },
+    { "id": "general", "ar": "صيانة عامة", "en": "General maintenance" },
+    { "id": "mechanic", "ar": "ميكانيكي", "en": "Mechanic" },
+    { "id": "tires", "ar": "محل تواير", "en": "Tire shop" },
+    { "id": "battery", "ar": "بطاريات", "en": "Batteries" }
+  ],
+  "templates": [
+    {
+      "id": "ac_filters", "kind": "home", "area": "ac", "icon": "filter", "trade": "ac", "default": true,
+      "every": { "days": 30, "bawarih": 14 },
+      "ar": "نظّف فلاتر المكيفات", "en": "Clean the AC filters",
+      "why_ar": "الغبار يسد الفلتر فيشتغل المكيف أكثر ويبرّد أقل، وفي البوارح يتعبى أسرع فنقرّب الموعد لكل أسبوعين.",
+      "why_en": "Dust clogs the filter so the unit works harder and cools less, and during the Bawarih it fills faster, so the reminder comes every two weeks."
+    },
+    {
+      "id": "ac_service", "kind": "home", "area": "ac", "icon": "ac", "trade": "ac", "default": true,
+      "every": { "season": "kinna", "offset": -28 },
+      "ar": "غسيل المكيفات وفحص الفريون", "en": "AC wash and refrigerant check",
+      "why_ar": "الغسيل قبل الحر يرجّع كفاءة المكيف ويكشف نقص الفريون قبل لا يخرب بعز القيظ.",
+      "why_en": "A wash before the heat restores efficiency and catches low refrigerant before it fails in peak summer."
+    },
+    {
+      "id": "ac_autumn", "kind": "home", "area": "ac", "icon": "ac", "trade": "ac", "default": false,
+      "every": { "season": "wasm", "offset": 0 },
+      "ar": "فحص المكيفات بعد القيظ", "en": "Post-summer AC check",
+      "why_ar": "بعد صيف كامل من الشغل المتواصل، الفحص يلقى التسريب والعطل الصغير قبل الصيف الجاي.",
+      "why_en": "After a summer of nonstop running, a check finds leaks and small faults before next summer."
+    },
+    {
+      "id": "ac_ducts", "kind": "home", "area": "ac", "icon": "duct", "trade": "ac", "default": true, "needs": "central_ac",
+      "every": { "months": 12 },
+      "ar": "تنظيف دكت المكيف المركزي", "en": "Clean the central AC ducts",
+      "why_ar": "الدكت يجمع غبار السنة كلها ويوزعه على الغرف.",
+      "why_en": "Ducts collect a year of dust and spread it through every room."
+    },
+    {
+      "id": "water_tank", "kind": "home", "area": "water", "icon": "tank", "trade": "plumber", "default": true, "needs": "tank",
+      "every": { "months": 6 },
+      "ar": "تنظيف وتعقيم التانكي", "en": "Clean and disinfect the water tank",
+      "why_ar": "الحر يسرّع الترسبات والطحالب في التانكي، والماي اللي تشربه وتطبخ فيه يمر منه.",
+      "why_en": "Heat speeds up sediment and algae in the tank, and the water you drink and cook with passes through it."
+    },
+    {
+      "id": "water_filter", "kind": "home", "area": "water", "icon": "drop", "trade": "plumber", "default": true, "needs": "filter",
+      "every": { "months": 3 },
+      "ar": "تبديل شموع فلتر الماي", "en": "Replace the water filter cartridges",
+      "why_ar": "الشمعة إذا شبعت صارت تجمع البكتيريا بدل ما تنقّي.",
+      "why_en": "A saturated cartridge starts collecting bacteria instead of filtering."
+    },
+    {
+      "id": "ro_membrane", "kind": "home", "area": "water", "icon": "drop", "trade": "plumber", "default": false, "needs": "filter",
+      "every": { "months": 24 },
+      "ar": "تبديل ممبرين الفلتر", "en": "Replace the filter membrane",
+      "why_ar": "الممبرين قلب الفلتر وعمره محدود حتى لو الماي يطلع صافي.",
+      "why_en": "The membrane is the heart of the filter and wears out even when the water still looks clear."
+    },
+    {
+      "id": "water_heater", "kind": "home", "area": "water", "icon": "heater", "trade": "plumber", "default": true,
+      "every": { "season": "murabbaniya", "offset": -14 },
+      "ar": "فحص السخان وتنظيفه من الترسبات", "en": "Service the water heater",
+      "why_ar": "الترسبات تاكل السخان من داخل وتطوّل التسخين، والأحسن تنظفه قبل ما يدخل البرد.",
+      "why_en": "Scale eats the heater from inside and slows heating, so flush it before the cold arrives."
+    },
+    {
+      "id": "leaks", "kind": "home", "area": "water", "icon": "leak", "trade": "plumber", "default": true,
+      "every": { "months": 6 },
+      "ar": "فحص تسريبات الماي", "en": "Check for water leaks",
+      "why_ar": "سكّر كل الحنفيات وراقب العداد، فإذا تحرك عندك تسريب مخفي.",
+      "why_en": "Close every tap and watch the meter, and if it moves you have a hidden leak."
+    },
+    {
+      "id": "roof_drains", "kind": "home", "area": "roof", "icon": "roof", "trade": "general", "default": true,
+      "every": { "season": "wasm", "offset": -21 },
+      "ar": "تنظيف المزاريب وفحص عزل السطح", "en": "Clear the roof drains and check the waterproofing",
+      "why_ar": "أول مطرة بالوسم تكشف كل مزراب مسدود وكل شق في العزل، والأحسن تلقاهم قبلها.",
+      "why_en": "The first Wasm rain exposes every blocked drain and cracked seal, so find them before it."
+    },
+    {
+      "id": "seals", "kind": "home", "area": "roof", "icon": "window", "trade": "general", "default": true,
+      "every": { "season": "thurayya", "offset": -14 },
+      "ar": "فحص عوازل الدرايش والأبواب", "en": "Check the window and door seals",
+      "why_ar": "البوارح تدخّل الغبار من أصغر فتحة، والعازل الزين يوفر عليك تنظيف وكهرباء.",
+      "why_en": "The Bawarih push dust through the smallest gap, and good seals save cleaning and power."
+    },
+    {
+      "id": "smoke", "kind": "home", "area": "safety", "icon": "smoke", "default": true,
+      "every": { "months": 6 },
+      "ar": "فحص كاشف الدخان وبطاريته", "en": "Test the smoke alarms and their batteries",
+      "why_ar": "الكاشف اللي بطاريته خالصة ما يحمي أحد.",
+      "why_en": "An alarm with a dead battery protects no one."
+    },
+    {
+      "id": "extinguisher", "kind": "home", "area": "safety", "icon": "extinguisher", "default": true,
+      "every": { "months": 12 },
+      "ar": "فحص طفاية الحريق", "en": "Check the fire extinguisher",
+      "why_ar": "تأكد إن المؤشر على الأخضر والتاريخ ساري، وخلها بمكان تطوله بسرعة.",
+      "why_en": "Make sure the gauge is in the green and the date is valid, and keep it within quick reach."
+    },
+    {
+      "id": "gas_hose", "kind": "home", "area": "safety", "icon": "gas", "default": true,
+      "every": { "months": 6 },
+      "ar": "فحص خرطوم وصمام الغاز", "en": "Inspect the gas hose and regulator",
+      "why_ar": "الحر ينشّف الخرطوم ويشققه، ورغوة الصابون تكشف أي تسريب.",
+      "why_en": "Heat dries and cracks the hose, and soapy water reveals any leak."
+    },
+    {
+      "id": "hood", "kind": "home", "area": "kitchen", "icon": "hood", "default": true,
+      "every": { "months": 2 },
+      "ar": "تنظيف فلتر الشفاط", "en": "Clean the kitchen hood filter",
+      "why_ar": "الدهون المتراكمة تضعف الشفط وتزيد خطر الحريق.",
+      "why_en": "Built-up grease weakens suction and raises the risk of fire."
+    },
+    {
+      "id": "pests", "kind": "home", "area": "pests", "icon": "bug", "trade": "pest", "default": true,
+      "every": { "months": 3 },
+      "ar": "رش الحشرات", "en": "Pest control",
+      "why_ar": "الرش المنتظم يمنع المشكلة قبل لا تكبر، خصوصاً مع دخول الحر.",
+      "why_en": "Regular treatment stops problems before they grow, especially as the heat comes in."
+    },
+    {
+      "id": "electrical", "kind": "home", "area": "electrical", "icon": "bolt", "trade": "electrician", "default": false,
+      "every": { "months": 12 },
+      "ar": "فحص الطبلون والأفياش", "en": "Check the breaker panel and sockets",
+      "why_ar": "أحمال الصيف تسخّن التوصيلات، والفحص السنوي يلقى الفيش اللي بدا يذوب.",
+      "why_en": "Summer loads heat the connections, and a yearly check finds the socket that has started to melt."
+    },
+    {
+      "id": "oil", "kind": "car", "area": "engine", "icon": "oil", "trade": "mechanic", "default": true,
+      "every": { "km": 5000, "months": 6 },
+      "ar": "تغيير الزيت والفلتر", "en": "Oil and filter change",
+      "why_ar": "الحر والغبار من الظروف الشاقة في كتيبات أغلب الشركات، فامش على الجدول الأقصر وارجع لكتيب سيارتك.",
+      "why_en": "Heat and dust count as severe conditions in most owner's manuals, so follow the shorter schedule and check your manual."
+    },
+    {
+      "id": "air_filter", "kind": "car", "area": "engine", "icon": "air", "trade": "mechanic", "default": true,
+      "every": { "km": 10000, "months": 12 },
+      "ar": "تبديل فلتر الهوا", "en": "Replace the engine air filter",
+      "why_ar": "فلتر الهوا المسدود بالغبار يخنق المكينة ويزيد صرف البنزين.",
+      "why_en": "A dust-clogged air filter chokes the engine and raises fuel use."
+    },
+    {
+      "id": "cabin_filter", "kind": "car", "area": "cool", "icon": "fan", "trade": "mechanic", "default": true,
+      "every": { "km": 15000, "months": 6 },
+      "ar": "تبديل فلتر مكيف السيارة", "en": "Replace the cabin AC filter",
+      "why_ar": "هذا الفلتر اللي تتنفس منه داخل السيارة، والغبار يشبّعه بسرعة.",
+      "why_en": "This is the filter you breathe through inside the car, and dust saturates it quickly."
+    },
+    {
+      "id": "car_ac", "kind": "car", "area": "cool", "icon": "snow", "trade": "mechanic", "default": true,
+      "every": { "season": "kinna", "offset": -21 },
+      "ar": "فحص مكيف السيارة", "en": "Check the car AC",
+      "why_ar": "أسوأ وقت يخرب فيه المكيف نص يوليو، فافحصه قبل الحر.",
+      "why_en": "The worst time for the AC to fail is mid July, so check it before the heat."
+    },
+    {
+      "id": "coolant", "kind": "car", "area": "cool", "icon": "thermo", "trade": "mechanic", "default": true,
+      "every": { "season": "kinna", "offset": -14 },
+      "ar": "فحص ماي الردياتير", "en": "Check the coolant",
+      "why_ar": "المكينة بالقيظ تشتغل على الحد، ونقص الماي يعني حرارة عالية ووقفة بالشارع.",
+      "why_en": "In peak summer the engine runs at its limit, and low coolant means overheating on the road."
+    },
+    {
+      "id": "tires", "kind": "car", "area": "wheels", "icon": "tire", "trade": "tires", "default": true,
+      "every": { "season": "kinna", "offset": -10 },
+      "ar": "فحص التواير وتاريخ صنعها", "en": "Inspect the tires and their age",
+      "why_ar": "الحر يرفع ضغط التاير ويكبّر خطر الانفجار، والتاير القديم يتشقق حتى لو ممشاه قليل.",
+      "why_en": "Heat raises tire pressure and the risk of a blowout, and old tires crack even with low mileage."
+    },
+    {
+      "id": "tire_pressure", "kind": "car", "area": "wheels", "icon": "gauge", "default": true,
+      "every": { "days": 30 },
+      "ar": "ضغط التواير", "en": "Tire pressure",
+      "why_ar": "افحصه الصبح والتواير باردة، لأن الحرارة تغيّر القراءة.",
+      "why_en": "Check it in the morning while the tires are cold, since heat changes the reading."
+    },
+    {
+      "id": "rotation", "kind": "car", "area": "wheels", "icon": "tire", "trade": "tires", "default": false,
+      "every": { "km": 10000, "months": 12 },
+      "ar": "تدوير التواير", "en": "Rotate the tires",
+      "why_ar": "التدوير يوزع الأكل على التواير فتعيش أطول.",
+      "why_en": "Rotation spreads the wear so the tires last longer."
+    },
+    {
+      "id": "brake_fluid", "kind": "car", "area": "wheels", "icon": "brake", "trade": "mechanic", "default": true,
+      "every": { "km": 40000, "months": 24 },
+      "ar": "تبديل زيت الفرامل", "en": "Replace the brake fluid",
+      "why_ar": "زيت الفرامل يشرب رطوبة مع الوقت فيضعف الفرامل وأنت ما تحس.",
+      "why_en": "Brake fluid absorbs moisture over time and weakens braking without you noticing."
+    },
+    {
+      "id": "battery", "kind": "car", "area": "care", "icon": "battery", "trade": "battery", "default": true,
+      "every": { "season": "kinna", "offset": -7 },
+      "ar": "فحص البطارية", "en": "Test the battery",
+      "why_ar": "الحر يقصّر عمر البطارية، فافحصها قبل القيظ لا تخذلك بنص الطريق.",
+      "why_en": "Heat shortens battery life, so test it before peak summer leaves you stranded."
+    },
+    {
+      "id": "wipers", "kind": "car", "area": "care", "icon": "wiper", "trade": "mechanic", "default": true,
+      "every": { "season": "wasm", "offset": -14 },
+      "ar": "تبديل المساحات", "en": "Replace the wipers",
+      "why_ar": "الشمس تنشّف مطاط المساحات، وما تنتبه لها إلا مع أول مطرة.",
+      "why_en": "The sun hardens the rubber, and you only notice when the first rain falls."
+    },
+    {
+      "id": "registration", "kind": "car", "area": "papers", "icon": "doc", "default": true,
+      "every": { "fixed": true, "repeat": 12, "lead": 30 },
+      "ar": "تجديد دفتر السيارة", "en": "Renew the car registration",
+      "why_ar": "التأخير بالتجديد يعني غرامة، والتذكير قبل شهر يعطيك وقت للفحص والتأمين.",
+      "why_en": "Late renewal means a fine, and a month's notice leaves time for the inspection and insurance."
+    },
+    {
+      "id": "insurance", "kind": "car", "area": "papers", "icon": "shield", "default": true,
+      "every": { "fixed": true, "repeat": 12, "lead": 30 },
+      "ar": "تجديد تأمين السيارة", "en": "Renew the car insurance",
+      "why_ar": "لا تخلي التأمين يخلص وأنت ماشي، وقارن العروض قبل التجديد.",
+      "why_en": "Never let the cover lapse while you drive, and compare offers before renewing."
+    },
+    {
+      "id": "inspection", "kind": "car", "area": "papers", "icon": "check", "default": false,
+      "every": { "fixed": true, "repeat": 12, "lead": 30 },
+      "ar": "الفحص الفني", "en": "Technical inspection",
+      "why_ar": "إذا سيارتك يلزمها فحص فني قبل التجديد، حط موعده هنا.",
+      "why_en": "If your car needs a technical inspection before renewal, set its date here."
+    }
+  ],
+  "travel": [
+    { "id": "valve", "ar": "سكّر محبس الماي الرئيسي", "en": "Close the main water valve" },
+    { "id": "heaters", "ar": "طفّ السخانات", "en": "Switch off the water heaters" },
+    { "id": "fridge", "ar": "فضّ الثلاجة من الأكل اللي يخرب", "en": "Clear the fridge of food that will spoil" },
+    { "id": "unplug", "ar": "فصّل الأجهزة من الأفياش", "en": "Unplug the appliances" },
+    { "id": "ac", "ar": "قرّر عن المكيفات: وحدة على حرارة معتدلة تحمي الأثاث من حر الصيف", "en": "Decide on the ACs: one on a moderate setting protects the furniture from the summer heat" },
+    { "id": "windows", "ar": "سكّر الدرايش وسدّ الستاير", "en": "Lock the windows and draw the curtains" },
+    { "id": "deliveries", "ar": "وقّف الطلبات والتوصيل المتكرر", "en": "Pause deliveries and recurring orders" },
+    { "id": "neighbour", "ar": "بلّغ جار تثق فيه وعطه رقمك", "en": "Tell a neighbour you trust and leave your number" },
+    { "id": "car", "ar": "ظلّل على السيارة، وافصل البطارية أو خل أحد يشغلها كل أسبوع", "en": "Shade the car, and disconnect the battery or have someone run it weekly" },
+    { "id": "meters", "ar": "صوّر عدادات الكهرباء والماي قبل لا تطلع", "en": "Photograph the power and water meters before you leave" },
+    { "id": "subs", "ar": "وقّف الاشتراكات اللي ما راح تستخدمها بالسفر", "en": "Pause subscriptions you won't use while away" }
+  ]
+}

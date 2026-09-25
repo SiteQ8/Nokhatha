@@ -1,0 +1,2116 @@
+{
+ "engine": "0.1.0",
+ "about": "Shared contract for the web, iOS and Android engines. \"$seasons\" means the seasons array of docs/data/seasons.json and \"$bawarih\" its bawarih window. Expected values were worked out by hand from the calendar, not produced by the engine.",
+ "cases": [
+  {
+   "fn": "dayNumber",
+   "args": [
+    "1970-01-01"
+   ],
+   "out": 0
+  },
+  {
+   "fn": "dayNumber",
+   "args": [
+    "1969-12-31"
+   ],
+   "out": -1
+  },
+  {
+   "fn": "dayNumber",
+   "args": [
+    "2000-01-01"
+   ],
+   "out": 10957
+  },
+  {
+   "fn": "dayNumber",
+   "args": [
+    "2000-03-01"
+   ],
+   "out": 11017
+  },
+  {
+   "fn": "dayNumber",
+   "args": [
+    "2026-01-01"
+   ],
+   "out": 20454
+  },
+  {
+   "fn": "dayNumber",
+   "args": [
+    "2026-09-25"
+   ],
+   "out": 20721
+  },
+  {
+   "fn": "fromDayNumber",
+   "args": [
+    0
+   ],
+   "out": "1970-01-01"
+  },
+  {
+   "fn": "fromDayNumber",
+   "args": [
+    -1
+   ],
+   "out": "1969-12-31"
+  },
+  {
+   "fn": "fromDayNumber",
+   "args": [
+    11016
+   ],
+   "out": "2000-02-29"
+  },
+  {
+   "fn": "fromDayNumber",
+   "args": [
+    20721
+   ],
+   "out": "2026-09-25"
+  },
+  {
+   "fn": "weekday",
+   "args": [
+    "1970-01-01"
+   ],
+   "out": 4
+  },
+  {
+   "fn": "weekday",
+   "args": [
+    "2000-01-01"
+   ],
+   "out": 6
+  },
+  {
+   "fn": "weekday",
+   "args": [
+    "2026-09-25"
+   ],
+   "out": 5
+  },
+  {
+   "fn": "weekday",
+   "args": [
+    "2026-09-27"
+   ],
+   "out": 0
+  },
+  {
+   "fn": "addDays",
+   "args": [
+    "2026-12-31",
+    1
+   ],
+   "out": "2027-01-01"
+  },
+  {
+   "fn": "addDays",
+   "args": [
+    "2028-02-28",
+    1
+   ],
+   "out": "2028-02-29"
+  },
+  {
+   "fn": "addDays",
+   "args": [
+    "2026-03-01",
+    -1
+   ],
+   "out": "2026-02-28"
+  },
+  {
+   "fn": "diffDays",
+   "args": [
+    "2026-09-25",
+    "2026-10-15"
+   ],
+   "out": 20
+  },
+  {
+   "fn": "diffDays",
+   "args": [
+    "2026-08-24",
+    "2026-09-25"
+   ],
+   "out": 32
+  },
+  {
+   "fn": "diffDays",
+   "args": [
+    "2026-10-15",
+    "2026-09-25"
+   ],
+   "out": -20
+  },
+  {
+   "fn": "addMonths",
+   "args": [
+    "2026-01-31",
+    1
+   ],
+   "out": "2026-02-28"
+  },
+  {
+   "fn": "addMonths",
+   "args": [
+    "2028-01-31",
+    1
+   ],
+   "out": "2028-02-29"
+  },
+  {
+   "fn": "addMonths",
+   "args": [
+    "2026-03-31",
+    -1
+   ],
+   "out": "2026-02-28"
+  },
+  {
+   "fn": "addMonths",
+   "args": [
+    "2026-12-15",
+    1
+   ],
+   "out": "2027-01-15"
+  },
+  {
+   "fn": "addMonths",
+   "args": [
+    "2026-05-31",
+    13
+   ],
+   "out": "2027-06-30"
+  },
+  {
+   "fn": "addMonths",
+   "args": [
+    "2026-01-10",
+    -13
+   ],
+   "out": "2024-12-10"
+  },
+  {
+   "fn": "isISO",
+   "args": [
+    "2026-09-25"
+   ],
+   "out": true
+  },
+  {
+   "fn": "isISO",
+   "args": [
+    "2026-02-29"
+   ],
+   "out": false
+  },
+  {
+   "fn": "isISO",
+   "args": [
+    "2028-02-29"
+   ],
+   "out": true
+  },
+  {
+   "fn": "isISO",
+   "args": [
+    "2026-13-01"
+   ],
+   "out": false
+  },
+  {
+   "fn": "isISO",
+   "args": [
+    "26-09-25"
+   ],
+   "out": false
+  },
+  {
+   "fn": "seasonAt",
+   "args": [
+    "2026-09-25",
+    "$seasons"
+   ],
+   "out": {
+    "id": "suhail",
+    "index": 0,
+    "start": "2026-08-24",
+    "next": "2026-10-15",
+    "nextId": "wasm",
+    "length": 52,
+    "dayIn": 33,
+    "daysLeft": 20
+   }
+  },
+  {
+   "fn": "seasonAt",
+   "args": [
+    "2026-08-24",
+    "$seasons"
+   ],
+   "out": {
+    "id": "suhail",
+    "index": 0,
+    "start": "2026-08-24",
+    "next": "2026-10-15",
+    "nextId": "wasm",
+    "length": 52,
+    "dayIn": 1,
+    "daysLeft": 52
+   }
+  },
+  {
+   "fn": "seasonAt",
+   "args": [
+    "2026-08-23",
+    "$seasons"
+   ],
+   "out": {
+    "id": "kulaibain",
+    "index": 13,
+    "start": "2026-08-11",
+    "next": "2026-08-24",
+    "nextId": "suhail",
+    "length": 13,
+    "dayIn": 13,
+    "daysLeft": 1
+   }
+  },
+  {
+   "fn": "seasonAt",
+   "args": [
+    "2026-01-01",
+    "$seasons"
+   ],
+   "out": {
+    "id": "murabbaniya",
+    "index": 2,
+    "start": "2025-12-06",
+    "next": "2026-01-15",
+    "nextId": "shabt",
+    "length": 40,
+    "dayIn": 27,
+    "daysLeft": 14
+   }
+  },
+  {
+   "fn": "seasonAt",
+   "args": [
+    "2028-02-29",
+    "$seasons"
+   ],
+   "out": {
+    "id": "aqarib",
+    "index": 4,
+    "start": "2028-02-10",
+    "next": "2028-03-08",
+    "nextId": "hamim",
+    "length": 27,
+    "dayIn": 20,
+    "daysLeft": 8
+   },
+   "note": "leap year lengthens Al-Aqarib"
+  },
+  {
+   "fn": "seasonRing",
+   "args": [
+    "2026-09-25",
+    "$seasons"
+   ],
+   "out": {
+    "total": 365,
+    "segs": [
+     {
+      "id": "suhail",
+      "start": "2026-08-24",
+      "offset": -32,
+      "length": 52
+     },
+     {
+      "id": "wasm",
+      "start": "2026-10-15",
+      "offset": 20,
+      "length": 52
+     },
+     {
+      "id": "murabbaniya",
+      "start": "2026-12-06",
+      "offset": 72,
+      "length": 40
+     },
+     {
+      "id": "shabt",
+      "start": "2027-01-15",
+      "offset": 112,
+      "length": 26
+     },
+     {
+      "id": "aqarib",
+      "start": "2027-02-10",
+      "offset": 138,
+      "length": 26
+     },
+     {
+      "id": "hamim",
+      "start": "2027-03-08",
+      "offset": 164,
+      "length": 26
+     },
+     {
+      "id": "thiraan",
+      "start": "2027-04-03",
+      "offset": 190,
+      "length": 26
+     },
+     {
+      "id": "kinna",
+      "start": "2027-04-29",
+      "offset": 216,
+      "length": 39
+     },
+     {
+      "id": "thurayya",
+      "start": "2027-06-07",
+      "offset": 255,
+      "length": 13
+     },
+     {
+      "id": "tuwaibi",
+      "start": "2027-06-20",
+      "offset": 268,
+      "length": 13
+     },
+     {
+      "id": "jawza1",
+      "start": "2027-07-03",
+      "offset": 281,
+      "length": 13
+     },
+     {
+      "id": "jawza2",
+      "start": "2027-07-16",
+      "offset": 294,
+      "length": 13
+     },
+     {
+      "id": "marzam",
+      "start": "2027-07-29",
+      "offset": 307,
+      "length": 13
+     },
+     {
+      "id": "kulaibain",
+      "start": "2027-08-11",
+      "offset": 320,
+      "length": 13
+     }
+    ]
+   }
+  },
+  {
+   "fn": "seasonStartOnOrAfter",
+   "args": [
+    "2026-09-25",
+    "wasm",
+    "$seasons"
+   ],
+   "out": "2026-10-15"
+  },
+  {
+   "fn": "seasonStartOnOrAfter",
+   "args": [
+    "2026-10-16",
+    "wasm",
+    "$seasons"
+   ],
+   "out": "2027-10-15"
+  },
+  {
+   "fn": "seasonStartOnOrAfter",
+   "args": [
+    "2026-12-06",
+    "murabbaniya",
+    "$seasons"
+   ],
+   "out": "2026-12-06"
+  },
+  {
+   "fn": "inWindow",
+   "args": [
+    "2026-06-07",
+    "$bawarih"
+   ],
+   "out": true
+  },
+  {
+   "fn": "inWindow",
+   "args": [
+    "2026-07-28",
+    "$bawarih"
+   ],
+   "out": true
+  },
+  {
+   "fn": "inWindow",
+   "args": [
+    "2026-07-29",
+    "$bawarih"
+   ],
+   "out": false
+  },
+  {
+   "fn": "inWindow",
+   "args": [
+    "2026-06-06",
+    "$bawarih"
+   ],
+   "out": false
+  },
+  {
+   "fn": "inWindow",
+   "args": [
+    "2027-01-15",
+    {
+     "start": "12-01",
+     "end": "02-28"
+    }
+   ],
+   "out": true
+  },
+  {
+   "fn": "inWindow",
+   "args": [
+    "2027-03-01",
+    {
+     "start": "12-01",
+     "end": "02-28"
+    }
+   ],
+   "out": false
+  },
+  {
+   "fn": "seasonalDue",
+   "args": [
+    null,
+    "wasm",
+    -21,
+    "2026-09-25",
+    "$seasons"
+   ],
+   "out": "2026-09-24",
+   "note": "never done, anchor one day ago is still due"
+  },
+  {
+   "fn": "seasonalDue",
+   "args": [
+    null,
+    "kinna",
+    -28,
+    "2026-09-25",
+    "$seasons"
+   ],
+   "out": "2027-04-01",
+   "note": "never done, anchor too far back, next year"
+  },
+  {
+   "fn": "seasonalDue",
+   "args": [
+    "2026-04-05",
+    "kinna",
+    -28,
+    "2026-09-25",
+    "$seasons"
+   ],
+   "out": "2027-04-01"
+  },
+  {
+   "fn": "seasonalDue",
+   "args": [
+    "2026-01-15",
+    "kinna",
+    -28,
+    "2026-02-01",
+    "$seasons"
+   ],
+   "out": "2026-04-01",
+   "note": "done too early to count for this year"
+  },
+  {
+   "fn": "seasonalDue",
+   "args": [
+    null,
+    "murabbaniya",
+    -14,
+    "2026-09-25",
+    "$seasons"
+   ],
+   "out": "2026-11-22"
+  },
+  {
+   "fn": "seasonalDue",
+   "args": [
+    null,
+    "wasm",
+    0,
+    "2026-12-10",
+    "$seasons"
+   ],
+   "out": "2026-10-15",
+   "note": "56 days after the anchor, inside grace"
+  },
+  {
+   "fn": "seasonalDue",
+   "args": [
+    null,
+    "wasm",
+    0,
+    "2026-12-20",
+    "$seasons"
+   ],
+   "out": "2027-10-15",
+   "note": "66 days after the anchor, past grace"
+  },
+  {
+   "fn": "kmRate",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-06-01",
+       "km": 80000
+      },
+      {
+       "date": "2026-09-01",
+       "km": 83680
+      }
+     ]
+    }
+   ],
+   "out": {
+    "num": 3680,
+    "den": 92
+   }
+  },
+  {
+   "fn": "kmOn",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-06-01",
+       "km": 80000
+      },
+      {
+       "date": "2026-09-01",
+       "km": 83680
+      }
+     ]
+    },
+    "2026-09-25"
+   ],
+   "out": 84640
+  },
+  {
+   "fn": "kmOn",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-06-01",
+       "km": 80000
+      },
+      {
+       "date": "2026-09-01",
+       "km": 83680
+      }
+     ]
+    },
+    "2026-08-01"
+   ],
+   "out": 83680,
+   "note": "dates before the last reading return it"
+  },
+  {
+   "fn": "dateAtKm",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-06-01",
+       "km": 80000
+      },
+      {
+       "date": "2026-09-01",
+       "km": 83680
+      }
+     ]
+    },
+    87000
+   ],
+   "out": "2026-11-23"
+  },
+  {
+   "fn": "lastReading",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-06-01",
+       "km": 80000
+      },
+      {
+       "date": "2026-09-01",
+       "km": 83680
+      }
+     ]
+    }
+   ],
+   "out": {
+    "date": "2026-09-01",
+    "km": 83680
+   }
+  },
+  {
+   "fn": "kmRate",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-09-01",
+       "km": 10000
+      },
+      {
+       "date": "2026-09-20",
+       "km": 10500
+      }
+     ]
+    }
+   ],
+   "out": {
+    "num": 500,
+    "den": 19
+   }
+  },
+  {
+   "fn": "kmOn",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-09-01",
+       "km": 10000
+      },
+      {
+       "date": "2026-09-20",
+       "km": 10500
+      }
+     ]
+    },
+    "2026-09-25"
+   ],
+   "out": 10631,
+   "note": "floor of 10500 + 5 x 500 / 19"
+  },
+  {
+   "fn": "dateAtKm",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-09-01",
+       "km": 10000
+      },
+      {
+       "date": "2026-09-20",
+       "km": 10500
+      }
+     ]
+    },
+    11000
+   ],
+   "out": "2026-10-09"
+  },
+  {
+   "fn": "dateAtKm",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-09-01",
+       "km": 10000
+      },
+      {
+       "date": "2026-09-20",
+       "km": 10500
+      }
+     ]
+    },
+    11001
+   ],
+   "out": "2026-10-10",
+   "note": "501 x 19 / 500 = 19.04 days, rounded up so the reminder is never late"
+  },
+  {
+   "fn": "dateAtKm",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-06-01",
+       "km": 80000
+      },
+      {
+       "date": "2026-09-01",
+       "km": 83680
+      }
+     ]
+    },
+    87001
+   ],
+   "out": "2026-11-24",
+   "note": "3321 x 92 / 3680 = 83.03 days, rounded up"
+  },
+  {
+   "fn": "dateAtKm",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-06-01",
+       "km": 80000
+      },
+      {
+       "date": "2026-09-01",
+       "km": 83680
+      }
+     ]
+    },
+    83000
+   ],
+   "out": "2026-08-15",
+   "note": "a target already passed gives a past date"
+  },
+  {
+   "fn": "kmRate",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-09-10",
+       "km": 10000
+      },
+      {
+       "date": "2026-09-20",
+       "km": 10400
+      }
+     ]
+    }
+   ],
+   "out": {
+    "num": 40,
+    "den": 1
+   },
+   "note": "span under 14 days falls back to dailyKm"
+  },
+  {
+   "fn": "kmOn",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": [
+      {
+       "date": "2026-09-10",
+       "km": 10000
+      },
+      {
+       "date": "2026-09-20",
+       "km": 10400
+      }
+     ]
+    },
+    "2026-09-25"
+   ],
+   "out": 10600
+  },
+  {
+   "fn": "kmRate",
+   "args": [
+    {
+     "dailyKm": 30,
+     "readings": [
+      {
+       "date": "2026-01-01",
+       "km": 1000
+      },
+      {
+       "date": "2026-05-01",
+       "km": 5000
+      },
+      {
+       "date": "2026-09-01",
+       "km": 9000
+      }
+     ]
+    }
+   ],
+   "out": {
+    "num": 4000,
+    "den": 123
+   },
+   "note": "earliest reading within 180 days of the latest"
+  },
+  {
+   "fn": "kmOn",
+   "args": [
+    {
+     "dailyKm": 30,
+     "readings": [
+      {
+       "date": "2026-01-01",
+       "km": 1000
+      },
+      {
+       "date": "2026-05-01",
+       "km": 5000
+      },
+      {
+       "date": "2026-09-01",
+       "km": 9000
+      }
+     ]
+    },
+    "2026-09-11"
+   ],
+   "out": 9325
+  },
+  {
+   "fn": "kmRate",
+   "args": [
+    {
+     "dailyKm": 0,
+     "readings": []
+    }
+   ],
+   "out": {
+    "num": 40,
+    "den": 1
+   }
+  },
+  {
+   "fn": "kmOn",
+   "args": [
+    {
+     "dailyKm": 40,
+     "readings": []
+    },
+    "2026-09-25"
+   ],
+   "out": null
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "days": 30,
+      "bawarih": 14
+     },
+     "lastDone": "2026-06-10"
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": "2026-06-24",
+    "by": "time"
+   },
+   "note": "done inside the Bawarih, short interval"
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "days": 30,
+      "bawarih": 14
+     },
+     "lastDone": "2026-08-01"
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": "2026-08-31",
+    "by": "time"
+   }
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "months": 6
+     },
+     "lastDone": "2026-03-31"
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": "2026-09-30",
+    "by": "time"
+   }
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "months": 6
+     },
+     "lastDone": null
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": "2026-09-25",
+    "by": "new"
+   }
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "months": 6
+     },
+     "lastDone": null,
+     "firstDue": "2026-10-05"
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": "2026-10-05",
+    "by": "new"
+   }
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "fixed": true,
+      "lead": 30,
+      "repeat": 12
+     },
+     "due": "2026-10-16"
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": "2026-10-16",
+    "by": "fixed"
+   }
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "fixed": true,
+      "lead": 30,
+      "repeat": 12
+     }
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": null,
+    "by": "unset"
+   }
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "season": "wasm",
+      "offset": -21
+     },
+     "lastDone": null
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": "2026-09-24",
+    "by": "season"
+   }
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "months": 6
+     },
+     "lastDone": "2026-03-01",
+     "snoozeUntil": "2026-10-02"
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": "2026-10-02",
+    "by": "snooze"
+   }
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "months": 6
+     },
+     "lastDone": "2026-03-01",
+     "snoozeUntil": "2026-08-01"
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih"
+    }
+   ],
+   "out": {
+    "due": "2026-09-01",
+    "by": "time"
+   },
+   "note": "a snooze before the due date changes nothing"
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "km": 5000,
+      "months": 6
+     },
+     "lastDone": "2026-06-01",
+     "lastKm": 82000
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih",
+     "car": {
+      "dailyKm": 40,
+      "readings": [
+       {
+        "date": "2026-06-01",
+        "km": 80000
+       },
+       {
+        "date": "2026-09-01",
+        "km": 83680
+       }
+      ]
+     }
+    }
+   ],
+   "out": {
+    "due": "2026-11-23",
+    "by": "km"
+   }
+  },
+  {
+   "fn": "nextDue",
+   "args": [
+    {
+     "every": {
+      "km": 5000,
+      "months": 6
+     },
+     "lastDone": "2026-06-01",
+     "lastKm": 84000
+    },
+    {
+     "today": "2026-09-25",
+     "seasons": "$seasons",
+     "bawarih": "$bawarih",
+     "car": {
+      "dailyKm": 40,
+      "readings": [
+       {
+        "date": "2026-06-01",
+        "km": 80000
+       },
+       {
+        "date": "2026-09-01",
+        "km": 83680
+       }
+      ]
+     }
+    }
+   ],
+   "out": {
+    "due": "2026-12-01",
+    "by": "time"
+   }
+  },
+  {
+   "fn": "statusOf",
+   "args": [
+    "2026-09-24",
+    "2026-09-25",
+    7
+   ],
+   "out": {
+    "status": "overdue",
+    "days": -1
+   }
+  },
+  {
+   "fn": "statusOf",
+   "args": [
+    "2026-09-25",
+    "2026-09-25",
+    7
+   ],
+   "out": {
+    "status": "today",
+    "days": 0
+   }
+  },
+  {
+   "fn": "statusOf",
+   "args": [
+    "2026-10-02",
+    "2026-09-25",
+    7
+   ],
+   "out": {
+    "status": "soon",
+    "days": 7
+   }
+  },
+  {
+   "fn": "statusOf",
+   "args": [
+    "2026-10-03",
+    "2026-09-25",
+    7
+   ],
+   "out": {
+    "status": "ok",
+    "days": 8
+   }
+  },
+  {
+   "fn": "statusOf",
+   "args": [
+    null,
+    "2026-09-25",
+    7
+   ],
+   "out": {
+    "status": "unset",
+    "days": null
+   }
+  },
+  {
+   "fn": "cycleProgress",
+   "args": [
+    "2026-09-01",
+    "2026-10-01",
+    "2026-09-16"
+   ],
+   "out": 0.5
+  },
+  {
+   "fn": "cycleProgress",
+   "args": [
+    "2026-09-01",
+    "2026-10-01",
+    "2026-11-01"
+   ],
+   "out": 1
+  },
+  {
+   "fn": "cycleProgress",
+   "args": [
+    null,
+    "2026-10-01",
+    "2026-09-16"
+   ],
+   "out": 0
+  },
+  {
+   "fn": "nextRenewal",
+   "args": [
+    {
+     "anchor": "2026-01-31",
+     "cycle": "monthly"
+    },
+    "2026-09-25"
+   ],
+   "out": "2026-09-30",
+   "note": "renewals follow the anchor, back to the 31st after short months"
+  },
+  {
+   "fn": "nextRenewal",
+   "args": [
+    {
+     "anchor": "2026-10-01",
+     "cycle": "monthly"
+    },
+    "2026-09-25"
+   ],
+   "out": "2026-10-01"
+  },
+  {
+   "fn": "nextRenewal",
+   "args": [
+    {
+     "anchor": "2026-09-25",
+     "cycle": "yearly"
+    },
+    "2026-09-25"
+   ],
+   "out": "2026-09-25"
+  },
+  {
+   "fn": "nextRenewal",
+   "args": [
+    {
+     "anchor": "2024-02-29",
+     "cycle": "yearly"
+    },
+    "2026-09-25"
+   ],
+   "out": "2027-02-28"
+  },
+  {
+   "fn": "nextRenewal",
+   "args": [
+    {
+     "anchor": "2026-09-04",
+     "cycle": "weekly"
+    },
+    "2026-09-25"
+   ],
+   "out": "2026-09-25"
+  },
+  {
+   "fn": "nextRenewal",
+   "args": [
+    {
+     "anchor": "2026-08-15",
+     "cycle": "quarterly"
+    },
+    "2026-09-25"
+   ],
+   "out": "2026-11-15"
+  },
+  {
+   "fn": "nthRenewal",
+   "args": [
+    "2024-02-29",
+    "yearly",
+    4
+   ],
+   "out": "2028-02-29"
+  },
+  {
+   "fn": "nthRenewal",
+   "args": [
+    "2026-01-31",
+    "monthly",
+    1
+   ],
+   "out": "2026-02-28"
+  },
+  {
+   "fn": "nthRenewal",
+   "args": [
+    "2026-01-31",
+    "monthly",
+    2
+   ],
+   "out": "2026-03-31"
+  },
+  {
+   "fn": "chargesBetween",
+   "args": [
+    {
+     "anchor": "2026-01-31",
+     "cycle": "monthly"
+    },
+    "2026-01-01",
+    "2026-12-31"
+   ],
+   "out": 12
+  },
+  {
+   "fn": "chargesBetween",
+   "args": [
+    {
+     "anchor": "2026-01-31",
+     "cycle": "monthly"
+    },
+    "2026-01-01",
+    "2026-09-25"
+   ],
+   "out": 8
+  },
+  {
+   "fn": "chargesBetween",
+   "args": [
+    {
+     "anchor": "2026-01-01",
+     "cycle": "weekly"
+    },
+    "2026-01-01",
+    "2026-12-31"
+   ],
+   "out": 53
+  },
+  {
+   "fn": "chargesBetween",
+   "args": [
+    {
+     "anchor": "2025-11-28",
+     "cycle": "yearly"
+    },
+    "2026-01-01",
+    "2026-09-25"
+   ],
+   "out": 0
+  },
+  {
+   "fn": "chargesBetween",
+   "args": [
+    {
+     "anchor": "2025-11-28",
+     "cycle": "yearly"
+    },
+    "2026-01-01",
+    "2026-12-31"
+   ],
+   "out": 1
+  },
+  {
+   "fn": "perMonth",
+   "args": [
+    3500,
+    "weekly"
+   ],
+   "out": 15167
+  },
+  {
+   "fn": "perMonth",
+   "args": [
+    45000,
+    "quarterly"
+   ],
+   "out": 15000
+  },
+  {
+   "fn": "perMonth",
+   "args": [
+    35000,
+    "yearly"
+   ],
+   "out": 2917
+  },
+  {
+   "fn": "perMonth",
+   "args": [
+    10000,
+    "semiannual"
+   ],
+   "out": 1667
+  },
+  {
+   "fn": "perMonth",
+   "args": [
+    1990,
+    "monthly"
+   ],
+   "out": 1990
+  },
+  {
+   "fn": "perMonth",
+   "args": [
+    1000,
+    "yearly"
+   ],
+   "out": 83
+  },
+  {
+   "fn": "perYear",
+   "args": [
+    3500,
+    "weekly"
+   ],
+   "out": 182000
+  },
+  {
+   "fn": "perYear",
+   "args": [
+    45000,
+    "quarterly"
+   ],
+   "out": 180000
+  },
+  {
+   "fn": "subTotals",
+   "args": [
+    [
+     {
+      "amount": 3500,
+      "currency": "KWD",
+      "cycle": "monthly"
+     },
+     {
+      "amount": 45000,
+      "currency": "KWD",
+      "cycle": "quarterly"
+     },
+     {
+      "amount": 1000,
+      "currency": "USD",
+      "cycle": "yearly"
+     },
+     {
+      "amount": 9999,
+      "currency": "KWD",
+      "cycle": "monthly",
+      "cancelled": true
+     }
+    ]
+   ],
+   "out": {
+    "KWD": {
+     "month": 18500,
+     "year": 222000,
+     "count": 2
+    },
+    "USD": {
+     "month": 83,
+     "year": 1000,
+     "count": 1
+    }
+   }
+  },
+  {
+   "fn": "formatMoney",
+   "args": [
+    4500,
+    "KWD",
+    "ar"
+   ],
+   "out": "4.500 د.ك"
+  },
+  {
+   "fn": "formatMoney",
+   "args": [
+    4500,
+    "KWD",
+    "en"
+   ],
+   "out": "KWD 4.500"
+  },
+  {
+   "fn": "formatMoney",
+   "args": [
+    1234567,
+    "KWD",
+    "en"
+   ],
+   "out": "KWD 1,234.567"
+  },
+  {
+   "fn": "formatMoney",
+   "args": [
+    123456,
+    "SAR",
+    "en"
+   ],
+   "out": "SAR 1,234.56"
+  },
+  {
+   "fn": "formatMoney",
+   "args": [
+    5,
+    "SAR",
+    "ar"
+   ],
+   "out": "0.05 ر.س"
+  },
+  {
+   "fn": "formatMoney",
+   "args": [
+    -2500,
+    "BHD",
+    "en"
+   ],
+   "out": "BHD -2.500"
+  },
+  {
+   "fn": "formatMoney",
+   "args": [
+    0,
+    "USD",
+    "en"
+   ],
+   "out": "USD 0.00"
+  },
+  {
+   "fn": "normalizeDigits",
+   "args": [
+    "٤٫٥٠٠"
+   ],
+   "out": "4.500"
+  },
+  {
+   "fn": "normalizeDigits",
+   "args": [
+    "۱۲۳"
+   ],
+   "out": "123"
+  },
+  {
+   "fn": "normalizeDigits",
+   "args": [
+    "١٬٢٣٤"
+   ],
+   "out": "1,234"
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "4.5",
+    "KWD"
+   ],
+   "out": 4500
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "٤٫٥٠٠",
+    "KWD"
+   ],
+   "out": 4500
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "2,5",
+    "KWD"
+   ],
+   "out": 2500
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "1,500",
+    "SAR"
+   ],
+   "out": 150000
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "1,500",
+    "KWD"
+   ],
+   "out": 1500
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "1,234.5",
+    "USD"
+   ],
+   "out": 123450
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "3.4567",
+    "KWD"
+   ],
+   "out": 3457
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    ".5",
+    "KWD"
+   ],
+   "out": 500
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "12",
+    "OMR"
+   ],
+   "out": 12000
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "3.500 د.ك",
+    "KWD"
+   ],
+   "out": 3500
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "١٬٢٣٤٫٥",
+    "KWD"
+   ],
+   "out": 1234500
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "abc",
+    "KWD"
+   ],
+   "out": null
+  },
+  {
+   "fn": "parseMoney",
+   "args": [
+    "1",
+    "XXX"
+   ],
+   "out": null
+  },
+  {
+   "fn": "countAr",
+   "args": [
+    1,
+    "day"
+   ],
+   "out": "يوم"
+  },
+  {
+   "fn": "countAr",
+   "args": [
+    2,
+    "day"
+   ],
+   "out": "يومين"
+  },
+  {
+   "fn": "countAr",
+   "args": [
+    3,
+    "day"
+   ],
+   "out": "3 أيام"
+  },
+  {
+   "fn": "countAr",
+   "args": [
+    10,
+    "month"
+   ],
+   "out": "10 شهور"
+  },
+  {
+   "fn": "countAr",
+   "args": [
+    11,
+    "month"
+   ],
+   "out": "11 شهر"
+  },
+  {
+   "fn": "countAr",
+   "args": [
+    20,
+    "day"
+   ],
+   "out": "20 يوم"
+  },
+  {
+   "fn": "countAr",
+   "args": [
+    5,
+    "year"
+   ],
+   "out": "5 سنوات"
+  },
+  {
+   "fn": "countAr",
+   "args": [
+    2,
+    "week"
+   ],
+   "out": "أسبوعين"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    0,
+    "ar"
+   ],
+   "out": "اليوم"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    1,
+    "ar"
+   ],
+   "out": "باچر"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    -1,
+    "ar"
+   ],
+   "out": "أمس"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    2,
+    "ar"
+   ],
+   "out": "بعد يومين"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    -2,
+    "ar"
+   ],
+   "out": "من يومين"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    3,
+    "ar"
+   ],
+   "out": "بعد 3 أيام"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    7,
+    "ar"
+   ],
+   "out": "بعد 7 أيام"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    11,
+    "ar"
+   ],
+   "out": "بعد 11 يوم"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    13,
+    "ar"
+   ],
+   "out": "بعد 13 يوم"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    14,
+    "ar"
+   ],
+   "out": "بعد أسبوعين"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    21,
+    "ar"
+   ],
+   "out": "بعد 3 أسابيع"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    29,
+    "ar"
+   ],
+   "out": "بعد 4 أسابيع"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    30,
+    "ar"
+   ],
+   "out": "بعد شهر"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    59,
+    "ar"
+   ],
+   "out": "بعد شهر"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    60,
+    "ar"
+   ],
+   "out": "بعد شهرين"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    90,
+    "ar"
+   ],
+   "out": "بعد 3 شهور"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    330,
+    "ar"
+   ],
+   "out": "بعد 11 شهر"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    335,
+    "ar"
+   ],
+   "out": "بعد سنة"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    730,
+    "ar"
+   ],
+   "out": "بعد سنتين"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    -45,
+    "ar"
+   ],
+   "out": "من شهر"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    0,
+    "en"
+   ],
+   "out": "today"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    1,
+    "en"
+   ],
+   "out": "tomorrow"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    -1,
+    "en"
+   ],
+   "out": "yesterday"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    3,
+    "en"
+   ],
+   "out": "in 3 days"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    -6,
+    "en"
+   ],
+   "out": "6 days ago"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    14,
+    "en"
+   ],
+   "out": "in 2 weeks"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    30,
+    "en"
+   ],
+   "out": "in 1 month"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    60,
+    "en"
+   ],
+   "out": "in 2 months"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    400,
+    "en"
+   ],
+   "out": "in 1 year"
+  },
+  {
+   "fn": "relative",
+   "args": [
+    800,
+    "en"
+   ],
+   "out": "in 2 years"
+  },
+  {
+   "fn": "formatDate",
+   "args": [
+    "2026-09-25",
+    "ar",
+    2026
+   ],
+   "out": "25 سبتمبر"
+  },
+  {
+   "fn": "formatDate",
+   "args": [
+    "2027-01-15",
+    "ar",
+    2026
+   ],
+   "out": "15 يناير 2027"
+  },
+  {
+   "fn": "formatDate",
+   "args": [
+    "2026-09-25",
+    "en",
+    2026
+   ],
+   "out": "25 September"
+  },
+  {
+   "fn": "formatDate",
+   "args": [
+    "2026-09-25",
+    "en"
+   ],
+   "out": "25 September"
+  },
+  {
+   "fn": "toICS",
+   "args": [
+    [
+     {
+      "uid": "a1-2026-10-01",
+      "date": "2026-10-01",
+      "title": "تنظيف, الفلتر; ok",
+      "note": "line1\nline2",
+      "lead": 3
+     }
+    ],
+    {
+     "stamp": "20260925T090000Z",
+     "calName": "نُوخذة"
+    }
+   ],
+   "out": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Nokhatha//Nokhatha//AR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:نُوخذة\r\nBEGIN:VEVENT\r\nUID:a1-2026-10-01@nokhatha.3li.info\r\nDTSTAMP:20260925T090000Z\r\nDTSTART;VALUE=DATE:20261001\r\nDTEND;VALUE=DATE:20261002\r\nSUMMARY:تنظيف\\, الفلتر\\; ok\r\nDESCRIPTION:line1\\nline2\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:تنظيف\\, الفلتر\\; ok\r\nTRIGGER:PT9H\r\nEND:VALARM\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:تنظيف\\, الفلتر\\; ok\r\nTRIGGER:-P2DT15H\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n"
+  },
+  {
+   "fn": "foldLine",
+   "args": [
+    "DESCRIPTION:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+   ],
+   "out": "DESCRIPTION:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r\n aaaaaaaaaaaaaaaaa"
+  },
+  {
+   "fn": "foldLine",
+   "args": [
+    "SUMMARY:بببببببببببببببببببببببببببببببببببببببب"
+   ],
+   "out": "SUMMARY:ببببببببببببببببببببببببببببببببب\r\n ببببببب",
+   "note": "never splits a two byte letter"
+  }
+ ]
+}
