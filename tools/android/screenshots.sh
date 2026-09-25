@@ -19,6 +19,11 @@ for lang in ar en; do
     adb exec-out screencap -p > "shots/$lang-$tab.png"
   done
 done
+for page in settings warranties techs travel spend about things; do
+  adb shell am start -S -W -n "$PKG/.MainActivity" --ez sample true --es tab more --es page "$page" --es lang ar
+  sleep 6
+  adb exec-out screencap -p > "shots/ar-page-$page.png"
+done
 for lang in ar en; do
   adb shell am start -S -W -n "$PKG/.MainActivity" --es screen setup --es lang "$lang"
   sleep 6

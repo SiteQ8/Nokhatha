@@ -1,0 +1,673 @@
+{
+ "note": "An encrypted backup made by docs/app/backup.js. The password is nokhatha-test-2026.",
+ "file": {
+  "app": "nokhatha",
+  "format": 1,
+  "kdf": "PBKDF2-SHA256",
+  "iterations": 600000,
+  "cipher": "AES-256-GCM",
+  "salt": "W5Bb+7B7nz1xCV5AqDBmpw==",
+  "iv": "SqgS8boNOFEs0ngh",
+  "data": "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"
+ },
+ "state": {
+  "v": 1,
+  "settings": {
+   "lang": "ar",
+   "country": "KW",
+   "theme": "auto",
+   "currency": "KWD",
+   "lead": 7,
+   "onboarded": true
+  },
+  "homes": [
+   {
+    "id": "000d1a273441",
+    "kind": "home",
+    "type": "house",
+    "name": "البيت",
+    "features": {
+     "central_ac": false,
+     "tank": true,
+     "filter": true
+    }
+   },
+   {
+    "id": "626f7c8996a3",
+    "kind": "home",
+    "type": "chalet",
+    "name": "الشاليه",
+    "features": {
+     "central_ac": false,
+     "tank": true,
+     "filter": false
+    }
+   }
+  ],
+  "cars": [
+   {
+    "id": "bdcad7e4f1fe",
+    "kind": "car",
+    "name": "سيارتي",
+    "dailyKm": 40,
+    "readings": [
+     {
+      "date": "2026-05-18",
+      "km": 61200
+     },
+     {
+      "date": "2026-09-15",
+      "km": 66050
+     }
+    ]
+   }
+  ],
+  "things": [
+   {
+    "id": "505d6a778491",
+    "kind": "thing",
+    "type": "boat",
+    "name": "الطراد"
+   }
+  ],
+  "items": [
+   {
+    "id": "0714212e3b48",
+    "asset": "000d1a273441",
+    "tpl": "ac_filters",
+    "enabled": true,
+    "lastDone": "2026-08-23",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "0e1b2835424f",
+    "asset": "000d1a273441",
+    "tpl": "ac_service",
+    "enabled": true,
+    "lastDone": "2026-03-31",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-03-31",
+      "cost": 25000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "15222f3c4956",
+    "asset": "000d1a273441",
+    "tpl": "water_tank",
+    "enabled": true,
+    "lastDone": "2026-04-08",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-04-08",
+      "cost": 15000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "1c293643505d",
+    "asset": "000d1a273441",
+    "tpl": "water_filter",
+    "enabled": true,
+    "lastDone": "2026-07-03",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "23303d4a5764",
+    "asset": "000d1a273441",
+    "tpl": "water_heater",
+    "enabled": true,
+    "lastDone": "2025-11-24",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "2a3744515e6b",
+    "asset": "000d1a273441",
+    "tpl": "leaks",
+    "enabled": true,
+    "lastDone": "2026-06-17",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "313e4b586572",
+    "asset": "000d1a273441",
+    "tpl": "roof_drains",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "3845525f6c79",
+    "asset": "000d1a273441",
+    "tpl": "seals",
+    "enabled": true,
+    "lastDone": "2026-05-26",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "3f4c59667380",
+    "asset": "000d1a273441",
+    "tpl": "smoke",
+    "enabled": true,
+    "lastDone": "2026-04-28",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "4653606d7a87",
+    "asset": "000d1a273441",
+    "tpl": "extinguisher",
+    "enabled": true,
+    "lastDone": "2026-03-09",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "4d5a6774818e",
+    "asset": "000d1a273441",
+    "tpl": "gas_hose",
+    "enabled": true,
+    "lastDone": "2026-04-02",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "54616e7b8895",
+    "asset": "000d1a273441",
+    "tpl": "hood",
+    "enabled": true,
+    "lastDone": "2026-08-11",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "5b6875828f9c",
+    "asset": "000d1a273441",
+    "tpl": "pests",
+    "enabled": true,
+    "lastDone": "2026-06-21",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-06-21",
+      "cost": 12000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "697683909daa",
+    "asset": "626f7c8996a3",
+    "tpl": "ac_filters",
+    "enabled": true,
+    "lastDone": "2026-09-05",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "707d8a97a4b1",
+    "asset": "626f7c8996a3",
+    "tpl": "ac_service",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "7784919eabb8",
+    "asset": "626f7c8996a3",
+    "tpl": "water_tank",
+    "enabled": true,
+    "lastDone": "2026-07-27",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "7e8b98a5b2bf",
+    "asset": "626f7c8996a3",
+    "tpl": "water_heater",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "85929facb9c6",
+    "asset": "626f7c8996a3",
+    "tpl": "leaks",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "8c99a6b3c0cd",
+    "asset": "626f7c8996a3",
+    "tpl": "roof_drains",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "93a0adbac7d4",
+    "asset": "626f7c8996a3",
+    "tpl": "seals",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "9aa7b4c1cedb",
+    "asset": "626f7c8996a3",
+    "tpl": "smoke",
+    "enabled": true,
+    "lastDone": "2026-06-27",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "a1aebbc8d5e2",
+    "asset": "626f7c8996a3",
+    "tpl": "extinguisher",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "a8b5c2cfdce9",
+    "asset": "626f7c8996a3",
+    "tpl": "gas_hose",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "afbcc9d6e3f0",
+    "asset": "626f7c8996a3",
+    "tpl": "hood",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "b6c3d0ddeaf7",
+    "asset": "626f7c8996a3",
+    "tpl": "pests",
+    "enabled": true,
+    "lastDone": "2026-08-16",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-08-16",
+      "cost": 10000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "c4d1deebf805",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "oil",
+    "enabled": true,
+    "lastDone": "2026-06-17",
+    "lastKm": 61900,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-06-17",
+      "cost": 18500,
+      "cur": "KWD",
+      "km": 61900
+     }
+    ]
+   },
+   {
+    "id": "cbd8e5f2ff0c",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "air_filter",
+    "enabled": true,
+    "lastDone": "2026-03-09",
+    "lastKm": 57500,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "d2dfecf90613",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "cabin_filter",
+    "enabled": true,
+    "lastDone": "2026-03-19",
+    "lastKm": 58000,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "d9e6f3000d1a",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "car_ac",
+    "enabled": true,
+    "lastDone": "2026-04-06",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "e0edfa071421",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "coolant",
+    "enabled": true,
+    "lastDone": "2026-04-13",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "e7f4010e1b28",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "tires",
+    "enabled": true,
+    "lastDone": "2026-04-18",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-04-18",
+      "cost": 120000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "eefb0815222f",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "tire_pressure",
+    "enabled": true,
+    "lastDone": "2026-08-29",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "f5020f1c2936",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "brake_fluid",
+    "enabled": true,
+    "lastDone": "2025-08-21",
+    "lastKm": 50000,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "fc091623303d",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "battery",
+    "enabled": true,
+    "lastDone": "2026-04-20",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "03101d2a3744",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "wipers",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "0a1724313e4b",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "registration",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": "2026-10-16",
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "111e2b384552",
+    "asset": "bdcad7e4f1fe",
+    "tpl": "insurance",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": "2026-10-16",
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "5764717e8b98",
+    "asset": "505d6a778491",
+    "tpl": "boat_engine",
+    "enabled": true,
+    "lastDone": "2026-04-28",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-04-28",
+      "cost": 45000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "5e6b7885929f",
+    "asset": "505d6a778491",
+    "tpl": "boat_hull",
+    "enabled": true,
+    "lastDone": "2026-07-17",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "65727f8c99a6",
+    "asset": "505d6a778491",
+    "tpl": "boat_safety",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "6c798693a0ad",
+    "asset": "505d6a778491",
+    "tpl": "boat_license",
+    "enabled": true,
+    "lastDone": null,
+    "lastKm": null,
+    "due": "2026-11-09",
+    "snoozeUntil": null,
+    "log": []
+   }
+  ],
+  "subs": [
+   {
+    "id": "1825323f4c59",
+    "name": "منصة الأفلام",
+    "amount": 3500,
+    "currency": "KWD",
+    "cycle": "monthly",
+    "anchor": "2025-12-26",
+    "category": "stream",
+    "usage": {}
+   },
+   {
+    "id": "1f2c39465360",
+    "name": "الموسيقى",
+    "amount": 1990,
+    "currency": "KWD",
+    "cycle": "monthly",
+    "anchor": "2026-01-07",
+    "category": "music",
+    "usage": {}
+   },
+   {
+    "id": "2633404d5a67",
+    "name": "التخزين السحابي",
+    "amount": 990,
+    "currency": "KWD",
+    "cycle": "monthly",
+    "anchor": "2026-09-28",
+    "category": "cloud",
+    "usage": {},
+    "trial": true
+   },
+   {
+    "id": "2d3a4754616e",
+    "name": "النادي الرياضي",
+    "amount": 45000,
+    "currency": "KWD",
+    "cycle": "quarterly",
+    "anchor": "2026-02-04",
+    "category": "gym",
+    "usage": {}
+   },
+   {
+    "id": "34414e5b6875",
+    "name": "إنترنت البيت",
+    "amount": 15000,
+    "currency": "KWD",
+    "cycle": "monthly",
+    "anchor": "2026-01-01",
+    "category": "internet",
+    "usage": {}
+   },
+   {
+    "id": "3b4855626f7c",
+    "name": "برنامج التصميم",
+    "amount": 35000,
+    "currency": "KWD",
+    "cycle": "yearly",
+    "anchor": "2025-11-28",
+    "category": "apps",
+    "usage": {}
+   }
+  ],
+  "warranties": [
+   {
+    "id": "w1",
+    "name": "الثلاجة",
+    "store": "معرض",
+    "bought": "2025-10-01",
+    "months": 24,
+    "receipt": "r1"
+   }
+  ],
+  "techs": [
+   {
+    "id": "73808d9aa7b4",
+    "name": "أبو محمد",
+    "trade": "ac",
+    "phone": "12345678"
+   },
+   {
+    "id": "7a8794a1aebb",
+    "name": "أبو علي",
+    "trade": "plumber",
+    "phone": "12345679"
+   },
+   {
+    "id": "818e9ba8b5c2",
+    "name": "كراج الشويخ",
+    "trade": "mechanic",
+    "phone": "12345680"
+   }
+  ],
+  "travel": {
+   "done": []
+  },
+  "sample": true
+ },
+ "receipts": {
+  "r1": {
+   "type": "image/jpeg",
+   "data": "/9j/4AECAwT/2Q=="
+  }
+ }
+}

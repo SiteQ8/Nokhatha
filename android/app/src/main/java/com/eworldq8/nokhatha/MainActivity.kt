@@ -12,6 +12,18 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalView
+import androidx.core.content.FileProvider
+import androidx.core.view.WindowCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -64,11 +76,15 @@ class AppModel(private val ctx: Context, intent: Intent?) {
     var toast by mutableStateOf<Toast?>(null)
     var tab by mutableStateOf("today")
     var onboarding by mutableStateOf<Onboarding?>(null)
+    /** The page open from More: things, warranties, techs, travel, spend, settings or about. */
+    var page by mutableStateOf<String?>(null)
     private val file = File(ctx.filesDir, "nokhatha.json")
+    private val receipts = File(ctx.filesDir, "receipts")
 
     init {
         val lang0 = intent?.getStringExtra("lang")
         tab = intent?.getStringExtra("tab") ?: "today"
+        page = intent?.getStringExtra("page")
         when {
             intent?.getStringExtra("screen") == "setup" -> {
                 state = AppState(settings = Settings(lang = lang0 ?: deviceLang))
@@ -140,15 +156,124 @@ class AppModel(private val ctx: Context, intent: Intent?) {
 
     fun startWithSample() {
         state = Brain.sample(catalog, lang, today)
+        onboarding = null
         save()
     }
 
     fun eraseAll() {
         file.delete()
+        receipts.deleteRecursively()
         state = null
         onboarding = null
+        page = null
+        tab = "today"
         Reminders.schedule(ctx)
     }
+
+    // ---------------------------------------------------------------- receipts
+
+    fun receiptBitmap(id: String): ImageBitmap? = runCatching { File(receipts, id).readBytes() }.getOrNull()?.let { bitmap(it) }
+
+    fun bitmap(bytes: ByteArray): ImageBitmap? = runCatching { BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap() }.getOrNull()
+
+    /** A photo from the camera or the gallery, scaled to 1600 pixels at most and saved as JPEG, as the web app does. */
+    fun compressImage(uri: Uri): ByteArray? = runCatching {
+        val r = ctx.contentResolver
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        r.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+        var sample = 1
+        while (maxOf(bounds.outWidth, bounds.outHeight) / (sample * 2) >= 1600) sample *= 2
+        val raw = r.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample }) } ?: return null
+        val scale = minOf(1f, 1600f / maxOf(raw.width, raw.height))
+        val bmp = if (scale < 1f) Bitmap.createScaledBitmap(raw, (raw.width * scale).toInt(), (raw.height * scale).toInt(), true) else raw
+        java.io.ByteArrayOutputStream().also { bmp.compress(Bitmap.CompressFormat.JPEG, 82, it) }.toByteArray()
+    }.getOrNull()
+
+    /** Where the camera writes a receipt photo, shared through the app's file provider. */
+    fun cameraUri(): Uri {
+        val dir = File(ctx.cacheDir, "camera").apply { mkdirs() }
+        return FileProvider.getUriForFile(ctx, ctx.packageName + ".files", File(dir, "receipt.jpg"))
+    }
+
+    fun saveWarranty(existing: Warranty?, name: String, store: String, bought: Day, months: Int, photo: ByteArray?) {
+        var rid = existing?.receipt
+        if (photo != null) {
+            val id = rid ?: newID()
+            if (runCatching { receipts.mkdirs(); File(receipts, id).writeBytes(photo) }.isSuccess) rid = id else say("err.photo")
+        }
+        update("toast.saved") { b ->
+            val w = Warranty(existing?.id ?: newID(), name, store.ifEmpty { null }, bought.iso, months, rid)
+            b.state = b.state.copy(warranties = if (existing != null) b.state.warranties.map { if (it.id == existing.id) w else it } else b.state.warranties + w)
+        }
+    }
+
+    fun deleteWarranty(w: Warranty) {
+        w.receipt?.let { File(receipts, it).delete() }
+        update("toast.deleted") { b -> b.state = b.state.copy(warranties = b.state.warranties.filter { it.id != w.id }) }
+    }
+
+    // ---------------------------------------------------------------- files
+
+    fun exportIcs(uri: Uri) {
+        val events = brain().calendarEvents(words)
+        val ok = runCatching { ctx.contentResolver.openOutputStream(uri)?.use { it.write(toICS(events, utcStamp(), t("app.name")).toByteArray()) } }.isSuccess
+        say(if (ok) "toast.ics" else "backup.failed")
+    }
+
+    suspend fun writeBackup(uri: Uri, pass: String): Boolean = withContext(Dispatchers.Default) {
+        runCatching {
+            val s = state ?: AppState()
+            val rs = JSONObject()
+            s.warranties.mapNotNull { it.receipt }.forEach { id ->
+                runCatching { File(receipts, id).readBytes() }.getOrNull()?.let { rs.put(id, JSONObject().put("type", "image/jpeg").put("data", B64.encode(it))) }
+            }
+            val text = Backup.encrypt(JSONObject().put("state", s.toJson()).put("receipts", rs).toString(), pass)
+            ctx.contentResolver.openOutputStream(uri)?.use { it.write(text.toByteArray()) } ?: error("no file")
+        }.isSuccess
+    }.also { ok ->
+        if (ok) { state = state?.let { it.copy(settings = it.settings.copy(lastBackup = today.iso)) }; save() }
+    }
+
+    /** Null when the backup was restored, otherwise "pass" or "format". */
+    suspend fun readBackup(uri: Uri, pass: String): String? {
+        val result = withContext(Dispatchers.Default) {
+            try {
+                val text = ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) } ?: return@withContext Pair<String?, JSONObject?>("format", null)
+                Pair<String?, JSONObject?>(null, JSONObject(Backup.decrypt(text, pass)))
+            } catch (e: BackupError) {
+                Pair<String?, JSONObject?>(e.reason, null)
+            } catch (e: Exception) {
+                Pair<String?, JSONObject?>("format", null)
+            }
+        }
+        val payload = result.second ?: return result.first
+        val restored = runCatching { AppState.fromJson(payload.getJSONObject("state")) }.getOrNull() ?: return "format"
+        receipts.deleteRecursively()
+        receipts.mkdirs()
+        payload.optJSONObject("receipts")?.let { rs ->
+            for (id in rs.keys()) runCatching { File(receipts, id).writeBytes(B64.decode(rs.getJSONObject(id).getString("data"))) }
+        }
+        state = restored.copy(settings = restored.settings.copy(onboarded = true))
+        onboarding = null
+        save()
+        return null
+    }
+
+    fun fileName(uri: Uri): String? = runCatching {
+        ctx.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c -> if (c.moveToFirst()) c.getString(0) else null }
+    }.getOrNull()
+
+    // ---------------------------------------------------------------- links
+
+    private fun open(intent: Intent) {
+        runCatching { ctx.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.onFailure { say("err.open") }
+    }
+
+    fun openUrl(url: String) = open(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    fun dial(phone: String) = open(Intent(Intent.ACTION_DIAL, Uri.parse("tel:+" + phoneDigits(phone, state?.settings?.country ?: "KW"))))
+    fun whatsapp(phone: String) = open(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/" + phoneDigits(phone, state?.settings?.country ?: "KW"))))
+
+    val version: String get() = runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "1.0"
 
     companion object {
         val deviceLang: String get() = if (Locale.getDefault().language == "ar") "ar" else "en"
@@ -246,9 +371,23 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Root(model: AppModel) {
+    val dark = when (model.state?.settings?.theme) {
+        "light" -> false
+        "dark" -> true
+        else -> androidx.compose.foundation.isSystemInDarkTheme()
+    }
+    val view = LocalView.current
+    SideEffect {
+        (view.context as? Activity)?.window?.let { WindowCompat.getInsetsController(it, view).apply { isAppearanceLightStatusBars = !dark; isAppearanceLightNavigationBars = !dark } }
+    }
+    CompositionLocalProvider(LocalDark provides dark) { RootBody(model) }
+}
+
+@Composable
+fun RootBody(model: AppModel) {
     val p = pal()
     CompositionLocalProvider(LocalLayoutDirection provides if (model.isArabic) LayoutDirection.Rtl else LayoutDirection.Ltr) {
-        MaterialTheme(colorScheme = if (androidx.compose.foundation.isSystemInDarkTheme()) darkColorScheme(primary = p.ink, surface = p.surface, background = p.bg)
+        MaterialTheme(colorScheme = if (LocalDark.current == true) darkColorScheme(primary = p.ink, surface = p.surface, background = p.bg)
             else lightColorScheme(primary = p.ink, surface = p.surface, background = p.bg)) {
             Box(Modifier.fillMaxSize().background(p.bg)) {
                 val ob = model.onboarding
@@ -267,20 +406,27 @@ fun Root(model: AppModel) {
 @Composable
 fun Tabs(model: AppModel) {
     val p = pal()
-    var sub by remember { mutableStateOf<String?>(null) }
-    BackHandler(enabled = sub != null || model.tab != "today") { if (sub != null) sub = null else model.tab = "today" }
+    BackHandler(enabled = model.page != null || model.tab != "today") { if (model.page != null) model.page = null else model.tab = "today" }
     Scaffold(
         containerColor = p.bg,
-        bottomBar = { TabBar(model) { sub = null } },
+        bottomBar = { TabBar(model) { model.page = null } },
     ) { pad ->
         Box(Modifier.padding(pad).fillMaxSize()) {
-            when {
-                model.tab == "more" && sub == "things" -> AssetsScreen(model, AssetKind.THING)
-                model.tab == "today" -> TodayScreen(model)
-                model.tab == "home" -> AssetsScreen(model, AssetKind.HOME)
-                model.tab == "car" -> AssetsScreen(model, AssetKind.CAR)
-                model.tab == "subs" -> SubsScreen(model)
-                else -> MoreScreen(model) { sub = it }
+            when (model.tab) {
+                "today" -> TodayScreen(model)
+                "home" -> AssetsScreen(model, AssetKind.HOME)
+                "car" -> AssetsScreen(model, AssetKind.CAR)
+                "subs" -> SubsScreen(model)
+                else -> when (model.page) {
+                    "things" -> AssetsScreen(model, AssetKind.THING) { model.page = null }
+                    "warranties" -> WarrantiesScreen(model)
+                    "techs" -> TechsScreen(model)
+                    "travel" -> TravelScreen(model)
+                    "spend" -> SpendScreen(model)
+                    "settings" -> SettingsScreen(model)
+                    "about" -> AboutScreen(model)
+                    else -> MoreScreen(model)
+                }
             }
         }
     }

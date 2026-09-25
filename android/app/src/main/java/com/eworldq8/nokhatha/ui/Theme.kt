@@ -17,6 +17,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,8 +75,11 @@ private val dark = Pal(
     Color(0xFF204750), Color(0xFF363C50), Color(0xFF394841), Color(0xFF564833),
 )
 
+/** The theme chosen in Settings: null follows the phone. */
+val LocalDark = staticCompositionLocalOf<Boolean?> { null }
+
 @Composable
-fun pal(): Pal = if (isSystemInDarkTheme()) dark else light
+fun pal(): Pal = if (LocalDark.current ?: isSystemInDarkTheme()) dark else light
 
 val Plex = FontFamily(
     Font(R.font.plex_regular, FontWeight.Normal), Font(R.font.plex_medium, FontWeight.Medium),
@@ -134,36 +143,50 @@ fun Chip(text: String, on: Boolean, icon: String? = null, onClick: () -> Unit) {
 }
 
 @Composable
-fun WideButton(text: String, primary: Boolean = true, danger: Boolean = false, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun WideButton(text: String, primary: Boolean = true, danger: Boolean = false, modifier: Modifier = Modifier, icon: String? = null, onClick: () -> Unit) {
     val p = pal()
     val filled = primary && !danger
-    Box(
+    val ink = if (danger) p.overdue else if (filled) p.onInk else p.ink
+    Row(
         modifier
             .fillMaxWidth()
             .height(50.dp)
             .clip(RoundedCornerShape(14.dp))
             .background(if (filled) p.ink else p.surface)
             .then(if (filled) Modifier else Modifier.border(1.dp, p.line, RoundedCornerShape(14.dp)))
-            .clickable(role = Role.Button, onClick = onClick),
-        contentAlignment = Alignment.Center,
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 12.dp),
+        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text, style = body(16, FontWeight.SemiBold), color = if (danger) p.overdue else if (filled) p.onInk else p.ink)
+        if (icon != null) { Ico(icon, ink, 19.dp); Spacer(Modifier.width(8.dp)) }
+        com.eworldq8.nokhatha.FitText(text, body(16, FontWeight.SemiBold), ink, Modifier.weight(1f, fill = false))
     }
 }
 
 @Composable
-fun Input(value: String, onChange: (String) -> Unit, placeholder: String, numbers: Boolean = false, modifier: Modifier = Modifier) {
+fun Input(value: String, onChange: (String) -> Unit, placeholder: String, numbers: Boolean = false, modifier: Modifier = Modifier,
+          phone: Boolean = false, password: Boolean = false) {
     val p = pal()
-    OutlinedTextField(
-        value = value, onValueChange = onChange, singleLine = true, modifier = modifier.fillMaxWidth(),
-        textStyle = body(16).copy(color = p.ink),
-        placeholder = { Text(placeholder, style = body(16), color = p.ink3) },
-        keyboardOptions = KeyboardOptions(keyboardType = if (numbers) KeyboardType.Decimal else KeyboardType.Text),
-        shape = RoundedCornerShape(13.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = p.ink, unfocusedBorderColor = p.line, focusedContainerColor = p.bg, unfocusedContainerColor = p.bg, cursorColor = p.ink,
-        ),
-    )
+    val field = @Composable {
+        OutlinedTextField(
+            value = value, onValueChange = onChange, singleLine = true, modifier = modifier.fillMaxWidth(),
+            textStyle = body(16).copy(color = p.ink),
+            placeholder = { Text(placeholder, style = body(16), color = p.ink3) },
+            keyboardOptions = KeyboardOptions(keyboardType = when {
+                password -> KeyboardType.Password
+                phone -> KeyboardType.Phone
+                numbers -> KeyboardType.Decimal
+                else -> KeyboardType.Text
+            }),
+            visualTransformation = if (password) PasswordVisualTransformation() else VisualTransformation.None,
+            shape = RoundedCornerShape(13.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = p.ink, unfocusedBorderColor = p.line, focusedContainerColor = p.bg, unfocusedContainerColor = p.bg, cursorColor = p.ink,
+            ),
+        )
+    }
+    // phone numbers and passwords read left to right in both languages
+    if (phone || password) CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) { field() } else field()
 }
 
 @Composable

@@ -106,111 +106,6 @@ fun TaskList(model: AppModel, rows: List<Evaluated>, showAsset: Boolean = false)
 }
 
 @Composable
-fun TodayScreen(model: AppModel) {
-    val p = pal()
-    val b = model.brain()
-    val w = model.words
-    val tasks = b.tasks()
-    val now = tasks.filter { it.status in setOf("overdue", "today", "soon") }
-    val later = tasks.filter { it.status == "ok" && (it.days ?: 999) <= 30 }.take(6)
-    val subs = b.subs()
-    val season = seasonAt(model.today, model.catalog.seasons)
-    val dots = tasks.mapNotNull { e -> e.days?.let { DialDot(it, e.status) } } + subs.filter { it.status != "off" }.map { DialDot(it.days, "sub") }
-    val totals = b.totals()
-    val cur = model.state?.settings?.currency?.takeIf { totals.containsKey(it) } ?: totals.keys.sorted().firstOrNull()
-    Page {
-        Header(model)
-        Text(w.greeting(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)), style = title(24), color = p.ink)
-        Text(w.longDate(model.today), style = body(14), color = p.ink3)
-        Spacer(Modifier.height(8.dp))
-        Dial(model.today, model.catalog, dots, w.seasonCenter(season, model.catalog, model.today))
-        model.catalog.season(season.id)?.hint(model.lang)?.let { hint ->
-            Spacer(Modifier.height(8.dp))
-            CardBox(padding = 14.dp) {
-                Row { Ico("spark", p.sadu, 18.dp, Modifier.padding(top = 3.dp)); Spacer(Modifier.width(10.dp)); Text(hint, style = body(14), color = p.ink2) }
-            }
-        }
-        SectionTitle(model.t("today.now"), now.size)
-        if (now.isEmpty()) CardBox { Text(model.t("today.clear"), style = body(15), color = p.ink2) } else TaskList(model, now, true)
-        subs.firstOrNull { it.ask || it.planned }?.let { Spacer(Modifier.height(10.dp)); AskCard(model, it) }
-        if (cur != null) {
-            val t = totals.getValue(cur)
-            Spacer(Modifier.height(10.dp))
-            CardBox(Modifier.clickable { model.tab = "subs" }, padding = 14.dp) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Ico("repeat", p.ok, 20.dp)
-                    Spacer(Modifier.width(10.dp))
-                    Text(model.t("today.subs", mapOf("amount" to w.money(t.month, cur))), style = body(15, FontWeight.SemiBold), color = p.ink, modifier = Modifier.weight(1f))
-                }
-            }
-        }
-        if (later.isNotEmpty()) {
-            SectionTitle(model.t("today.later"))
-            TaskList(model, later, true)
-        }
-    }
-}
-
-@Composable
-fun AssetsScreen(model: AppModel, kind: AssetKind) {
-    val p = pal()
-    val state = model.state ?: AppState()
-    val list = when (kind) {
-        AssetKind.HOME -> state.homes.map { it.id to it.name }
-        AssetKind.CAR -> state.cars.map { it.id to it.name }
-        AssetKind.THING -> state.things.map { it.id to it.name }
-    }
-    var selected by remember { mutableStateOf<String?>(null) }
-    var sheet by remember { mutableStateOf<String?>(null) }
-    val current = list.firstOrNull { it.first == selected } ?: list.firstOrNull()
-    val tasks = current?.let { c -> model.brain().tasks { it.asset == c.first } } ?: emptyList()
-    val areas = model.catalog.areas[kind.key] ?: emptyList()
-    val add = when (kind) { AssetKind.HOME -> "act.add_home"; AssetKind.CAR -> "act.add_car"; AssetKind.THING -> "act.add_thing" }
-    val edit = when (kind) { AssetKind.HOME -> "act.edit_home"; AssetKind.CAR -> "act.edit_car"; AssetKind.THING -> "act.edit_thing" }
-    Page {
-        Header(model)
-        Text(model.t(when (kind) { AssetKind.HOME -> "tab.home"; AssetKind.CAR -> "tab.car"; AssetKind.THING -> "more.things" }), style = title(30), color = p.ink)
-        Row(Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            for ((id, name) in list) Chip(name, id == current?.first) { selected = id }
-            Chip(model.t(add), false, "plus") { sheet = "add" }
-        }
-        if (kind == AssetKind.CAR && current != null) {
-            state.cars.firstOrNull { it.id == current.first }?.let { car ->
-                CardBox {
-                    Text(model.t("car.odo"), style = body(13, FontWeight.SemiBold), color = p.ink3)
-                    Text(kmOn(car.odometer, model.today)?.let { model.words.km(it) } ?: model.t("car.odo_unknown"), style = title(28), color = p.ink)
-                    Row(Modifier.clickable { sheet = "odo" }.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Ico("gauge", p.ink, 18.dp); Spacer(Modifier.width(6.dp)); Text(model.t("act.update_odo"), style = body(14, FontWeight.SemiBold), color = p.ink)
-                    }
-                }
-            }
-        }
-        if (current != null) {
-            Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                WideButton(model.t("act.add_task"), modifier = Modifier.weight(1f)) { sheet = "task" }
-                WideButton(model.t(edit), primary = false, modifier = Modifier.weight(1f)) { sheet = "edit" }
-            }
-        }
-        if (tasks.isEmpty()) {
-            Spacer(Modifier.height(10.dp))
-            CardBox { Text(model.t("empty.${kind.key}"), style = body(15), color = p.ink2) }
-        }
-        for (area in areas) {
-            val rows = tasks.filter { (it.tpl?.area ?: "custom") == area.id }
-            if (rows.isEmpty()) continue
-            Text(area.name(model.lang), style = body(13, FontWeight.Bold), color = p.ink3, modifier = Modifier.padding(top = 16.dp, bottom = 6.dp))
-            TaskList(model, rows)
-        }
-    }
-    when (sheet) {
-        "add" -> AssetSheet(model, kind, null) { sheet = null }
-        "edit" -> current?.let { AssetSheet(model, kind, it.first) { sheet = null } }
-        "task" -> current?.let { AddTaskSheet(model, it.first) { sheet = null } }
-        "odo" -> current?.let { OdoSheet(model, it.first) { sheet = null } }
-    }
-}
-
-@Composable
 fun SubsScreen(model: AppModel) {
     val p = pal()
     val b = model.brain()
@@ -264,76 +159,117 @@ fun SubsScreen(model: AppModel) {
     if (adding) SubSheet(model, null) { adding = false }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+
 @Composable
-fun MoreScreen(model: AppModel, open: (String) -> Unit) {
+fun TodayScreen(model: AppModel) {
     val p = pal()
-    val ctx = androidx.compose.ui.platform.LocalContext.current
-    var confirm by remember { mutableStateOf(false) }
-    val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        model.update { b -> b.state = b.state.copy(settings = b.state.settings.copy(notify = granted)) }
-        if (!granted) model.say("notify.denied")
-    }
-    val s = model.state?.settings ?: Settings()
+    val b = model.brain()
+    val w = model.words
+    val tasks = b.tasks()
+    val now = tasks.filter { it.status in setOf("overdue", "today", "soon") }
+    val later = tasks.filter { it.status == "ok" && (it.days ?: 999) <= 30 }.take(6)
+    val subs = b.subs()
+    val talk = subs.filter { it.ask || it.planned }
+    val warr = b.warranties().filter { it.status == "soon" || it.status == "today" }
+    val season = seasonAt(model.today, model.catalog.seasons)
+    val dots = tasks.mapNotNull { e -> e.days?.let { DialDot(it, e.status) } } + subs.filter { it.status != "off" }.map { DialDot(it.days, "sub") }
+    val totals = b.totals()
+    val cur = model.state?.settings?.currency?.takeIf { totals.containsKey(it) } ?: totals.keys.sorted().firstOrNull()
     Page {
         Header(model)
-        Text(model.t("tab.more"), style = title(30), color = p.ink)
+        Text(w.greeting(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)), style = title(24), color = p.ink)
+        Text(w.longDate(model.today), style = body(14), color = p.ink3)
         Spacer(Modifier.height(8.dp))
-        CardBox(Modifier.clickable { open("things") }, padding = 14.dp) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Ico("box", p.ink, 20.dp); Spacer(Modifier.width(10.dp))
-                Text(model.t("more.things"), style = body(16, FontWeight.SemiBold), color = p.ink, modifier = Modifier.weight(1f))
-                Text((model.state?.things?.size ?: 0).toString(), style = body(13, FontWeight.Bold), color = p.ink3)
+        Dial(model.today, model.catalog, dots, w.seasonCenter(season, model.catalog, model.today))
+        model.catalog.season(season.id)?.hint(model.lang)?.let { hint ->
+            Spacer(Modifier.height(8.dp))
+            CardBox(padding = 14.dp) {
+                Row { Ico("spark", p.sadu, 18.dp, Modifier.padding(top = 3.dp)); Spacer(Modifier.width(10.dp)); Text(hint, style = body(14), color = p.ink2) }
             }
         }
-        SectionTitle(model.t("settings.lang"))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Chip("عربي", model.lang == "ar") { model.setLang("ar") }
-            Chip("English", model.lang == "en") { model.setLang("en") }
+        SectionTitle(model.t("today.now"), now.size)
+        if (now.isEmpty()) CardBox { EmptyNote("done", model.t("today.clear")) } else TaskList(model, now, true)
+        talk.firstOrNull()?.let { Spacer(Modifier.height(10.dp)); AskCard(model, it) }
+        if (talk.size > 1) {
+            Text(model.t("today.more_asks"), style = body(14, FontWeight.SemiBold), color = p.ink2,
+                modifier = Modifier.fillMaxWidth().clickable { model.tab = "subs" }.padding(vertical = 10.dp), textAlign = TextAlign.Center)
         }
-        SectionTitle(model.t("settings.country"))
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            for (c in Brain.countries.keys) Chip(model.t("country.$c"), s.country == c) {
-                model.update { b ->
-                    val before = Brain.countries[b.state.settings.country]?.third
-                    val cur = if (b.state.settings.currency == before) Brain.countries[c]?.third ?: "KWD" else b.state.settings.currency
-                    b.state = b.state.copy(settings = b.state.settings.copy(country = c, currency = cur))
+        if (cur != null) {
+            val t = totals.getValue(cur)
+            Spacer(Modifier.height(10.dp))
+            ListCard {
+                Row(Modifier.fillMaxWidth().clickable { model.tab = "subs" }.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Ico("repeat", p.ok, 20.dp)
+                    Spacer(Modifier.width(10.dp))
+                    Text(model.t("today.subs", mapOf("amount" to w.money(t.month, cur))), style = body(15, FontWeight.SemiBold), color = p.ink, modifier = Modifier.weight(1f))
+                    Chevron(p.ink3)
                 }
             }
         }
-        SectionTitle(model.t("settings.currency"))
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            for (c in currencies.keys) Chip(c, s.currency == c) { model.update { b -> b.state = b.state.copy(settings = b.state.settings.copy(currency = c)) } }
+        if (warr.isNotEmpty()) {
+            SectionTitle(model.t("today.warranties"))
+            WarrantyList(model, warr)
         }
-        SectionTitle(model.t("settings.lead"))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            for (n in listOf(3, 7, 14)) Chip(model.words.dayCount(n), s.lead == n) { model.update { b -> b.state = b.state.copy(settings = b.state.settings.copy(lead = n)) } }
+        if (later.isNotEmpty()) {
+            SectionTitle(model.t("today.later"))
+            TaskList(model, later, true)
         }
-        SectionTitle(model.t("settings.notify"))
-        Text(if (s.notify == true) model.t("notify.state_on") else model.t("notify.android_ready"), style = body(14), color = p.ink2)
-        if (s.notify != true) {
-            Spacer(Modifier.height(10.dp))
-            WideButton(model.t("notify.on")) {
-                if (Build.VERSION.SDK_INT >= 33) ask.launch(Manifest.permission.POST_NOTIFICATIONS)
-                else model.update { b -> b.state = b.state.copy(settings = b.state.settings.copy(notify = true)) }
-            }
-        } else {
-            Spacer(Modifier.height(10.dp))
-            WideButton(model.t("notify.off"), primary = false) { model.update { b -> b.state = b.state.copy(settings = b.state.settings.copy(notify = false)) } }
-        }
-        SectionTitle(model.t("about.privacy_h"))
-        Text(model.t("about.privacy"), style = body(14), color = p.ink2)
-        Spacer(Modifier.height(16.dp))
-        WideButton(model.t("act.wipe"), primary = false, danger = true) { confirm = true }
-        Text(model.t("about.copyright"), style = body(12), color = p.ink3, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 10.dp))
     }
-    if (confirm) {
-        AlertDialog(
-            onDismissRequest = { confirm = false },
-            text = { Text(model.t("confirm.wipe"), style = body(15)) },
-            confirmButton = { TextButton({ confirm = false; model.eraseAll() }) { Text(model.t("act.wipe"), color = p.overdue) } },
-            dismissButton = { TextButton({ confirm = false }) { Text(model.t("act.cancel")) } },
-        )
+}
+
+@Composable
+fun AssetsScreen(model: AppModel, kind: AssetKind, onBack: (() -> Unit)? = null) {
+    val p = pal()
+    val state = model.state ?: AppState()
+    val list = when (kind) {
+        AssetKind.HOME -> state.homes.map { it.id to it.name }
+        AssetKind.CAR -> state.cars.map { it.id to it.name }
+        AssetKind.THING -> state.things.map { it.id to it.name }
+    }
+    var selected by remember { mutableStateOf<String?>(null) }
+    var sheet by remember { mutableStateOf<String?>(null) }
+    val current = list.firstOrNull { it.first == selected } ?: list.firstOrNull()
+    val tasks = current?.let { c -> model.brain().tasks { it.asset == c.first } } ?: emptyList()
+    val areas = model.catalog.areas[kind.key] ?: emptyList()
+    val add = when (kind) { AssetKind.HOME -> "act.add_home"; AssetKind.CAR -> "act.add_car"; AssetKind.THING -> "act.add_thing" }
+    val edit = when (kind) { AssetKind.HOME -> "act.edit_home"; AssetKind.CAR -> "act.edit_car"; AssetKind.THING -> "act.edit_thing" }
+    val name = model.t(when (kind) { AssetKind.HOME -> "tab.home"; AssetKind.CAR -> "tab.car"; AssetKind.THING -> "more.things" })
+    Page {
+        if (onBack != null) PageHead(name, onBack) else { Header(model); Text(name, style = title(30), color = p.ink) }
+        Row(Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            for ((id, n) in list) Chip(n, id == current?.first) { selected = id }
+            Chip(model.t(add), false, "plus") { sheet = "add" }
+        }
+        if (kind == AssetKind.CAR && current != null) {
+            state.cars.firstOrNull { it.id == current.first }?.let { car ->
+                CardBox {
+                    Text(model.t("car.odo"), style = body(13, FontWeight.SemiBold), color = p.ink3)
+                    Text(kmOn(car.odometer, model.today)?.let { model.words.km(it) } ?: model.t("car.odo_unknown"), style = title(28), color = p.ink)
+                    Spacer(Modifier.height(8.dp))
+                    WideButton(model.t("act.update_odo"), primary = false, icon = "gauge") { sheet = "odo" }
+                }
+            }
+        }
+        if (current != null) {
+            Spacer(Modifier.height(10.dp))
+            ButtonPair(model.t("act.add_task"), { sheet = "task" }, model.t(edit), { sheet = "edit" }, aPrimary = true)
+        }
+        if (tasks.isEmpty()) {
+            Spacer(Modifier.height(10.dp))
+            CardBox { Text(model.t("empty.${kind.key}"), style = body(15), color = p.ink2) }
+        }
+        for (area in areas) {
+            val rows = tasks.filter { (it.tpl?.area ?: "custom") == area.id }
+            if (rows.isEmpty()) continue
+            Text(area.name(model.lang), style = body(13, FontWeight.Bold), color = p.ink3, modifier = Modifier.padding(top = 16.dp, bottom = 6.dp))
+            TaskList(model, rows)
+        }
+    }
+    when (sheet) {
+        "add" -> AssetSheet(model, kind, null) { sheet = null }
+        "edit" -> current?.let { AssetSheet(model, kind, it.first) { sheet = null } }
+        "task" -> current?.let { AddTaskSheet(model, it.first) { sheet = null } }
+        "odo" -> current?.let { OdoSheet(model, it.first) { sheet = null } }
     }
 }
 
@@ -350,19 +286,35 @@ fun WelcomeScreen(model: AppModel) {
         Text(model.t("welcome.tag"), style = title(21), color = p.overdue)
         Spacer(Modifier.height(8.dp))
         Text(model.t("welcome.body"), style = body(16), color = p.ink2, textAlign = TextAlign.Center)
-        Row(Modifier.padding(vertical = 18.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Chip("عربي", model.lang == "ar") { model.setLang("ar") }
-            Chip("English", model.lang == "en") { model.setLang("en") }
-        }
+        Spacer(Modifier.height(18.dp))
+        Seg(listOf("ar" to "عربي", "en" to "English"), model.lang, Modifier.width(240.dp)) { model.setLang(it) }
+        Spacer(Modifier.height(18.dp))
         WideButton(model.t("welcome.start")) { model.beginSetup() }
-        Text(model.t("welcome.demo"), style = body(15, FontWeight.SemiBold), color = p.ink2, modifier = Modifier.clickable { model.startWithSample() }.padding(14.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Ico("lock", p.ink3, 16.dp); Spacer(Modifier.width(6.dp)); Text(model.t("welcome.private"), style = body(13), color = p.ink3)
+        Spacer(Modifier.height(10.dp))
+        WideButton(model.t("welcome.demo"), primary = false, icon = "spark") { model.startWithSample() }
+        Spacer(Modifier.height(16.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+            Ico("lock", p.ink3, 16.dp)
+            Spacer(Modifier.width(6.dp))
+            Text(model.t("welcome.private"), style = body(13), color = p.ink3, textAlign = TextAlign.Center)
         }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun SwitchCard(rows: List<Triple<String, Boolean, (Boolean) -> Unit>>) {
+    val p = pal()
+    ListCard {
+        rows.forEachIndexed { i, (label, on, set) ->
+            if (i > 0) HorizontalDivider(color = p.line)
+            Row(Modifier.fillMaxWidth().clickable { set(!on) }.padding(horizontal = 14.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(label, style = body(15), color = p.ink, modifier = Modifier.weight(1f))
+                Switch(on, set, colors = SwitchDefaults.colors(checkedTrackColor = p.ok, checkedThumbColor = p.onInk))
+            }
+        }
+    }
+}
+
 @Composable
 fun SetupScreen(model: AppModel) {
     val p = pal()
@@ -370,7 +322,7 @@ fun SetupScreen(model: AppModel) {
     var tick by remember { mutableStateOf(0) }
     fun touch() { tick++ }
     var extraName by remember { mutableStateOf("") }
-    var extraMonths by remember { mutableStateOf(6) }
+    var extraMonths by remember { mutableStateOf("6") }
     var homeName by remember { mutableStateOf("") }
     var carName by remember { mutableStateOf("") }
     var km by remember { mutableStateOf("") }
@@ -380,46 +332,39 @@ fun SetupScreen(model: AppModel) {
             Text(model.t("setup.step", mapOf("n" to "1", "of" to "2")), style = body(13, FontWeight.Bold), color = p.overdue, modifier = Modifier.padding(top = 20.dp))
             Text(model.t("setup.title"), style = title(30), color = p.ink)
             FieldLabel(model.t("setup.country"))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                for (c in Brain.countries.keys) Chip(model.t("country.$c"), d.country == c) { d.country = c; touch() }
-            }
+            ChoiceGrid(Brain.countries.keys.toList(), 3, { d.country == it }, { model.t("country.$it") }) { d.country = it; touch() }
             FieldLabel(model.t("setup.type"))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                for (ty in listOf("house", "flat", "chalet", "farm", "jakhoor")) Chip(model.t("type.$ty"), d.homeType == ty) { d.homeType = ty; d.features["tank"] = ty != "flat"; touch() }
+            ChoiceGrid(listOf("house", "flat", "chalet", "farm", "jakhoor"), 3, { d.homeType == it }, { model.t("type.$it") }) {
+                d.homeType = it; d.features["tank"] = it != "flat"; touch()
             }
             FieldLabel(model.t("setup.name"))
             Input(homeName, { homeName = it }, model.t("type.${d.homeType}"))
             FieldLabel(model.t("setup.has"))
-            Column(Modifier.clip(RoundedCornerShape(16.dp)).background(p.surface).border(1.dp, p.line, RoundedCornerShape(16.dp))) {
-                for (f in listOf("central_ac", "tank", "filter")) {
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(model.t("feat.$f"), style = body(15), color = p.ink, modifier = Modifier.weight(1f))
-                        Switch(d.features[f] == true, { d.features[f] = it; touch() }, colors = SwitchDefaults.colors(checkedTrackColor = p.ok))
-                    }
-                }
-            }
+            SwitchCard(listOf("central_ac", "tank", "filter").map { f -> Triple(model.t("feat.$f"), d.features[f] == true) { v: Boolean -> d.features[f] = v; touch() } })
             FieldLabel(model.t("setup.extra"))
             if (d.extras.isNotEmpty()) {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    d.extras.forEachIndexed { i, (t, m) -> Chip("$t  ${model.t("setup.every_$m")}", true, "close") { d.extras.removeAt(i); touch() } }
+                ListCard {
+                    d.extras.forEachIndexed { i, (t, m) ->
+                        if (i > 0) HorizontalDivider(color = p.line)
+                        Row(Modifier.fillMaxWidth().padding(start = 14.dp, end = 6.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(t, style = body(15, FontWeight.SemiBold), color = p.ink, modifier = Modifier.weight(1f))
+                            Text(model.t("setup.every_$m"), style = body(13), color = p.ink3)
+                            Box(Modifier.size(44.dp).clickable(role = Role.Button) { d.extras.removeAt(i); touch() }, contentAlignment = Alignment.Center) { Ico("close", p.ink3, 18.dp) }
+                        }
+                    }
                 }
                 Spacer(Modifier.height(8.dp))
             }
-            Input(extraName, { extraName = it }, model.t("setup.extra_ph"))
-            Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                for (n in listOf(1, 3, 6, 12)) Chip(model.t("setup.every_$n"), extraMonths == n) { extraMonths = n }
-            }
-            Spacer(Modifier.height(8.dp))
-            WideButton(model.t("act.add"), primary = false) {
-                val t = extraName.trim()
-                if (t.isNotEmpty()) { d.extras.add(t to extraMonths); extraName = ""; touch() }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Input(extraName, { extraName = it }, model.t("setup.extra_ph"), modifier = Modifier.weight(1f))
+                Select(extraMonths, listOf(1, 3, 6, 12).map { it.toString() to model.t("setup.every_$it") }, Modifier.width(118.dp)) { extraMonths = it }
+                Box(Modifier.size(ControlHeight).clip(RoundedCornerShape(14.dp)).background(p.ink).clickable(role = Role.Button) {
+                    val t = extraName.trim()
+                    if (t.isNotEmpty()) { d.extras.add(t to extraMonths.toInt()); extraName = ""; touch() }
+                }, contentAlignment = Alignment.Center) { Ico("plus", p.onInk, 20.dp) }
             }
             FieldLabel(model.t("setup.car"))
-            Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(p.surface).border(1.dp, p.line, RoundedCornerShape(16.dp)).padding(horizontal = 14.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                Text(model.t("setup.has_car"), style = body(15), color = p.ink, modifier = Modifier.weight(1f))
-                Switch(d.hasCar, { d.hasCar = it; touch() }, colors = SwitchDefaults.colors(checkedTrackColor = p.ok))
-            }
+            SwitchCard(listOf(Triple(model.t("setup.has_car"), d.hasCar) { v: Boolean -> d.hasCar = v; touch() }))
             if (d.hasCar) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Column(Modifier.weight(1f)) { FieldLabel(model.t("car.name")); Input(carName, { carName = it }, model.t("car.default")) }
@@ -427,10 +372,8 @@ fun SetupScreen(model: AppModel) {
                 }
             }
             FieldLabel(model.t("setup.things"))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                for (tt in model.catalog.thingTypes) Chip(tt.name(model.lang), d.things.contains(tt.id), tt.icon) {
-                    if (d.things.contains(tt.id)) d.things.remove(tt.id) else d.things.add(tt.id); touch()
-                }
+            ChoiceGrid(model.catalog.thingTypes, 3, { d.things.contains(it.id) }, { it.name(model.lang) }, { it.icon }) {
+                if (d.things.contains(it.id)) d.things.remove(it.id) else d.things.add(it.id); touch()
             }
             if (d.things.contains("other")) {
                 FieldLabel(model.t("setup.other"))
@@ -441,11 +384,12 @@ fun SetupScreen(model: AppModel) {
                 d.homeName = homeName; d.carName = carName; d.km = wholeNumber(km); d.otherName = other
                 model.runSetup(d)
             }
+            Spacer(Modifier.height(8.dp))
+            WideButton(model.t("act.back"), primary = false) { model.onboarding = null }
         }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LastTimeScreen(model: AppModel, created: List<String>) {
     val p = pal()
@@ -456,13 +400,10 @@ fun LastTimeScreen(model: AppModel, created: List<String>) {
         Text(model.t("last.title"), style = title(30), color = p.ink)
         Text(model.t("last.body"), style = body(15), color = p.ink2)
         for (q in questions) {
-            Text(q.tpl?.let { model.catalog.template[it]?.name(model.lang) } ?: "", style = body(15, FontWeight.SemiBold), color = p.ink, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                for ((k, _) in Brain.lastOptions) Chip(model.t("last.$k"), (answers[q.id] ?: "unknown") == k) { answers[q.id] = k }
-            }
-            HorizontalDivider(color = p.line, modifier = Modifier.padding(top = 12.dp))
+            Text(q.tpl?.let { model.catalog.template[it]?.name(model.lang) } ?: "", style = body(15, FontWeight.SemiBold), color = p.ink, modifier = Modifier.padding(top = 18.dp, bottom = 8.dp))
+            ChoiceGrid(Brain.lastOptions.map { it.first }, 3, { (answers[q.id] ?: "unknown") == it }, { model.t("last.$it") }) { answers[q.id] = it }
         }
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(22.dp))
         WideButton(model.t("act.finish")) { model.finishSetup(created, answers.toMap()) }
     }
 }

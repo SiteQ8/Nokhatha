@@ -185,3 +185,79 @@ class VectorTest {
         assertEquals("كل 30 يوم، وكل 14 يوم بالبوارح", w.every(Every(days = 30, bawarih = 14), catalog))
     }
 }
+
+class ExtrasTest {
+    private val root = java.io.File("../..").canonicalFile
+    private fun read(p: String) = java.io.File(root, p).readText()
+    private val catalog = Catalog.load { read("docs/data/$it") }
+
+    @Test
+    fun opensABackupMadeByTheWebApp() {
+        val f = JSONObject(read("tests/fixtures/backup-web.json"))
+        val payload = JSONObject(Backup.decrypt(f.getJSONObject("file").toString(), "nokhatha-test-2026"))
+        val want = AppState.fromJson(f.getJSONObject("state"))
+        val got = AppState.fromJson(payload.getJSONObject("state"))
+        assertEquals(want.copy(settings = want.settings.copy(extra = null)), got.copy(settings = got.settings.copy(extra = null)))
+        assertEquals("r1", got.warranties.single().receipt)
+        val r = payload.getJSONObject("receipts").getJSONObject("r1")
+        assertEquals("image/jpeg", r.getString("type"))
+        assertEquals(listOf(0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4, 0xff, 0xd9), B64.decode(r.getString("data")).map { it.toInt() and 0xff })
+        try {
+            Backup.decrypt(f.getJSONObject("file").toString(), "wrong-password")
+            throw AssertionError("a wrong password must fail")
+        } catch (e: BackupError) {
+            assertEquals("pass", e.reason)
+        }
+        try {
+            Backup.decrypt("{\"app\":\"other\"}", "x")
+            throw AssertionError("a foreign file must fail")
+        } catch (e: BackupError) {
+            assertEquals("format", e.reason)
+        }
+    }
+
+    @Test
+    fun backupRoundTripAndBase64() {
+        val text = "{\"state\":{\"v\":1},\"note\":\"نُوخذة\"}"
+        val file = Backup.encrypt(text, "12345678", 1000)
+        assertEquals(text, Backup.decrypt(file, "12345678"))
+        for (n in 0..40) {
+            val b = ByteArray(n) { (it * 37 + n).toByte() }
+            assertEquals(java.util.Base64.getEncoder().encodeToString(b), B64.encode(b))
+            assertTrue(b.contentEquals(B64.decode(B64.encode(b))))
+        }
+    }
+
+    @Test
+    fun phoneNumbersLikeTheWeb() {
+        assertEquals("96551153554", phoneDigits("51153554", "KW"))
+        assertEquals("96551153554", phoneDigits("٥١١٥٣٥٥٤", "KW"))
+        assertEquals("96551153554", phoneDigits("+965 5115 3554", "KW"))
+        assertEquals("96551153554", phoneDigits("00965-51153554", "KW"))
+        assertEquals("966512345678", phoneDigits("0512345678", "SA"))
+        assertEquals("1234", phoneDigits("1234", "KW"))
+    }
+
+    @Test
+    fun warrantiesSpendAndCalendar() {
+        val today = Day.parse("2026-09-25")!!
+        val sample = Brain.sample(catalog, "ar", today)
+        val b = Brain(catalog, sample, today)
+        val ws = b.warranties()
+        assertEquals(2, ws.size)
+        assertEquals("soon", ws.first().status)
+        assertEquals(26, ws.first().days)
+        val report = b.spend(2026, "ar")
+        val kwd = report.blocks.single { it.currency == "KWD" }
+        // costs the sample household logged this year, from the web's sample data
+        val logged = sample.items.flatMap { it.log }.filter { it.cost != null && it.date.startsWith("2026") }.sumOf { it.cost!! }
+        assertEquals(logged, kwd.home + kwd.car + kwd.things)
+        assertTrue(kwd.subs > 0 && kwd.projected >= kwd.subs)
+        assertEquals(report.logs.sortedByDescending { it.date.n }, report.logs)
+        val events = b.calendarEvents(Words(catalog.strings, "ar"))
+        assertEquals(b.tasks().count { it.due != null } + b.subs().count { it.sub.cancelled != true } + ws.count { it.end >= today }, events.size)
+        assertTrue(events.all { it.date >= today })
+        val ics = toICS(events, utcStamp(0), "نُوخذة")
+        assertTrue(ics.startsWith("BEGIN:VCALENDAR\r\n") && ics.contains("DTSTAMP:19700101T000000Z"))
+    }
+}
