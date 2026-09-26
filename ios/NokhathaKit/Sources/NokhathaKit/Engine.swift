@@ -155,6 +155,7 @@ public struct Season: Codable, Hashable, Sendable {
 
     public func name(_ lang: String) -> String { lang == "ar" ? ar : en }
     public func hint(_ lang: String) -> String? { lang == "ar" ? hint_ar : hint_en }
+    public func hint(_ lang: String) -> String? { lang == "ar" ? hint_ar : hint_en }
 }
 
 /// A month-day range such as the Bawarih winds, {start: "06-07", end: "07-28"}.
