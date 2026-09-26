@@ -61,3 +61,45 @@ final class ExtrasTests: XCTestCase {
     }
     #endif
 }
+
+final class DocsTests: XCTestCase {
+    func testDocumentsAndRenewalLikeTheWeb() {
+        let catalog = ExtrasTests.catalog
+        let today = Day(iso: "2026-09-25")!
+        var b = Brain(catalog: catalog, state: Brain.sample(catalog: catalog, lang: "ar", today: today), today: today)
+        let docs = b.docs()
+        XCTAssertEqual(docs.count, 4)
+        XCTAssertEqual(docs.first?.type.id, "civil_id")
+        XCTAssertEqual(docs.first?.status, "soon")
+        let res = docs.first { $0.type.id == "residency" }!
+        XCTAssertEqual(res.status, "soon")
+        XCTAssertEqual(res.needType?.id, "health")
+        XCTAssertEqual(res.need?.status, "soon")
+        XCTAssertEqual(b.docTitle(res.d, lang: "ar"), "الإقامة")
+        XCTAssertEqual(catalog.docType["residency"]!.name("en", country: "SA"), "Iqama")
+        XCTAssertEqual(b.renewDoc(res.d.id)?.expiry, today.adding(52).addingMonths(12).iso)
+        b.saveDoc(Doc(id: "x", type: "passport", who: "أنا", expiry: today.adding(-30).iso))
+        XCTAssertEqual(b.evalDoc(b.state.docs.last!).status, "overdue")
+        XCTAssertEqual(b.renewDoc("x")?.expiry, today.addingMonths(120).iso)
+        b.deleteDoc("x")
+        XCTAssertEqual(b.state.docs.count, 4)
+        let car = b.state.cars[0]
+        XCTAssertTrue(b.renewalShown(car.id))
+        b.setRenewStep(car.id, "insurance", on: true)
+        b.setRenewYears(car.id, 2)
+        XCTAssertEqual(b.state.cars[0].renewal?.done, ["insurance"])
+        b.finishRenewal(car.id)
+        let reg = b.state.items.first { $0.asset == car.id && $0.tpl == "registration" }!
+        XCTAssertEqual(reg.due, today.adding(21).addingMonths(24).iso)
+        XCTAssertEqual(reg.lastDone, today.iso)
+        XCTAssertNil(b.state.cars[0].renewal)
+        XCTAssertFalse(b.renewalShown(car.id))
+        // the web's fixture round trips with its documents
+        let raw = try! Data(contentsOf: VectorTests.root.appendingPathComponent("tests/fixtures/parity.json"))
+        struct StateOnly: Decodable { let state: AppState }
+        let fixture = try! JSONDecoder().decode(StateOnly.self, from: raw)
+        XCTAssertEqual(fixture.state.docs.count, 4)
+        let back = try! JSONDecoder().decode(AppState.self, from: try! JSONEncoder().encode(fixture.state))
+        XCTAssertEqual(back.docs, fixture.state.docs)
+    }
+}

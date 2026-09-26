@@ -390,6 +390,12 @@ public struct Brain: Sendable {
             Tech(id: newID(), name: T("أبو علي", "Abu Ali"), trade: "plumber", phone: "12345679"),
             Tech(id: newID(), name: T("كراج الشويخ", "Shuwaikh garage"), trade: "mechanic", phone: "12345680"),
         ]
+        b.state.docs = [
+            Doc(id: newID(), type: "civil_id", who: T("أنا", "Me"), expiry: today.adding(40).iso),
+            Doc(id: newID(), type: "passport", who: T("أم محمد", "Umm Mohammed"), expiry: today.adding(120).iso),
+            Doc(id: newID(), type: "residency", who: T("السائق", "The driver"), expiry: today.adding(52).iso),
+            Doc(id: newID(), type: "health", who: T("السائق", "The driver"), expiry: today.adding(45).iso),
+        ]
         return b.state
     }
 }

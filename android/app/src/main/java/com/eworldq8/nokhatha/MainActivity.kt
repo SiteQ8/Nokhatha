@@ -119,6 +119,7 @@ class AppModel(private val ctx: Context, intent: Intent?) {
 
     val lang: String get() = state?.settings?.lang ?: deviceLang
     val isArabic get() = lang == "ar"
+    val country: String get() = state?.settings?.country ?: "KW"
     val words get() = Words(catalog.strings, lang)
     fun brain() = Brain(catalog, state ?: AppState(settings = Settings(lang = lang)), today)
     fun t(key: String, vars: Map<String, String> = emptyMap()) = words.t(key, vars)
@@ -411,6 +412,10 @@ object Reminders {
             lines += "${e.title(state.settings.lang)}${words.comma}${e.asset.name}"
         }
         for (s in brain.subs()) if (s.ask && s.days <= 2) lines += words.t("ask.q", mapOf("name" to s.sub.name))
+        for (x in brain.docs()) if (x.days <= x.type.lead) {
+            if (x.days < 0) late = true
+            lines += words.t("ics.doc", mapOf("name" to brain.docTitle(x.d, state.settings.lang)))
+        }
         state.settings.weather?.let { w ->
             val c = WxCache.load(ctx.getSharedPreferences("weather", Context.MODE_PRIVATE))
             if (w.on && c != null && c.lat == w.lat && c.lon == w.lon && System.currentTimeMillis() - c.at < 20 * 3600_000L) {
@@ -515,6 +520,7 @@ fun Tabs(model: AppModel) {
                 "subs" -> SubsScreen(model)
                 else -> when (model.page) {
                     "things" -> AssetsScreen(model, AssetKind.THING) { model.page = null }
+                    "docs" -> DocsScreen(model)
                     "warranties" -> WarrantiesScreen(model)
                     "techs" -> TechsScreen(model)
                     "travel" -> TravelScreen(model)

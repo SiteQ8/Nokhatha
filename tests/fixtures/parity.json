@@ -54,7 +54,7 @@
   ],
   "things": [
    {
-    "id": "505d6a778491",
+    "id": "6c798693a0ad",
     "kind": "thing",
     "type": "boat",
     "name": "الطراد"
@@ -506,8 +506,8 @@
     "log": []
    },
    {
-    "id": "5764717e8b98",
-    "asset": "505d6a778491",
+    "id": "73808d9aa7b4",
+    "asset": "6c798693a0ad",
     "tpl": "boat_engine",
     "enabled": true,
     "lastDone": "2026-04-28",
@@ -523,8 +523,8 @@
     ]
    },
    {
-    "id": "5e6b7885929f",
-    "asset": "505d6a778491",
+    "id": "7a8794a1aebb",
+    "asset": "6c798693a0ad",
     "tpl": "boat_hull",
     "enabled": true,
     "lastDone": "2026-07-17",
@@ -534,8 +534,8 @@
     "log": []
    },
    {
-    "id": "65727f8c99a6",
-    "asset": "505d6a778491",
+    "id": "818e9ba8b5c2",
+    "asset": "6c798693a0ad",
     "tpl": "boat_safety",
     "enabled": true,
     "lastDone": null,
@@ -545,8 +545,8 @@
     "log": []
    },
    {
-    "id": "6c798693a0ad",
-    "asset": "505d6a778491",
+    "id": "8895a2afbcc9",
+    "asset": "6c798693a0ad",
     "tpl": "boat_license",
     "enabled": true,
     "lastDone": null,
@@ -637,22 +637,48 @@
   ],
   "techs": [
    {
-    "id": "73808d9aa7b4",
+    "id": "8f9ca9b6c3d0",
     "name": "أبو محمد",
     "trade": "ac",
     "phone": "12345678"
    },
    {
-    "id": "7a8794a1aebb",
+    "id": "96a3b0bdcad7",
     "name": "أبو علي",
     "trade": "plumber",
     "phone": "12345679"
    },
    {
-    "id": "818e9ba8b5c2",
+    "id": "9daab7c4d1de",
     "name": "كراج الشويخ",
     "trade": "mechanic",
     "phone": "12345680"
+   }
+  ],
+  "docs": [
+   {
+    "id": "505d6a778491",
+    "type": "civil_id",
+    "who": "أنا",
+    "expiry": "2026-11-04"
+   },
+   {
+    "id": "5764717e8b98",
+    "type": "passport",
+    "who": "أم محمد",
+    "expiry": "2027-01-23"
+   },
+   {
+    "id": "5e6b7885929f",
+    "type": "residency",
+    "who": "السائق",
+    "expiry": "2026-11-16"
+   },
+   {
+    "id": "65727f8c99a6",
+    "type": "health",
+    "who": "السائق",
+    "expiry": "2026-11-09"
    }
   ],
   "travel": {
@@ -767,7 +793,7 @@
    "days": 16
   },
   {
-   "id": "5e6b7885929f",
+   "id": "7a8794a1aebb",
    "due": "2026-10-17",
    "by": "time",
    "status": "ok",
@@ -788,14 +814,14 @@
    "days": 33
   },
   {
-   "id": "5764717e8b98",
+   "id": "73808d9aa7b4",
    "due": "2026-10-28",
    "by": "time",
    "status": "ok",
    "days": 33
   },
   {
-   "id": "6c798693a0ad",
+   "id": "8895a2afbcc9",
    "due": "2026-11-09",
    "by": "fixed",
    "status": "ok",
@@ -865,7 +891,7 @@
    "days": 202
   },
   {
-   "id": "65727f8c99a6",
+   "id": "818e9ba8b5c2",
    "due": "2027-04-15",
    "by": "season",
    "status": "ok",

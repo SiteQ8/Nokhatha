@@ -40,21 +40,61 @@ data class Place(val id: String, val country: String, val ar: String, val en: St
     fun name(lang: String) = if (lang == "ar") ar else en
 }
 
+/** A kind of document a household keeps: how long it lasts, how early to remind, what it needs first, where to renew it. */
+data class DocType(
+    val id: String, val icon: String, val years: Int, val lead: Int, val ar: String, val en: String,
+    val local: Map<String, Pair<String, String>> = emptyMap(), val hintAr: String? = null, val hintEn: String? = null,
+    val needs: String? = null, val portal: Map<String, String> = emptyMap(),
+) {
+    /** The document's name in the chosen country's own words. */
+    fun name(lang: String, country: String): String {
+        val l = local[country]
+        return if (l != null) (if (lang == "ar") l.first else l.second) else if (lang == "ar") ar else en
+    }
+    fun hint(lang: String) = if (lang == "ar") hintAr else hintEn
+}
+
+data class RenewStep(val id: String, val icon: String, val ar: String, val en: String, val link: String?) {
+    fun name(lang: String) = if (lang == "ar") ar else en
+}
+
+/** The registration renewal path of one country. */
+data class RenewPlan(val portalAr: String, val portalEn: String, val years: List<Int>, val steps: List<RenewStep>) {
+    fun portal(lang: String) = if (lang == "ar") portalAr else portalEn
+}
+
 class Catalog(
     val seasons: List<Season>, val bawarih: Window, val templates: List<Template>, val areas: Map<String, List<Named>>,
     val trades: List<Named>, val travel: List<Named>, val thingTypes: List<Named>, val places: List<Place>,
-    val strings: Map<String, Map<String, String>>,
+    val strings: Map<String, Map<String, String>>, val docTypes: List<DocType> = emptyList(), val who: List<Named> = emptyList(),
+    val renewal: Map<String, RenewPlan> = emptyMap(),
 ) {
     val template: Map<String, Template> = templates.associateBy { it.id }
+    val docType: Map<String, DocType> = docTypes.associateBy { it.id }
+    fun renewPlan(country: String): RenewPlan? = renewal[country] ?: renewal["KW"]
     fun season(id: String) = seasons.firstOrNull { it.id == id }
 
     companion object {
-        /** read(name) returns the text of seasons.json, tasks.json, strings.json or places.json. */
+        /** read(name) returns the text of seasons.json, tasks.json, strings.json, places.json or docs.json. */
         fun load(read: (String) -> String): Catalog {
             val s = JSONObject(read("seasons.json"))
             val t = JSONObject(read("tasks.json"))
             val p = JSONObject(read("places.json"))
             val str = JSONObject(read("strings.json"))
+            val d = JSONObject(read("docs.json"))
+            fun strMap(o: JSONObject?): Map<String, String> = o?.let { m -> m.keys().asSequence().associateWith { m.getString(it) } } ?: emptyMap()
+            val docTypes = d.getJSONArray("types").map { x ->
+                val local = x.optJSONObject("local")?.let { m -> m.keys().asSequence().associateWith { k -> val a = m.getJSONArray(k); Pair(a.getString(0), a.getString(1)) } } ?: emptyMap()
+                DocType(x.getString("id"), x.getString("icon"), x.optInt("years", 1), x.optInt("lead", 30), x.getString("ar"), x.getString("en"),
+                    local, x.str("hint_ar"), x.str("hint_en"), x.str("needs"), strMap(x.optJSONObject("portal")))
+            }
+            val ren = d.getJSONObject("renewal")
+            val renewal = ren.keys().asSequence().associateWith { c ->
+                val o = ren.getJSONObject(c)
+                val years = o.getJSONArray("years").let { a -> (0 until a.length()).map { a.getInt(it) } }
+                RenewPlan(o.getJSONArray("portal").getString(0), o.getJSONArray("portal").getString(1), years,
+                    o.getJSONArray("steps").map { RenewStep(it.getString("id"), it.getString("icon"), it.getString("ar"), it.getString("en"), it.str("link")) })
+            }
             val named = { o: JSONObject -> Named(o.getString("id"), o.getString("ar"), o.getString("en"), o.str("icon")) }
             val areas = t.getJSONObject("areas").let { a -> a.keys().asSequence().associateWith { k -> a.getJSONArray(k).map(named) } }
             val strings = str.keys().asSequence().associateWith { lang ->
@@ -78,6 +118,7 @@ class Catalog(
                 thingTypes = t.getJSONArray("thingTypes").map(named),
                 places = p.getJSONArray("places").map { Place(it.getString("id"), it.getString("country"), it.getString("ar"), it.getString("en"), it.getDouble("lat"), it.getDouble("lon")) },
                 strings = strings,
+                docTypes = docTypes, who = d.getJSONArray("who").map(named), renewal = renewal,
             )
         }
     }
@@ -96,9 +137,15 @@ data class Item(
 }
 
 data class Home(val id: String, val type: String, val name: String, val features: Map<String, Boolean> = emptyMap())
-data class Car(val id: String, val name: String, val dailyKm: Int? = 40, val readings: List<Reading> = emptyList()) {
+/** Where a car is in its registration renewal: the steps ticked and the term chosen. */
+data class Renewal(val done: List<String> = emptyList(), val years: Int? = null)
+
+data class Car(val id: String, val name: String, val dailyKm: Int? = 40, val readings: List<Reading> = emptyList(), val renewal: Renewal? = null) {
     val odometer: Odometer get() = Odometer(dailyKm ?: Engine.DEFAULT_DAILY_KM, readings)
 }
+
+/** A document with an expiry: a civil ID, a passport, a residency. Only a name and a date, never a number. */
+data class Doc(val id: String, val type: String, val who: String? = null, val name: String? = null, val expiry: String, val note: String? = null)
 data class Thing(val id: String, val type: String, val name: String)
 data class Sub(
     val id: String, val name: String, val amount: Int, val currency: String, val cycle: String, val anchor: String,
@@ -118,7 +165,7 @@ data class AppState(
     val v: Int = 1, val settings: Settings = Settings(), val homes: List<Home> = emptyList(), val cars: List<Car> = emptyList(),
     val things: List<Thing> = emptyList(), val items: List<Item> = emptyList(), val subs: List<Sub> = emptyList(),
     val warranties: List<Warranty> = emptyList(), val techs: List<Tech> = emptyList(), val travelDone: List<String> = emptyList(),
-    val sample: Boolean? = null,
+    val sample: Boolean? = null, val docs: List<Doc> = emptyList(),
 ) {
     val isEmpty: Boolean get() = homes.isEmpty() && cars.isEmpty() && things.isEmpty() && subs.isEmpty()
 
@@ -134,6 +181,7 @@ data class AppState(
             .put("cars", JSONArray(cars.map { c ->
                 JSONObject().put("id", c.id).put("kind", "car").put("name", c.name).opt("dailyKm", c.dailyKm)
                     .put("readings", JSONArray(c.readings.map { JSONObject().put("date", it.date).put("km", it.km) }))
+                    .opt("renewal", c.renewal?.let { r -> JSONObject().put("done", JSONArray(r.done)).opt("years", r.years) })
             }))
             .put("things", JSONArray(things.map { JSONObject().put("id", it.id).put("kind", "thing").put("type", it.type).put("name", it.name) }))
             .put("items", JSONArray(items.map { i ->
@@ -152,6 +200,7 @@ data class AppState(
             }))
             .put("techs", JSONArray(techs.map { t -> JSONObject().put("id", t.id).put("name", t.name).put("trade", t.trade).put("phone", t.phone).opt("note", t.note) }))
             .put("travel", JSONObject().put("done", JSONArray(travelDone)))
+            .put("docs", JSONArray(docs.map { d -> JSONObject().put("id", d.id).put("type", d.type).opt("who", d.who).opt("name", d.name).put("expiry", d.expiry).opt("note", d.note) }))
             .opt("sample", sample)
     }
 
@@ -166,7 +215,11 @@ data class AppState(
                     val f = if (h.has("features") && !h.isNull("features")) h.getJSONObject("features") else JSONObject()
                     Home(h.getString("id"), h.str("type") ?: "house", h.getString("name"), f.keys().asSequence().associateWith { f.getBoolean(it) })
                 },
-                cars = o.arr("cars").map { c -> Car(c.getString("id"), c.getString("name"), c.int("dailyKm"), c.arr("readings").map { Reading(it.getString("date"), it.getInt("km")) }) },
+                cars = o.arr("cars").map { c ->
+                    val r = c.optJSONObject("renewal")
+                    Car(c.getString("id"), c.getString("name"), c.int("dailyKm"), c.arr("readings").map { Reading(it.getString("date"), it.getInt("km")) },
+                        r?.let { Renewal(it.arr("done").let { a -> (0 until a.length()).map { i -> a.getString(i) } }, it.int("years")) })
+                },
                 things = o.arr("things").map { Thing(it.getString("id"), it.getString("type"), it.getString("name")) },
                 items = o.arr("items").map { i ->
                     Item(i.getString("id"), i.getString("asset"), i.str("tpl"), i.bool("enabled"), i.str("lastDone"), i.int("lastKm"), i.str("due"),
@@ -182,6 +235,7 @@ data class AppState(
                 techs = o.arr("techs").map { Tech(it.getString("id"), it.getString("name"), it.getString("trade"), it.getString("phone"), it.str("note")) },
                 travelDone = (if (o.has("travel") && !o.isNull("travel")) o.getJSONObject("travel").arr("done") else JSONArray()).let { a -> (0 until a.length()).map { a.getString(it) } },
                 sample = o.bool("sample"),
+                docs = o.arr("docs").map { Doc(it.getString("id"), it.getString("type"), it.str("who"), it.str("name"), it.getString("expiry"), it.str("note")) },
             )
         }
     }

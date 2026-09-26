@@ -60,6 +60,11 @@ fun Brain.calendarEvents(w: Words): List<CalendarEvent> {
         if (x.end < today) continue
         out += CalendarEvent("w-${x.w.id}", x.end, w.t("ics.warranty", mapOf("name" to x.w.name)), null, if (x.days > 14) 14 else 0)
     }
+    for (x in docs()) {
+        val end = Day.parse(x.d.expiry) ?: continue
+        if (end < today) continue
+        out += CalendarEvent("d-${x.d.id}", end, w.t("ics.doc", mapOf("name" to docTitle(x.d, w.lang))), null, minOf(x.type.lead, maxOf(0, x.days)))
+    }
     return out
 }
 
@@ -198,4 +203,74 @@ object Backup {
             throw BackupError("pass")
         }
     }
+}
+
+// ---------------------------------------------------------------- documents
+
+data class DocView(val d: Doc, val type: DocType, val status: String, val days: Int, val needType: DocType?, val need: DocView?)
+
+fun Brain.docTitle(d: Doc, lang: String): String = d.name ?: (catalog.docType[d.type] ?: catalog.docType.getValue("other")).name(lang, state.settings.country)
+
+/** A document judged by its own lead time, with the document it needs first for the same person. */
+fun Brain.evalDoc(d: Doc, depth: Int = 0): DocView {
+    val type = catalog.docType[d.type] ?: catalog.docType.getValue("other")
+    val st = statusOf(Day.parse(d.expiry), today, type.lead)
+    val needType = type.needs?.let { catalog.docType[it] }
+    val need = if (needType != null && depth == 0) state.docs.firstOrNull { it.type == needType.id && (it.who ?: "") == (d.who ?: "") } else null
+    return DocView(d, type, st.status, st.days ?: 0, needType, need?.let { evalDoc(it, 1) })
+}
+
+fun Brain.docs(): List<DocView> = state.docs.map { evalDoc(it) }.sortedBy { it.d.expiry }
+
+fun Brain.saveDoc(doc: Doc) {
+    state = if (state.docs.any { it.id == doc.id }) state.copy(docs = state.docs.map { if (it.id == doc.id) doc else it }) else state.copy(docs = state.docs + doc)
+}
+
+fun Brain.deleteDoc(id: String) { state = state.copy(docs = state.docs.filter { it.id != id }) }
+
+/** Renewed for its usual term, counted from the old date when that is still ahead. */
+fun Brain.renewDoc(id: String): Doc? {
+    val d = state.docs.firstOrNull { it.id == id } ?: return null
+    val type = catalog.docType[d.type] ?: catalog.docType.getValue("other")
+    val old = Day.parse(d.expiry) ?: today
+    val next = (if (old >= today) old else today).plusMonths(12 * type.years)
+    val out = d.copy(expiry = next.iso)
+    saveDoc(out)
+    return out
+}
+
+// ---------------------------------------------------------------- registration renewal
+
+/** The renewal path shows once the registration is due within its lead or a step has been ticked. */
+fun Brain.renewalShown(carId: String): Boolean {
+    val reg = tasks { it.asset == carId && it.tpl == "registration" }.firstOrNull() ?: return false
+    val car = state.cars.firstOrNull { it.id == carId } ?: return false
+    return reg.status in setOf("overdue", "today", "soon") || (car.renewal?.done?.isNotEmpty() == true)
+}
+
+fun Brain.setRenewStep(carId: String, step: String, on: Boolean) {
+    val plan = catalog.renewPlan(state.settings.country) ?: return
+    state = state.copy(cars = state.cars.map { c ->
+        if (c.id != carId) c else {
+            val r = c.renewal ?: Renewal(years = plan.years.first())
+            c.copy(renewal = r.copy(done = if (on) (r.done + step).distinct() else r.done.filter { it != step }))
+        }
+    })
+}
+
+fun Brain.setRenewYears(carId: String, years: Int) {
+    state = state.copy(cars = state.cars.map { c -> if (c.id != carId) c else c.copy(renewal = (c.renewal ?: Renewal()).copy(years = years)) })
+}
+
+/** The registration renewed: registration and insurance move on by the chosen years, the inspection by a year. */
+fun Brain.finishRenewal(carId: String) {
+    val car = state.cars.firstOrNull { it.id == carId } ?: return
+    val years = car.renewal?.years ?: 1
+    for ((tpl, months) in listOf("registration" to 12 * years, "insurance" to 12 * years, "inspection" to 12)) {
+        val item = state.items.firstOrNull { it.asset == carId && it.tpl == tpl && it.isOn } ?: continue
+        val due = Day.parse(item.due)
+        val base = if (due != null && due >= today) due else today
+        state = state.copy(items = state.items.map { if (it.id == item.id) it.copy(due = base.plusMonths(months).iso, lastDone = today.iso, log = it.log + LogEntry(today.iso)) else it })
+    }
+    state = state.copy(cars = state.cars.map { if (it.id == carId) it.copy(renewal = null) else it })
 }

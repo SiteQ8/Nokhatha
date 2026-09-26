@@ -185,3 +185,95 @@ public enum Backup {
     }
 }
 #endif
+
+// MARK: - documents
+
+public struct DocView: Identifiable, Hashable, Sendable {
+    public var id: String { d.id }
+    public let d: Doc
+    public let type: DocType
+    public let status: String
+    public let days: Int
+    public let needType: DocType?
+    public let need: DocViewNeed?
+}
+
+/// The document needed first, judged on its own.
+public struct DocViewNeed: Hashable, Sendable {
+    public let status: String
+    public let days: Int
+}
+
+public extension Brain {
+    func docTitle(_ d: Doc, lang: String) -> String {
+        d.name ?? (catalog.docType[d.type] ?? catalog.docType["other"]!).name(lang, country: state.settings.country)
+    }
+
+    /// A document judged by its own lead time, with the document it needs first for the same person.
+    func evalDoc(_ d: Doc) -> DocView {
+        let type = catalog.docType[d.type] ?? catalog.docType["other"]!
+        let st = statusOf(Day(iso: d.expiry), today: today, lead: type.lead)
+        let needType = type.needs.flatMap { catalog.docType[$0] }
+        var need: DocViewNeed? = nil
+        if let needType, let n = state.docs.first(where: { $0.type == needType.id && ($0.who ?? "") == (d.who ?? "") }) {
+            let ns = statusOf(Day(iso: n.expiry), today: today, lead: needType.lead)
+            need = DocViewNeed(status: ns.status, days: ns.days ?? 0)
+        }
+        return DocView(d: d, type: type, status: st.status, days: st.days ?? 0, needType: needType, need: need)
+    }
+
+    func docs() -> [DocView] { state.docs.map(evalDoc).sorted { $0.d.expiry < $1.d.expiry } }
+
+    mutating func saveDoc(_ doc: Doc) {
+        if let i = state.docs.firstIndex(where: { $0.id == doc.id }) { state.docs[i] = doc } else { state.docs.append(doc) }
+    }
+
+    mutating func deleteDoc(_ id: String) { state.docs.removeAll { $0.id == id } }
+
+    /// Renewed for its usual term, counted from the old date when that is still ahead.
+    @discardableResult
+    mutating func renewDoc(_ id: String) -> Doc? {
+        guard let i = state.docs.firstIndex(where: { $0.id == id }) else { return nil }
+        let type = catalog.docType[state.docs[i].type] ?? catalog.docType["other"]!
+        let old = Day(iso: state.docs[i].expiry) ?? today
+        state.docs[i].expiry = (old >= today ? old : today).addingMonths(12 * type.years).iso
+        return state.docs[i]
+    }
+
+    // MARK: registration renewal
+
+    /// The renewal path shows once the registration is due within its lead or a step has been ticked.
+    func renewalShown(_ carId: String) -> Bool {
+        guard let reg = tasks({ $0.asset == carId && $0.tpl == "registration" }).first, let car = state.cars.first(where: { $0.id == carId }) else { return false }
+        return ["overdue", "today", "soon"].contains(reg.status) || !(car.renewal?.done.isEmpty ?? true)
+    }
+
+    mutating func setRenewStep(_ carId: String, _ step: String, on: Bool) {
+        guard let i = state.cars.firstIndex(where: { $0.id == carId }), let plan = catalog.renewPlan(state.settings.country) else { return }
+        var r = state.cars[i].renewal ?? Renewal(years: plan.years.first)
+        r.done = on ? Array(Set(r.done + [step])).sorted { a, b in plan.steps.firstIndex { $0.id == a } ?? 0 < plan.steps.firstIndex { $0.id == b } ?? 0 } : r.done.filter { $0 != step }
+        state.cars[i].renewal = r
+    }
+
+    mutating func setRenewYears(_ carId: String, _ years: Int) {
+        guard let i = state.cars.firstIndex(where: { $0.id == carId }) else { return }
+        var r = state.cars[i].renewal ?? Renewal()
+        r.years = years
+        state.cars[i].renewal = r
+    }
+
+    /// The registration renewed: registration and insurance move on by the chosen years, the inspection by a year.
+    mutating func finishRenewal(_ carId: String) {
+        guard let ci = state.cars.firstIndex(where: { $0.id == carId }) else { return }
+        let years = state.cars[ci].renewal?.years ?? 1
+        for (tpl, months) in [("registration", 12 * years), ("insurance", 12 * years), ("inspection", 12)] {
+            guard let i = state.items.firstIndex(where: { $0.asset == carId && $0.tpl == tpl && $0.isOn }) else { continue }
+            let due = state.items[i].due.flatMap { Day(iso: $0) }
+            let base = (due != nil && due! >= today) ? due! : today
+            state.items[i].due = base.addingMonths(months).iso
+            state.items[i].lastDone = today.iso
+            state.items[i].log = (state.items[i].log ?? []) + [LogEntry(date: today.iso)]
+        }
+        state.cars[ci].renewal = nil
+    }
+}

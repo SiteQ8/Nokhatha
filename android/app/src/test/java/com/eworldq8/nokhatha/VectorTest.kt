@@ -266,6 +266,45 @@ class ExtrasTest {
     }
 
     @Test
+    fun documentsAndRenewalLikeTheWeb() {
+        val today = Day.parse("2026-09-25")!!
+        val b = Brain(catalog, Brain.sample(catalog, "ar", today), today)
+        val docs = b.docs()
+        assertEquals(4, docs.size)
+        assertEquals("civil_id", docs.first().type.id)
+        assertEquals("soon", docs.first().status)                       // 40 days ahead, lead 45
+        val res = docs.first { it.type.id == "residency" }
+        assertEquals("soon", res.status)                                  // 52 days ahead, lead 60
+        assertEquals("health", res.needType?.id)
+        assertEquals("soon", res.need?.status)                            // the driver's health cover ends first
+        assertEquals("الإقامة", b.docTitle(res.d, "ar"))
+        assertEquals("Iqama", catalog.docType.getValue("residency").name("en", "SA"))
+        val renewed = b.renewDoc(res.d.id)!!
+        assertEquals(today.plus(52).plusMonths(12).iso, renewed.expiry)   // a year on from the old date
+        val old = Doc("x", "passport", "أنا", null, today.plus(-30).iso)
+        b.saveDoc(old)
+        assertEquals("overdue", b.evalDoc(old).status)
+        assertEquals(today.plusMonths(120).iso, b.renewDoc("x")!!.expiry) // ten years from today when already expired
+        b.deleteDoc("x")
+        assertEquals(4, b.state.docs.size)
+        // the registration renewal path
+        val car = b.state.cars.first()
+        assertEquals(true, b.renewalShown(car.id))                        // registration due in 21 days
+        b.setRenewStep(car.id, "insurance", true)
+        b.setRenewYears(car.id, 2)
+        assertEquals(listOf("insurance"), b.state.cars.first().renewal?.done)
+        b.finishRenewal(car.id)
+        val reg = b.state.items.first { it.asset == car.id && it.tpl == "registration" }
+        assertEquals(today.plus(21).plusMonths(24).iso, reg.due)
+        assertEquals(today.plus(21).plusMonths(24).iso, b.state.items.first { it.asset == car.id && it.tpl == "insurance" }.due)
+        assertEquals(today.iso, reg.lastDone)
+        assertEquals(null, b.state.cars.first().renewal)
+        assertEquals(false, b.renewalShown(car.id))
+        val events = b.calendarEvents(Words(catalog.strings, "ar"))
+        assertEquals(4, events.count { it.uid.startsWith("d-") })
+    }
+
+    @Test
     fun warrantiesSpendAndCalendar() {
         val today = Day.parse("2026-09-25")!!
         val sample = Brain.sample(catalog, "ar", today)
@@ -282,7 +321,7 @@ class ExtrasTest {
         assertTrue(kwd.subs > 0 && kwd.projected >= kwd.subs)
         assertEquals(report.logs.sortedByDescending { it.date.n }, report.logs)
         val events = b.calendarEvents(Words(catalog.strings, "ar"))
-        assertEquals(b.tasks().count { it.due != null } + b.subs().count { it.sub.cancelled != true } + ws.count { it.end >= today }, events.size)
+        assertEquals(b.tasks().count { it.due != null } + b.subs().count { it.sub.cancelled != true } + ws.count { it.end >= today } + b.docs().size, events.size)
         assertTrue(events.all { it.date >= today })
         val ics = toICS(events, utcStamp(0), "نُوخذة")
         assertTrue(ics.startsWith("BEGIN:VCALENDAR\r\n") && ics.contains("DTSTAMP:19700101T000000Z"))

@@ -461,3 +461,14 @@ select.input { appearance: none; background-image: none; cursor: pointer; }
 .wx-a.wx-cold .ic { color: var(--ok); }
 .wx-src { position: absolute; inset-inline-end: 14px; bottom: 7px; font-size: 11px; color: var(--ink-3); text-decoration: none; }
 .wx-src:hover { text-decoration: underline; }
+
+/* the registration renewal path on the car page */
+.renew { margin: 14px 0 4px; padding: 16px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); }
+.renew-h { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; font-family: var(--font-display); font-weight: 600; font-size: 19px; }
+.renew-h .ic { width: 20px; height: 20px; color: var(--ink-2); }
+.renew .lede { margin-bottom: 10px; }
+.renew .list { margin-bottom: 12px; }
+.renew .field { margin: 0 0 12px; }
+.check-row .step-link { margin-inline-start: auto; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: var(--ink-3); }
+.check-row .step-link:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
+.check-row .step-link .ic { width: 18px; height: 18px; }

@@ -78,6 +78,14 @@ const P = {
   box: '<path d="M12 3 20 7.5v9L12 21l-8-4.5v-9Z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/>',
   bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15Z"/><path d="M10 21h4"/>',
   dust: '<path d="M3 8h9M3 12h13M3 16h8"/><circle cx="15.5" cy="8" r="1.1" class="fill"/><circle cx="19.5" cy="12" r="1.1" class="fill"/><circle cx="14" cy="16" r="1.1" class="fill"/><circle cx="18" cy="16.5" r="1.1" class="fill"/><circle cx="19" cy="7" r="1.1" class="fill"/>',
+  id: '<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16c.5-1.6 1.6-2.4 3-2.4s2.5.8 3 2.4M13.5 10h5M13.5 13.5h4"/>',
+  passport: '<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M9 16.5h6"/>',
+  licence: '<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M7 10.5h4M7 13.5h6"/><circle cx="16.5" cy="12" r="2"/>',
+  stamp: '<path d="M9 9.5V6a3 3 0 0 1 6 0v3.5"/><path d="M5 14.5v-2a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v2z"/><path d="M6 18.5h12"/>',
+  heart: '<path d="M12 20s-7.5-4.6-7.5-10A4.2 4.2 0 0 1 12 7.7 4.2 4.2 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+  briefcase: '<rect x="3" y="7.5" width="18" height="12" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3 12.5h18"/>',
+  alert: '<path d="M12 4 3 19.5h18z"/><path d="M12 10v4.5"/><circle cx="12" cy="17" r=".9" class="fill"/>',
+  link: '<path d="M14 5h5v5M19 5l-8 8"/><path d="M17 13v5.5a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 4 18.5v-10A1.5 1.5 0 0 1 5.5 7H11"/>',
   rain: '<path d="M7 15a4 4 0 0 1-.5-8 5.5 5.5 0 0 1 10.6-1.3A4 4 0 0 1 17.5 15Z"/><path d="m8.5 18-1 2.5M12.5 18l-1 2.5M16.5 18l-1 2.5"/>',
 };
 

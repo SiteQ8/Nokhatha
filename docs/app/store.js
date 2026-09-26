@@ -21,6 +21,7 @@ export function blank(lang) {
     subs: [],
     warranties: [],
     techs: [],
+    docs: [],
     travel: { done: [] },
   };
 }
@@ -28,7 +29,7 @@ export function blank(lang) {
 export function normalize(s) {
   const b = blank((s && s.settings && s.settings.lang) || 'ar');
   const out = { ...b, ...(s || {}), settings: { ...b.settings, ...((s && s.settings) || {}) }, travel: { ...b.travel, ...((s && s.travel) || {}) } };
-  for (const k of ['homes', 'cars', 'things', 'items', 'subs', 'warranties', 'techs']) if (!Array.isArray(out[k])) out[k] = [];
+  for (const k of ['homes', 'cars', 'things', 'items', 'subs', 'warranties', 'techs', 'docs']) if (!Array.isArray(out[k])) out[k] = [];
   if (!Array.isArray(out.travel.done)) out.travel.done = [];
   return out;
 }
@@ -254,6 +255,12 @@ export function sample(lang, today, templates) {
   s.warranties = [
     { id: uid(), name: T('الثلاجة', 'Fridge'), store: T('معرض الأجهزة', 'Appliance store'), bought: ago(300), months: 24 },
     { id: uid(), name: T('مكيف الصالة', 'Living room AC'), store: T('وكيل المكيفات', 'AC dealer'), bought: addMonths(addDays(today, 26), -24), months: 24 },
+  ];
+  s.docs = [
+    { id: uid(), type: 'civil_id', who: T('أنا', 'Me'), expiry: addDays(today, 40) },
+    { id: uid(), type: 'passport', who: T('أم محمد', 'Umm Mohammed'), expiry: addDays(today, 120) },
+    { id: uid(), type: 'residency', who: T('السائق', 'The driver'), expiry: addDays(today, 52) },
+    { id: uid(), type: 'health', who: T('السائق', 'The driver'), expiry: addDays(today, 45) },
   ];
   const boat = addThing(s, { type: 'boat', name: T('الطراد', 'The boat') }, templates);
   set(boat.id, 'boat_engine', { lastDone: ago(150), log: [cost(150, 45000)] });

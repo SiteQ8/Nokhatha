@@ -329,6 +329,12 @@ class Brain(val catalog: Catalog, var state: AppState, val today: Day) {
                     Tech(newID(), t("أبو علي", "Abu Ali"), "plumber", "12345679"),
                     Tech(newID(), t("كراج الشويخ", "Shuwaikh garage"), "mechanic", "12345680"),
                 ),
+                docs = listOf(
+                    Doc(newID(), "civil_id", t("أنا", "Me"), null, today.plus(40).iso),
+                    Doc(newID(), "passport", t("أم محمد", "Umm Mohammed"), null, today.plus(120).iso),
+                    Doc(newID(), "residency", t("السائق", "The driver"), null, today.plus(52).iso),
+                    Doc(newID(), "health", t("السائق", "The driver"), null, today.plus(45).iso),
+                ),
             )
             return b.state
         }
@@ -351,6 +357,7 @@ class Words(private val strings: Map<String, Map<String, String>>, val lang: Str
     fun rel(days: Int) = relative(days, lang)
     fun dayCount(n: Int) = if (isArabic) countAr(n, "day") else "$n day${if (n == 1) "" else "s"}"
     fun monthCount(n: Int) = if (isArabic) countAr(n, "month") else "$n month${if (n == 1) "" else "s"}"
+    fun yearCount(n: Int) = if (isArabic) countAr(n, "year") else "$n year${if (n == 1) "" else "s"}"
     fun km(n: Int) = groupThousands(n.toString()) + if (isArabic) " كم" else " km"
 
     fun due(e: Evaluated, today: Day): Pair<String, String?> {

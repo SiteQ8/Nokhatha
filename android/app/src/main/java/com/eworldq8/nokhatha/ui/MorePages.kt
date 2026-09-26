@@ -38,6 +38,7 @@ fun MoreScreen(model: AppModel) {
     val s = model.state ?: AppState()
     val entries = listOf(
         Triple("things", "box", s.things.size.takeIf { it > 0 }?.toString()),
+        Triple("docs", "id", s.docs.size.takeIf { it > 0 }?.toString()),
         Triple("warranties", "seal", s.warranties.size.takeIf { it > 0 }?.toString()),
         Triple("techs", "wrench", s.techs.size.takeIf { it > 0 }?.toString()),
         Triple("travel", "plane", if (s.travelDone.isNotEmpty()) "${s.travelDone.size}/${model.catalog.travel.size}" else null),
@@ -233,6 +234,125 @@ fun AboutScreen(model: AppModel) {
         Lede(model.t("about.open"))
         ButtonPair(model.t("about.source"), { model.openUrl("https://github.com/SiteQ8/Nokhatha") }, "nokhatha.3li.info", { model.openUrl("https://nokhatha.3li.info") }, aIcon = "code", bIcon = "globe")
         Fine(model.t("about.copyright"))
+    }
+}
+
+// ---------------------------------------------------------------- documents
+
+@Composable
+fun DocsScreen(model: AppModel) {
+    val list = model.brain().docs()
+    val groups = list.map { it.d.who ?: "" }.distinct()
+    var adding by remember { mutableStateOf(false) }
+    Page {
+        SubHead(model, model.t("more.docs"))
+        Lede(model.t("docs.lede"))
+        if (list.isEmpty()) EmptyNote("id", model.t("empty.docs"))
+        for (g in groups) {
+            if (g.isNotEmpty()) SmallHead(g)
+            DocList(model, list.filter { (it.d.who ?: "") == g })
+        }
+        Box(Modifier.padding(top = 16.dp)) { WideButton(model.t("act.add_doc"), primary = false, icon = "plus") { adding = true } }
+    }
+    if (adding) DocSheet(model, null) { adding = false }
+}
+
+@Composable
+fun DocList(model: AppModel, list: List<DocView>) {
+    ListCard {
+        list.forEachIndexed { i, x ->
+            if (i > 0) RowLine()
+            key(x.d.id) { DocRow(model, x) }
+        }
+    }
+}
+
+/** A document's row: its icon, name, when it expires, what it needs first, and the renew button. */
+@Composable
+fun DocRow(model: AppModel, x: DocView) {
+    val p = pal()
+    val w = model.words
+    val b = model.brain()
+    var open by remember { mutableStateOf(false) }
+    val rel = when (x.status) {
+        "overdue" -> model.t("docs.expired", mapOf("rel" to w.rel(x.days)))
+        "today" -> model.t("docs.today")
+        else -> model.t("docs.expires", mapOf("rel" to w.rel(x.days)))
+    }
+    val need = when {
+        x.needType != null && x.need == null -> model.t("docs.need_missing", mapOf("name" to x.needType.name(model.lang, model.country)))
+        x.need != null && x.need.status != "ok" -> model.t("docs.need", mapOf("name" to x.needType!!.name(model.lang, model.country)))
+        else -> null
+    }
+    Row(Modifier.fillMaxWidth().padding(start = 14.dp, end = 12.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(Modifier.weight(1f).clickable { open = true }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            RowIcon(x.type.icon, p.tint(x.status), p.tintBg(x.status))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(b.docTitle(x.d, model.lang), style = body(15.5, FontWeight.SemiBold, 1.45), color = p.ink)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(rel, style = body(13.5, FontWeight.SemiBold, 1.5), color = p.tint(x.status), maxLines = 1)
+                    Day.parse(x.d.expiry)?.let { Text(w.date(it, model.today), style = body(13.5, lineHeight = 1.5), color = p.ink3, maxLines = 1) }
+                }
+                if (need != null) {
+                    Text(need, style = body(12, FontWeight.SemiBold, 1.6), color = p.ink2,
+                        modifier = Modifier.clip(CircleShape).background(p.ink.copy(alpha = 0.07f)).padding(horizontal = 8.dp))
+                }
+            }
+        }
+        Text(model.t("act.renewed"), style = body(13.5, FontWeight.Bold, 1.2), color = p.ink,
+            modifier = Modifier.widthIn(min = 64.dp).height(46.dp).clip(CircleShape).background(p.surface).border(1.6.dp, p.line, CircleShape)
+                .clickable(role = Role.Button) {
+                    val d = model.brain().let { br -> br.renewDoc(x.d.id).also { model.state = br.state; model.save() } }
+                    d?.let { model.toast = com.eworldq8.nokhatha.Toast(model.t("toast.doc_renewed", mapOf("name" to b.docTitle(it, model.lang), "date" to (Day.parse(it.expiry)?.let { e -> w.date(e, model.today) } ?: it.expiry))), null) }
+                }
+                .padding(horizontal = 14.dp).wrapContentHeight(Alignment.CenterVertically))
+    }
+    if (open) DocSheet(model, x.d) { open = false }
+}
+
+@Composable
+fun DocSheet(model: AppModel, existing: Doc?, onClose: () -> Unit) {
+    val p = pal()
+    var type by remember { mutableStateOf(existing?.type ?: "civil_id") }
+    var who by remember { mutableStateOf(existing?.who ?: "") }
+    var name by remember { mutableStateOf(existing?.name ?: "") }
+    var expiry by remember { mutableStateOf(Day.parse(existing?.expiry) ?: model.today.plusMonths(120)) }
+    var note by remember { mutableStateOf(existing?.note ?: "") }
+    var confirm by remember { mutableStateOf(false) }
+    val ty = model.catalog.docType[type] ?: model.catalog.docType.getValue("other")
+    val portal = ty.portal[model.country]
+    Sheet(model, existing?.let { model.brain().docTitle(it, model.lang) } ?: model.t("act.add_doc"), onClose) {
+        FieldLabel(model.t("docs.type"))
+        ChoiceGrid(model.catalog.docTypes, 2, { type == it.id }, { it.name(model.lang, model.country) }, { it.icon }) {
+            if (existing == null) expiry = model.today.plusMonths(12 * it.years)
+            type = it.id
+        }
+        ty.hint(model.lang)?.let { Fine(it) }
+        FieldLabel(model.t("docs.who"))
+        Input(who, { who = it }, model.t("docs.who_ph"))
+        Spacer(Modifier.height(8.dp))
+        ChoiceGrid(model.catalog.who, 4, { who == it.name(model.lang) }, { it.name(model.lang) }, small = true) { who = it.name(model.lang) }
+        FieldLabel(model.t("docs.name"))
+        Input(name, { name = it }, ty.name(model.lang, model.country))
+        DayPicker(model.t("docs.expiry"), expiry) { expiry = it }
+        FieldLabel(model.t("docs.note"))
+        Input(note, { note = it }, model.t("docs.note_ph"))
+        if (portal != null) {
+            Spacer(Modifier.height(16.dp))
+            WideButton(model.t("docs.portal"), primary = false, icon = "link") { model.openUrl(portal) }
+        }
+        Spacer(Modifier.height(12.dp))
+        WideButton(model.t("act.save")) {
+            model.update("toast.saved") { it.saveDoc(Doc(existing?.id ?: newID(), type, who.trim().ifEmpty { null }, name.trim().ifEmpty { null }, expiry.iso, note.trim().ifEmpty { null })) }
+            onClose()
+        }
+        if (existing != null) {
+            Spacer(Modifier.height(4.dp))
+            WideButton(model.t("act.delete"), danger = true, icon = "trash") { confirm = true }
+        }
+    }
+    if (confirm && existing != null) {
+        ConfirmDialog(model.t("confirm.doc"), model.t("act.delete"), model.t("act.cancel"), { model.update("toast.deleted") { it.deleteDoc(existing.id) }; onClose() }) { confirm = false }
     }
 }
 

@@ -1,4 +1,4 @@
-// Generated from docs/app/icons.js by the brand script, so Android draws the same line icons as the web.
+// Generated from docs/app/icons.js by tools/brand/android-icons.py, so Android draws the same line icons as the web.
 // 24 unit grid, stroke 1.75. Do not edit by hand.
 package com.eworldq8.nokhatha.ui
 
@@ -81,5 +81,13 @@ internal val ICON_PATHS: Map<String, List<IconPart>> = mapOf(
     "box" to listOf(IconPart("M12 3 20 7.5v9L12 21l-8-4.5v-9Z", false), IconPart("M4 7.5 12 12l8-4.5M12 12v9", false)),
     "bell" to listOf(IconPart("M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15Z", false), IconPart("M10 21h4", false)),
     "dust" to listOf(IconPart("M3 8h9M3 12h13M3 16h8", false), IconPart("M14.4 8a1.1 1.1 0 1 0 2.2 0a1.1 1.1 0 1 0 -2.2 0Z", true), IconPart("M18.4 12a1.1 1.1 0 1 0 2.2 0a1.1 1.1 0 1 0 -2.2 0Z", true), IconPart("M12.9 16a1.1 1.1 0 1 0 2.2 0a1.1 1.1 0 1 0 -2.2 0Z", true), IconPart("M16.9 16.5a1.1 1.1 0 1 0 2.2 0a1.1 1.1 0 1 0 -2.2 0Z", true), IconPart("M17.9 7a1.1 1.1 0 1 0 2.2 0a1.1 1.1 0 1 0 -2.2 0Z", true)),
+    "id" to listOf(IconPart("M5.5 5.5h13a2.5 2.5 0 0 1 2.5 2.5v8a2.5 2.5 0 0 1 -2.5 2.5h-13a2.5 2.5 0 0 1 -2.5 -2.5v-8a2.5 2.5 0 0 1 2.5 -2.5Z", false), IconPart("M6.5 11a2 2 0 1 0 4 0a2 2 0 1 0 -4 0Z", false), IconPart("M5.5 16c.5-1.6 1.6-2.4 3-2.4s2.5.8 3 2.4M13.5 10h5M13.5 13.5h4", false)),
+    "passport" to listOf(IconPart("M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2Z", false), IconPart("M9 10a3 3 0 1 0 6 0a3 3 0 1 0 -6 0Z", false), IconPart("M9 16.5h6", false)),
+    "licence" to listOf(IconPart("M5.5 6h13a2.5 2.5 0 0 1 2.5 2.5v7a2.5 2.5 0 0 1 -2.5 2.5h-13a2.5 2.5 0 0 1 -2.5 -2.5v-7a2.5 2.5 0 0 1 2.5 -2.5Z", false), IconPart("M7 10.5h4M7 13.5h6", false), IconPart("M14.5 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0Z", false)),
+    "stamp" to listOf(IconPart("M9 9.5V6a3 3 0 0 1 6 0v3.5", false), IconPart("M5 14.5v-2a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v2z", false), IconPart("M6 18.5h12", false)),
+    "heart" to listOf(IconPart("M12 20s-7.5-4.6-7.5-10A4.2 4.2 0 0 1 12 7.7 4.2 4.2 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z", false)),
+    "briefcase" to listOf(IconPart("M5.5 7.5h13a2.5 2.5 0 0 1 2.5 2.5v7a2.5 2.5 0 0 1 -2.5 2.5h-13a2.5 2.5 0 0 1 -2.5 -2.5v-7a2.5 2.5 0 0 1 2.5 -2.5Z", false), IconPart("M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3 12.5h18", false)),
+    "alert" to listOf(IconPart("M12 4 3 19.5h18z", false), IconPart("M12 10v4.5", false), IconPart("M11.1 17a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0Z", true)),
+    "link" to listOf(IconPart("M14 5h5v5M19 5l-8 8", false), IconPart("M17 13v5.5a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 4 18.5v-10A1.5 1.5 0 0 1 5.5 7H11", false)),
     "rain" to listOf(IconPart("M7 15a4 4 0 0 1-.5-8 5.5 5.5 0 0 1 10.6-1.3A4 4 0 0 1 17.5 15Z", false), IconPart("m8.5 18-1 2.5M12.5 18l-1 2.5M16.5 18l-1 2.5", false)),
 )

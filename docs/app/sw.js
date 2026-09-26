@@ -21,6 +21,7 @@ const FILES = [
   '../data/tasks.json',
   '../data/strings.json',
   '../data/places.json',
+  '../data/docs.json',
   '../assets/base.css',
   '../assets/favicon.svg',
   '../assets/icons/icon-192.png',

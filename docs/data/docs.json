@@ -1,0 +1,393 @@
+{
+  "_note": "Documents with an expiry that a Gulf household keeps, and the registration renewal path per country. Portals are the official government sites.",
+  "types": [
+    {
+      "id": "civil_id",
+      "icon": "id",
+      "years": 10,
+      "lead": 45,
+      "ar": "البطاقة المدنية",
+      "en": "Civil ID",
+      "local": {
+        "SA": [
+          "الهوية الوطنية",
+          "National ID"
+        ],
+        "AE": [
+          "الهوية الإماراتية",
+          "Emirates ID"
+        ],
+        "QA": [
+          "البطاقة الشخصية",
+          "Qatar ID"
+        ],
+        "BH": [
+          "البطاقة الذكية",
+          "CPR card"
+        ]
+      },
+      "portal": {
+        "KW": "https://www.paci.gov.kw",
+        "SA": "https://www.absher.sa",
+        "AE": "https://icp.gov.ae",
+        "QA": "https://portal.moi.gov.qa",
+        "BH": "https://www.bahrain.bh",
+        "OM": "https://www.rop.gov.om"
+      }
+    },
+    {
+      "id": "passport",
+      "icon": "passport",
+      "years": 10,
+      "lead": 180,
+      "ar": "الجواز",
+      "en": "Passport",
+      "hint_ar": "كثير من الدول تطلب جواز صالح لستة شهور عند السفر، والإقامة ما تتجدد بجواز قرب ينتهي.",
+      "hint_en": "Many countries want six months left on a passport when you travel, and a residency will not renew on a passport that is about to expire."
+    },
+    {
+      "id": "licence",
+      "icon": "licence",
+      "years": 10,
+      "lead": 45,
+      "ar": "رخصة القيادة",
+      "en": "Driving licence",
+      "portal": {
+        "KW": "https://www.moi.gov.kw",
+        "SA": "https://www.absher.sa",
+        "AE": "https://u.ae",
+        "QA": "https://portal.moi.gov.qa",
+        "BH": "https://www.bahrain.bh",
+        "OM": "https://www.rop.gov.om"
+      }
+    },
+    {
+      "id": "residency",
+      "icon": "stamp",
+      "years": 1,
+      "lead": 60,
+      "needs": "health",
+      "ar": "الإقامة",
+      "en": "Residency",
+      "local": {
+        "SA": [
+          "الإقامة",
+          "Iqama"
+        ],
+        "AE": [
+          "إقامة الإمارات",
+          "UAE residence visa"
+        ]
+      },
+      "hint_ar": "جدّدها قبل انتهائها بشهرين على الأقل، وفي الكويت ما تتجدد إلا بضمان صحي ساري يغطي مدتها.",
+      "hint_en": "Renew it at least two months before it ends; in Kuwait it renews only against valid health cover for its whole term.",
+      "portal": {
+        "KW": "https://www.moi.gov.kw",
+        "SA": "https://www.absher.sa",
+        "AE": "https://icp.gov.ae",
+        "QA": "https://portal.moi.gov.qa",
+        "BH": "https://www.lmra.gov.bh",
+        "OM": "https://www.rop.gov.om"
+      }
+    },
+    {
+      "id": "health",
+      "icon": "heart",
+      "years": 1,
+      "lead": 60,
+      "ar": "الضمان الصحي",
+      "en": "Health insurance",
+      "portal": {
+        "KW": "https://www.moh.gov.kw",
+        "SA": "https://www.absher.sa",
+        "AE": "https://u.ae"
+      }
+    },
+    {
+      "id": "work_permit",
+      "icon": "briefcase",
+      "years": 1,
+      "lead": 60,
+      "ar": "إذن العمل",
+      "en": "Work permit",
+      "portal": {
+        "KW": "https://www.manpower.gov.kw",
+        "SA": "https://www.absher.sa",
+        "AE": "https://www.mohre.gov.ae",
+        "QA": "https://portal.moi.gov.qa",
+        "BH": "https://www.lmra.gov.bh",
+        "OM": "https://www.rop.gov.om"
+      }
+    },
+    {
+      "id": "other",
+      "icon": "doc",
+      "years": 1,
+      "lead": 30,
+      "ar": "وثيقة ثانية",
+      "en": "Another document"
+    }
+  ],
+  "who": [
+    {
+      "id": "me",
+      "ar": "أنا",
+      "en": "Me"
+    },
+    {
+      "id": "family",
+      "ar": "العائلة",
+      "en": "Family"
+    },
+    {
+      "id": "driver",
+      "ar": "السائق",
+      "en": "The driver"
+    },
+    {
+      "id": "helper",
+      "ar": "الخادمة",
+      "en": "The helper"
+    }
+  ],
+  "renewal": {
+    "KW": {
+      "portal": [
+        "سهل",
+        "Sahel"
+      ],
+      "years": [
+        1,
+        2
+      ],
+      "steps": [
+        {
+          "id": "fines",
+          "icon": "alert",
+          "ar": "سدّد المخالفات المرورية إذا عندك",
+          "en": "Pay any traffic fines",
+          "link": "https://www.moi.gov.kw"
+        },
+        {
+          "id": "insurance",
+          "icon": "shield",
+          "ar": "جدّد التأمين من منصة بيّمة",
+          "en": "Renew the insurance on Beema",
+          "link": "https://beema.iru.gov.kw"
+        },
+        {
+          "id": "inspection",
+          "icon": "gauge",
+          "ar": "الفحص الفني إذا طلبه سهل",
+          "en": "Technical inspection if Sahel asks for it",
+          "link": "https://www.moi.gov.kw"
+        },
+        {
+          "id": "pay",
+          "icon": "wallet",
+          "ar": "ادفع رسوم التجديد في سهل",
+          "en": "Pay the renewal fee in Sahel",
+          "link": "https://e.gov.kw"
+        },
+        {
+          "id": "card",
+          "icon": "id",
+          "ar": "الدفتر الرقمي يطلع لك في هويتي",
+          "en": "The digital licence appears in Hawiyati"
+        }
+      ]
+    },
+    "SA": {
+      "portal": [
+        "أبشر",
+        "Absher"
+      ],
+      "years": [
+        1,
+        2,
+        3
+      ],
+      "steps": [
+        {
+          "id": "fines",
+          "icon": "alert",
+          "ar": "سدّد كل المخالفات المرورية",
+          "en": "Pay every traffic fine",
+          "link": "https://www.absher.sa"
+        },
+        {
+          "id": "inspection",
+          "icon": "gauge",
+          "ar": "الفحص الدوري إذا عمر السيارة فوق 3 سنوات",
+          "en": "Periodic inspection if the car is over 3 years old",
+          "link": "https://www.absher.sa"
+        },
+        {
+          "id": "insurance",
+          "icon": "shield",
+          "ar": "جدّد التأمين",
+          "en": "Renew the insurance"
+        },
+        {
+          "id": "pay",
+          "icon": "wallet",
+          "ar": "جدّد الاستمارة في أبشر",
+          "en": "Renew the registration in Absher",
+          "link": "https://www.absher.sa"
+        }
+      ]
+    },
+    "AE": {
+      "portal": [
+        "الجهة المرورية",
+        "your traffic authority"
+      ],
+      "years": [
+        1
+      ],
+      "steps": [
+        {
+          "id": "fines",
+          "icon": "alert",
+          "ar": "سدّد المخالفات المرورية",
+          "en": "Pay the traffic fines",
+          "link": "https://u.ae"
+        },
+        {
+          "id": "inspection",
+          "icon": "gauge",
+          "ar": "فحص المركبة إذا عمرها فوق 3 سنوات",
+          "en": "Vehicle testing if the car is over 3 years old",
+          "link": "https://u.ae"
+        },
+        {
+          "id": "insurance",
+          "icon": "shield",
+          "ar": "جدّد التأمين",
+          "en": "Renew the insurance"
+        },
+        {
+          "id": "pay",
+          "icon": "wallet",
+          "ar": "جدّد الملكية في تطبيق الجهة المرورية",
+          "en": "Renew the registration in your authority's app",
+          "link": "https://u.ae"
+        }
+      ]
+    },
+    "QA": {
+      "portal": [
+        "مطراش",
+        "Metrash2"
+      ],
+      "years": [
+        1
+      ],
+      "steps": [
+        {
+          "id": "fines",
+          "icon": "alert",
+          "ar": "سدّد المخالفات المرورية",
+          "en": "Pay the traffic fines",
+          "link": "https://portal.moi.gov.qa"
+        },
+        {
+          "id": "inspection",
+          "icon": "gauge",
+          "ar": "الفحص الفني (فاحص) إذا طُلب",
+          "en": "Technical inspection (Fahes) if required",
+          "link": "https://portal.moi.gov.qa"
+        },
+        {
+          "id": "insurance",
+          "icon": "shield",
+          "ar": "جدّد التأمين",
+          "en": "Renew the insurance"
+        },
+        {
+          "id": "pay",
+          "icon": "wallet",
+          "ar": "جدّد الاستمارة في مطراش",
+          "en": "Renew the registration in Metrash2",
+          "link": "https://portal.moi.gov.qa"
+        }
+      ]
+    },
+    "BH": {
+      "portal": [
+        "بوابة الحكومة",
+        "bahrain.bh"
+      ],
+      "years": [
+        1
+      ],
+      "steps": [
+        {
+          "id": "fines",
+          "icon": "alert",
+          "ar": "سدّد المخالفات المرورية",
+          "en": "Pay the traffic fines",
+          "link": "https://www.bahrain.bh"
+        },
+        {
+          "id": "inspection",
+          "icon": "gauge",
+          "ar": "الفحص الفني إذا طُلب",
+          "en": "Technical inspection if required",
+          "link": "https://www.bahrain.bh"
+        },
+        {
+          "id": "insurance",
+          "icon": "shield",
+          "ar": "جدّد التأمين",
+          "en": "Renew the insurance"
+        },
+        {
+          "id": "pay",
+          "icon": "wallet",
+          "ar": "جدّد التسجيل في بوابة الحكومة",
+          "en": "Renew the registration on the government portal",
+          "link": "https://www.bahrain.bh"
+        }
+      ]
+    },
+    "OM": {
+      "portal": [
+        "شرطة عمان السلطانية",
+        "ROP"
+      ],
+      "years": [
+        1
+      ],
+      "steps": [
+        {
+          "id": "fines",
+          "icon": "alert",
+          "ar": "سدّد المخالفات المرورية",
+          "en": "Pay the traffic fines",
+          "link": "https://www.rop.gov.om"
+        },
+        {
+          "id": "inspection",
+          "icon": "gauge",
+          "ar": "الفحص الفني إذا طُلب",
+          "en": "Technical inspection if required",
+          "link": "https://www.rop.gov.om"
+        },
+        {
+          "id": "insurance",
+          "icon": "shield",
+          "ar": "جدّد التأمين",
+          "en": "Renew the insurance"
+        },
+        {
+          "id": "pay",
+          "icon": "wallet",
+          "ar": "جدّد الملكية في خدمات الشرطة",
+          "en": "Renew the registration through the ROP services",
+          "link": "https://www.rop.gov.om"
+        }
+      ]
+    }
+  }
+}

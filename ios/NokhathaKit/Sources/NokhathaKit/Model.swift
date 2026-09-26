@@ -76,8 +76,13 @@ public struct Catalog: Sendable {
     public let thingTypes: [Named]
     public let places: [Place]
     public let strings: [String: [String: String]]
+    public let docTypes: [DocType]
+    public let who: [Named]
+    public let renewal: [String: RenewPlan]
 
     public var template: [String: Template] { Dictionary(uniqueKeysWithValues: templates.map { ($0.id, $0) }) }
+    public var docType: [String: DocType] { Dictionary(uniqueKeysWithValues: docTypes.map { ($0.id, $0) }) }
+    public func renewPlan(_ country: String) -> RenewPlan? { renewal[country] ?? renewal["KW"] }
     public func season(_ id: String) -> Season? { seasons.first { $0.id == id } }
 
     /// Reads seasons.json, tasks.json, strings.json and places.json from a folder.
@@ -89,8 +94,10 @@ public struct Catalog: Sendable {
         let t = try read("tasks.json", TasksDoc.self)
         let p = try read("places.json", PlacesDoc.self)
         let strings = try read("strings.json", [String: [String: String]].self)
+        let d = try read("docs.json", DocsDoc.self)
         return Catalog(seasons: s.seasons, groups: s.groups, bawarih: s.bawarih, templates: t.templates, areas: t.areas,
-                       trades: t.trades, travel: t.travel, thingTypes: t.thingTypes, places: p.places, strings: strings)
+                       trades: t.trades, travel: t.travel, thingTypes: t.thingTypes, places: p.places, strings: strings,
+                       docTypes: d.types, who: d.who, renewal: d.renewal)
     }
 }
 
@@ -141,8 +148,74 @@ public struct Car: Codable, Hashable, Sendable, Identifiable {
     public var name: String
     public var dailyKm: Int?
     public var readings: [Reading]?
+    public var renewal: Renewal?
 
     public var odometer: CarOdometer { CarOdometer(dailyKm: dailyKm ?? Engine.defaultDailyKm, readings: readings ?? []) }
+}
+
+/// Where a car is in its registration renewal: the steps ticked and the term chosen.
+public struct Renewal: Codable, Hashable, Sendable {
+    public var done: [String] = []
+    public var years: Int?
+    public init(done: [String] = [], years: Int? = nil) { self.done = done; self.years = years }
+}
+
+/// A document with an expiry: a civil ID, a passport, a residency. Only a name and a date, never a number.
+public struct Doc: Codable, Hashable, Sendable, Identifiable {
+    public var id: String
+    public var type: String
+    public var who: String?
+    public var name: String?
+    public var expiry: String
+    public var note: String?
+    public init(id: String, type: String, who: String? = nil, name: String? = nil, expiry: String, note: String? = nil) {
+        self.id = id; self.type = type; self.who = who; self.name = name; self.expiry = expiry; self.note = note
+    }
+}
+
+/// A kind of document a household keeps: how long it lasts, how early to remind, what it needs first, where to renew it.
+public struct DocType: Codable, Hashable, Sendable, Identifiable {
+    public let id: String
+    public let icon: String
+    public let years: Int
+    public let lead: Int
+    public let ar: String
+    public let en: String
+    public let local: [String: [String]]?
+    public let hint_ar: String?
+    public let hint_en: String?
+    public let needs: String?
+    public let portal: [String: String]?
+
+    /// The document's name in the chosen country's own words.
+    public func name(_ lang: String, country: String) -> String {
+        if let l = local?[country], l.count == 2 { return lang == "ar" ? l[0] : l[1] }
+        return lang == "ar" ? ar : en
+    }
+    public func hint(_ lang: String) -> String? { lang == "ar" ? hint_ar : hint_en }
+}
+
+public struct RenewStep: Codable, Hashable, Sendable, Identifiable {
+    public let id: String
+    public let icon: String
+    public let ar: String
+    public let en: String
+    public let link: String?
+    public func name(_ lang: String) -> String { lang == "ar" ? ar : en }
+}
+
+/// The registration renewal path of one country.
+public struct RenewPlan: Codable, Hashable, Sendable {
+    public let portal: [String]
+    public let years: [Int]
+    public let steps: [RenewStep]
+    public func portalName(_ lang: String) -> String { lang == "ar" ? portal[0] : portal[1] }
+}
+
+struct DocsDoc: Decodable {
+    let types: [DocType]
+    let who: [Named]
+    let renewal: [String: RenewPlan]
 }
 
 public struct Thing: Codable, Hashable, Sendable, Identifiable {
@@ -242,6 +315,7 @@ public struct AppState: Codable, Hashable, Sendable {
     public var techs: [Tech] = []
     public var travel = Travel()
     public var sample: Bool?
+    public var docs: [Doc] = []
 
     public init(lang: String = "ar") { settings.lang = lang }
 
@@ -258,6 +332,7 @@ public struct AppState: Codable, Hashable, Sendable {
         techs = try c.decodeIfPresent([Tech].self, forKey: .techs) ?? []
         travel = try c.decodeIfPresent(Travel.self, forKey: .travel) ?? Travel()
         sample = try c.decodeIfPresent(Bool.self, forKey: .sample)
+        docs = try c.decodeIfPresent([Doc].self, forKey: .docs) ?? []
     }
 
     public var isEmpty: Bool { homes.isEmpty && cars.isEmpty && things.isEmpty && subs.isEmpty }

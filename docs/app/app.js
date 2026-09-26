@@ -53,7 +53,7 @@ async function loadData() {
     if (!r.ok) throw new Error(n);
     return r.json();
   });
-  const [seasons, tasks, strings, places] = await Promise.all([get('seasons'), get('tasks'), get('strings'), get('places')]);
+  const [seasons, tasks, strings, places, docs] = await Promise.all([get('seasons'), get('tasks'), get('strings'), get('places'), get('docs')]);
   D = {
     seasons: seasons.seasons, groups: seasons.groups, bawarih: seasons.bawarih,
     templates: tasks.templates, areas: tasks.areas, trades: tasks.trades, travel: tasks.travel, strings,
@@ -64,6 +64,10 @@ async function loadData() {
   D.thingTypes = tasks.thingTypes;
   D.places = places.places;
   D.place = Object.fromEntries(D.places.map((x) => [x.id, x]));
+  D.docTypes = docs.types;
+  D.docType = Object.fromEntries(D.docTypes.map((x) => [x.id, x]));
+  D.who = docs.who;
+  D.renewal = docs.renewal;
   D.thingType = Object.fromEntries(D.thingTypes.map((x) => [x.id, x]));
 }
 
@@ -266,6 +270,7 @@ function viewToday() {
   const subs = state.subs.map(evalSub);
   const talk = subs.filter((x) => x.ask || x.planned);
   const warr = state.warranties.map(evalWarranty).filter((x) => ['soon', 'today'].includes(x.status));
+  const docsSoon = state.docs.map((d) => evalDoc(d)).filter((x) => ['soon', 'today', 'overdue'].includes(x.status)).sort((a, b) => a.d.expiry.localeCompare(b.d.expiry));
   const season = E.seasonAt(TODAY, D.seasons);
   const dots = [
     ...evs.filter((e) => e.due).map((e) => ({ days: e.days, status: e.status, label: itemTitle(e) })),
@@ -292,6 +297,7 @@ ${talk.length ? askCard(talk[0]) : ''}
 ${talk.length > 1 ? `<a class="more-asks" href="#/subs">${t('today.more_asks')}</a>` : ''}
 ${cur ? `<a class="strip" href="#/subs">${icon('repeat')}<span>${t('today.subs', { amount: money(totals[cur].month, cur) })}</span>${icon('next', 'flip chev')}</a>` : ''}
 ${warr.length ? `<div class="sec"><h2>${t('today.warranties')}</h2></div><ul class="list">${warr.map(warrantyRow).join('')}</ul>` : ''}
+${docsSoon.length ? `<div class="sec"><h2>${t('today.docs')}</h2></div><ul class="list">${docsSoon.map(docRow).join('')}</ul>` : ''}
 ${later.length ? `<div class="sec"><h2>${t('today.later')}</h2></div><ul class="list">${later.map((e) => row(e, true)).join('')}</ul>` : ''}
 </section></div>`;
 }
@@ -354,6 +360,7 @@ function viewCar(r) {
 <span class="odo-v">${km != null ? kmText(km) : t('car.odo_unknown')}</span>
 <span class="odo-s">${last ? t('car.odo_last', { km: kmText(last.km), date: dateText(last.date) }) : t('car.odo_none')}</span></div>
 <button class="btn" data-act="odo" data-id="${esc(cur.id)}">${icon('gauge')}<span>${t('act.update_odo')}</span></button></div>
+${carRenewal(cur)}
 ${groupedRows(evs, D.areas.car)}
 <div class="actions"><button class="btn" data-act="add-task" data-id="${esc(cur.id)}">${icon('plus')}<span>${t('act.add_task')}</span></button>
 <button class="btn btn-quiet" data-act="edit-car" data-id="${esc(cur.id)}">${icon('edit')}<span>${t('act.edit_car')}</span></button></div>`;
@@ -405,6 +412,7 @@ ${talk.map(askCard).join('')}
 function viewMore() {
   const entries = [
     ['things', 'box', 'more.things', state.things.length || null],
+    ['docs', 'id', 'more.docs', state.docs.length || null],
     ['warranties', 'seal', 'more.warranties', state.warranties.length || null],
     ['techs', 'wrench', 'more.techs', state.techs.length || null],
     ['travel', 'plane', 'more.travel', state.travel.done.length ? `${state.travel.done.length}/${D.travel.length}` : null],
@@ -422,6 +430,115 @@ function warrantyRow(x) {
 <span class="row-ic">${icon('seal')}</span><span class="row-main"><span class="row-title">${esc(x.w.name)}</span>
 <span class="row-meta"><span class="rel">${r}</span><span class="date">${dateText(x.end)}</span>${x.w.store ? `<span class="asset">${esc(x.w.store)}</span>` : ''}</span></span>
 ${x.w.receipt ? `<span class="row-tag">${icon('receipt')}</span>` : ''}</button></li>`;
+}
+
+/* ------------------------------------------------------------- documents */
+
+function docName(ty) {
+  const l = ty.local && ty.local[state.settings.country];
+  return l ? (L() === 'ar' ? l[0] : l[1]) : nm(ty);
+}
+
+function docTitle(d, ty) {
+  return d.name || docName(ty);
+}
+
+function evalDoc(d, depth = 0) {
+  const ty = D.docType[d.type] || D.docType.other;
+  const st = E.statusOf(d.expiry, TODAY, ty.lead || 30);
+  const needType = ty.needs ? D.docType[ty.needs] : null;
+  const need = needType && depth === 0 ? state.docs.find((x) => x.type === ty.needs && (x.who || '') === (d.who || '')) : null;
+  return { d, ty, status: st.status, days: st.days, needType, need: need ? evalDoc(need, 1) : null };
+}
+
+function docRow(x) {
+  const r = x.status === 'overdue' ? t('docs.expired', { rel: rel(x.days) }) : x.status === 'today' ? t('docs.today') : t('docs.expires', { rel: rel(x.days) });
+  const need = x.needType && !x.need ? t('docs.need_missing', { name: docName(x.needType) })
+    : x.need && x.need.status !== 'ok' ? t('docs.need', { name: docName(x.needType) }) : '';
+  return `<li class="row s-${x.status}"><button class="row-body" data-act="doc" data-id="${esc(x.d.id)}">
+<span class="row-ic">${icon(x.ty.icon)}</span><span class="row-main"><span class="row-title">${esc(docTitle(x.d, x.ty))}</span>
+<span class="row-meta"><span class="rel">${r}</span><span class="date">${dateText(x.d.expiry)}</span>${need ? `<span class="asset">${esc(need)}</span>` : ''}</span></span></button>
+<button class="done txt" data-act="renew-doc" data-id="${esc(x.d.id)}">${t('act.renewed')}</button></li>`;
+}
+
+function viewDocs() {
+  const list = state.docs.map((d) => evalDoc(d)).sort((a, b) => a.d.expiry.localeCompare(b.d.expiry));
+  const groups = [...new Set(list.map((x) => x.d.who || ''))];
+  return `${pageHead(t('more.docs'), 'more', '', true)}
+<p class="lede">${t('docs.lede')}</p>
+${list.length ? '' : `<div class="empty">${icon('id', 'ic-xl')}<p>${t('empty.docs')}</p></div>`}
+${groups.map((g) => `${g ? `<div class="sec sec-sm"><h3>${esc(g)}</h3></div>` : ''}<ul class="list">${list.filter((x) => (x.d.who || '') === g).map(docRow).join('')}</ul>`).join('')}
+<div class="actions"><button class="btn" data-act="add-doc">${icon('plus')}<span>${t('act.add_doc')}</span></button></div>`;
+}
+
+function docSheet(id) {
+  const d = id ? state.docs.find((x) => x.id === id) : null;
+  const type = d ? d.type : 'civil_id';
+  const ty = D.docType[type];
+  const portal = ty.portal && ty.portal[state.settings.country];
+  openSheet(`<h2 class="sh-title">${d ? esc(docTitle(d, ty)) : t('act.add_doc')}</h2>
+<label class="field"><span>${t('docs.type')}</span><input type="hidden" name="dtype" value="${esc(type)}"></label>
+<div class="chips wrap">${D.docTypes.map((x) => `<button type="button" class="chip${x.id === type ? ' on' : ''}" data-act="set" data-name="dtype" data-v="${x.id}">${icon(x.icon)}<span>${esc(docName(x))}</span></button>`).join('')}</div>
+${ty.hint_ar ? `<p class="fine doc-hint">${esc(L() === 'ar' ? ty.hint_ar : ty.hint_en)}</p>` : '<p class="fine doc-hint"></p>'}
+<label class="field"><span>${t('docs.who')}</span><input class="input" name="who" value="${esc(d ? d.who || '' : '')}" placeholder="${esc(t('docs.who_ph'))}" autocomplete="off"></label>
+<div class="chips wrap">${D.who.map((w) => `<button type="button" class="chip" data-act="fill-who" data-v="${esc(nm(w))}">${esc(nm(w))}</button>`).join('')}</div>
+<label class="field"><span>${t('docs.name')}</span><input class="input" name="name" value="${esc(d ? d.name || '' : '')}" placeholder="${esc(docName(ty))}" autocomplete="off"></label>
+<label class="field"><span>${t('docs.expiry')}</span><input class="input" type="date" name="expiry" value="${esc(d ? d.expiry : E.addMonths(TODAY, 12 * (ty.years || 1)))}"></label>
+<label class="field"><span>${t('docs.note')}</span><input class="input" name="note" value="${esc(d ? d.note || '' : '')}" placeholder="${esc(t('docs.note_ph'))}" autocomplete="off"></label>
+${portal ? `<div class="actions"><a class="btn" href="${esc(portal)}" target="_blank" rel="noopener noreferrer">${icon('link')}<span>${t('docs.portal')}</span></a></div>` : ''}
+<button class="btn btn-primary btn-block" data-act="save-doc" data-id="${esc(id || '')}">${t('act.save')}</button>
+${d ? `<button class="btn btn-quiet btn-danger btn-block" data-act="delete-doc" data-id="${esc(id)}">${icon('trash')}<span>${t('act.delete')}</span></button>` : ''}`, d ? docTitle(d, ty) : t('act.add_doc'));
+}
+
+/** A document renewed for its usual term, counted from its old date when that is still ahead. */
+function renewDoc(id) {
+  const d = state.docs.find((x) => x.id === id);
+  if (!d) return;
+  const ty = D.docType[d.type] || D.docType.other;
+  const base = d.expiry >= TODAY ? d.expiry : TODAY;
+  d.expiry = E.addMonths(base, 12 * (ty.years || 1));
+  commit();
+  toast(t('toast.doc_renewed', { name: docTitle(d, ty), date: dateText(d.expiry) }));
+}
+
+/* ------------------------------------------------------------- registration renewal */
+
+function carRenewal(car) {
+  const plan = D.renewal[state.settings.country] || D.renewal.KW;
+  const reg = items((i) => i.asset === car.id && i.tpl === 'registration')[0];
+  const cur = car.renewal || { done: [], years: plan.years[0] };
+  const show = !!reg && (['overdue', 'today', 'soon'].includes(reg.status) || cur.done.length > 0);
+  if (!show) return '';
+  const chosen = cur.years || plan.years[0];
+  const years = plan.years.length > 1 ? `<div class="segc" role="group">${plan.years.map((y) => `<button type="button" data-act="renew-years" data-id="${esc(car.id)}" data-v="${y}" class="${y === chosen ? 'on' : ''}" aria-pressed="${y === chosen}">${countText(y)}</button>`).join('')}</div>` : '';
+  return `<div class="renew"><p class="renew-h">${icon('id')}<span>${t('renew.title')}</span></p>
+<p class="lede small">${t('renew.lede', { portal: L() === 'ar' ? plan.portal[0] : plan.portal[1] })}</p>
+<ul class="list checks">${plan.steps.map((s) => `<li><label class="check-row"><input type="checkbox" data-act="renew-step" data-id="${esc(car.id)}" value="${esc(s.id)}"${cur.done.includes(s.id) ? ' checked' : ''}>
+<span class="box">${icon('done')}</span><span>${esc(nm(s))}</span>${s.link ? `<a class="step-link" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(t('renew.open'))}">${icon('link')}</a>` : ''}</label></li>`).join('')}</ul>
+${years ? `<div class="field renew-years"><span>${t('renew.years')}</span>${years}</div>` : ''}
+<button class="btn btn-primary btn-block" data-act="renew-done" data-id="${esc(car.id)}">${icon('done')}<span>${t('renew.done')}</span></button></div>`;
+}
+
+function countText(years) {
+  return L() === 'ar' ? E.countAr(years, 'year') : `${years} year${years === 1 ? '' : 's'}`;
+}
+
+/** The registration renewed: registration and insurance move on by the chosen years, the inspection by a year. */
+function finishRenewal(carId) {
+  const car = state.cars.find((c) => c.id === carId);
+  if (!car) return;
+  const years = (car.renewal && car.renewal.years) || 1;
+  for (const [tpl, months] of [['registration', 12 * years], ['insurance', 12 * years], ['inspection', 12]]) {
+    const it = state.items.find((i) => i.asset === carId && i.tpl === tpl && i.enabled !== false);
+    if (!it) continue;
+    const base = it.due && it.due >= TODAY ? it.due : TODAY;
+    it.due = E.addMonths(base, months);
+    it.lastDone = TODAY;
+    (it.log = it.log || []).push({ date: TODAY });
+  }
+  delete car.renewal;
+  commit();
+  toast(t('renew.done_toast'));
 }
 
 function viewWarranties() {
@@ -744,7 +861,7 @@ function render() {
     const v = r.id === '2' ? viewSetup() : r.id === '3' ? viewLast() : viewWelcome();
     out = `<main class="onb" id="main">${v}</main>`;
   } else {
-    const V = { today: viewToday, home: viewHome, car: viewCar, subs: viewSubs, more: viewMore, things: viewThings, warranties: viewWarranties, techs: viewTechs, travel: viewTravel, spend: viewSpend, settings: viewSettings, about: viewAbout }[r.name] || viewToday;
+    const V = { today: viewToday, home: viewHome, car: viewCar, subs: viewSubs, more: viewMore, things: viewThings, docs: viewDocs, warranties: viewWarranties, techs: viewTechs, travel: viewTravel, spend: viewSpend, settings: viewSettings, about: viewAbout }[r.name] || viewToday;
     out = shell(r, V(r));
   }
   $('#app').innerHTML = out;
@@ -781,6 +898,9 @@ async function writeDigest() {
     }
     for (const w of state.warranties.map(evalWarranty)) {
       if (w.days != null && w.days >= 0 && w.days <= 60) list.push({ date: E.addDays(w.end, -14) < TODAY ? w.end : E.addDays(w.end, -14), title: t('ics.warranty', { name: w.w.name }) });
+    }
+    for (const x of state.docs.map((d) => evalDoc(d))) {
+      if (x.days != null && x.days <= 60) list.push({ date: x.days < 0 ? TODAY : E.addDays(x.d.expiry, -Math.min(x.days, x.ty.lead || 30)), title: t('ics.doc', { name: docTitle(x.d, x.ty) }) });
     }
     list.sort((a, b) => a.date.localeCompare(b.date));
     const payload = {
@@ -1195,6 +1315,9 @@ function exportICS() {
   for (const w of state.warranties.map(evalWarranty)) {
     if (w.end >= TODAY) events.push({ uid: `w-${w.w.id}`, date: w.end, title: t('ics.warranty', { name: w.w.name }), lead: w.days > 14 ? 14 : 0 });
   }
+  for (const x of state.docs.map((d) => evalDoc(d))) {
+    if (x.d.expiry >= TODAY) events.push({ uid: `d-${x.d.id}`, date: x.d.expiry, title: t('ics.doc', { name: docTitle(x.d, x.ty) }), lead: Math.min(x.ty.lead || 30, Math.max(0, x.days)) });
+  }
   const d = new Date();
   const stamp = `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
   download(E.toICS(events, { stamp, calName: t('app.name') }), 'nokhatha.ics', 'text/calendar');
@@ -1457,6 +1580,15 @@ async function onClick(e) {
         const nameInput = $('#sheet-root [name="name"]');
         if (nameInput) nameInput.placeholder = t('type.' + el.dataset.v);
       }
+      if (name === 'dtype') {
+        const ty = D.docType[el.dataset.v];
+        const nameInput = $('#sheet-root [name="name"]');
+        if (nameInput) nameInput.placeholder = docName(ty);
+        const hint = $('#sheet-root .doc-hint');
+        if (hint) hint.textContent = ty.hint_ar ? (L() === 'ar' ? ty.hint_ar : ty.hint_en) : '';
+        const expiry = $('#sheet-root [name="expiry"]');
+        if (expiry && !el.closest('#sheet-root').dataset.editing) expiry.value = E.addMonths(TODAY, 12 * (ty.years || 1));
+      }
       break;
     }
     case 'add-sub': subSheet(null); break;
@@ -1512,6 +1644,39 @@ async function onClick(e) {
       commit();
       break;
     }
+    case 'add-doc': docSheet(null); break;
+    case 'doc': docSheet(id); break;
+    case 'fill-who': { const input = $('#sheet-root [name="who"]'); if (input) input.value = el.dataset.v; break; }
+    case 'renew-doc': renewDoc(id); break;
+    case 'save-doc': {
+      const type = val('dtype') || 'civil_id';
+      const expiry = val('expiry');
+      if (!E.isISO(expiry)) return toast(t('err.number'));
+      const patch = { type, who: val('who').trim(), name: val('name').trim() || undefined, expiry, note: val('note').trim() || undefined };
+      let d = id ? state.docs.find((x) => x.id === id) : null;
+      if (d) Object.assign(d, patch);
+      else state.docs.push((d = { id: S.uid(), ...patch }));
+      closeSheet(true);
+      commit();
+      toast(t('toast.saved'));
+      break;
+    }
+    case 'delete-doc': {
+      if (!el.dataset.confirmed) return confirmSheet(t('confirm.doc'), 'delete-doc', id, t('act.delete'));
+      state.docs = state.docs.filter((x) => x.id !== id);
+      closeSheet(true);
+      commit();
+      toast(t('toast.deleted'));
+      break;
+    }
+    case 'renew-years': {
+      const car = state.cars.find((c) => c.id === id);
+      if (!car) break;
+      car.renewal = { ...(car.renewal || { done: [] }), years: Number(el.dataset.v) };
+      commit();
+      break;
+    }
+    case 'renew-done': finishRenewal(id); break;
     case 'add-warranty': warrantySheet(null); break;
     case 'warranty': warrantySheet(id); break;
     case 'save-warranty': {
@@ -1673,6 +1838,15 @@ async function onClick(e) {
 
 function onChange(e) {
   const el = e.target;
+  if (el.matches('[data-act="renew-step"]')) {
+    const car = state.cars.find((c) => c.id === el.dataset.id);
+    if (!car) return;
+    const plan = D.renewal[state.settings.country] || D.renewal.KW;
+    car.renewal = car.renewal || { done: [], years: plan.years[0] };
+    car.renewal.done = el.checked ? [...new Set([...car.renewal.done, el.value])] : car.renewal.done.filter((x) => x !== el.value);
+    commit(true);
+    return;
+  }
   if (el.matches('[data-act="travel"]')) {
     const set = new Set(state.travel.done);
     if (el.checked) set.add(el.value);

@@ -115,6 +115,7 @@ fun TodayScreen(model: AppModel) {
     val subs = b.subs()
     val talk = subs.filter { it.ask || it.planned }
     val warr = b.warranties().filter { it.status == "soon" || it.status == "today" }
+    val docsSoon = b.docs().filter { it.status in setOf("soon", "today", "overdue") }
     val season = seasonAt(model.today, model.catalog.seasons)
     val dots = tasks.mapNotNull { e -> e.days?.let { DialDot(it, e.status) } } + subs.filter { it.status != "off" }.map { DialDot(it.days, "sub") }
     val totals = b.totals()
@@ -154,6 +155,10 @@ fun TodayScreen(model: AppModel) {
         if (warr.isNotEmpty()) {
             SectionTitle(model.t("today.warranties"))
             WarrantyList(model, warr)
+        }
+        if (docsSoon.isNotEmpty()) {
+            SectionTitle(model.t("today.docs"))
+            DocList(model, docsSoon)
         }
         if (later.isNotEmpty()) {
             SectionTitle(model.t("today.later"))
@@ -208,6 +213,7 @@ fun AssetsScreen(model: AppModel, kind: AssetKind, onBack: (() -> Unit)? = null)
                     }
                 }
             }
+            if (kind == AssetKind.CAR) RenewalCard(model, current.first)
             if (tasks.isEmpty()) EmptyNote(icon, model.t("empty.${kind.key}")) else GroupedRows(model, tasks, areas)
             Box(Modifier.padding(top = 16.dp)) {
                 ButtonPair(model.t("act.add_task"), { sheet = "task" }, model.t(edit), { sheet = "edit" }, aIcon = "plus", bIcon = "edit", bQuiet = true)
@@ -437,5 +443,46 @@ fun WeatherCard(model: AppModel) {
             }
         }
         Text("Open-Meteo", style = body(11), color = p.ink3, modifier = Modifier.align(Alignment.BottomEnd).offset(y = 20.dp).clickable { model.openUrl("https://open-meteo.com") })
+    }
+}
+
+/** The web's renewal path: the steps for the chosen country with their links, the term, and the button that sets the next dates. */
+@Composable
+fun RenewalCard(model: AppModel, carId: String) {
+    val b = model.brain()
+    if (!b.renewalShown(carId)) return
+    val p = pal()
+    val plan = model.catalog.renewPlan(model.country) ?: return
+    val car = model.state?.cars?.firstOrNull { it.id == carId } ?: return
+    val done = car.renewal?.done ?: emptyList()
+    val years = car.renewal?.years ?: plan.years.first()
+    Column(Modifier.padding(top = 14.dp, bottom = 4.dp).fillMaxWidth().clip(CardShape).background(p.surface).border(1.dp, p.line, CardShape).padding(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Ico("id", p.ink2, 20.dp)
+            Text(model.t("renew.title"), style = title(19), color = p.ink)
+        }
+        Spacer(Modifier.height(4.dp))
+        Lede(model.t("renew.lede", mapOf("portal" to plan.portal(model.lang))), small = true)
+        ListCard {
+            plan.steps.forEachIndexed { i, s ->
+                if (i > 0) RowLine()
+                val on = done.contains(s.id)
+                Row(Modifier.fillMaxWidth().clickable(role = Role.Checkbox) { model.update { it.setRenewStep(carId, s.id, !on) } }
+                    .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Box(Modifier.size(24.dp).clip(RoundedCornerShape(7.dp)).background(if (on) p.ok else androidx.compose.ui.graphics.Color.Transparent).border(1.6.dp, if (on) p.ok else p.line, RoundedCornerShape(7.dp)),
+                        contentAlignment = Alignment.Center) { if (on) Ico("done", p.onInk, 16.dp) }
+                    Text(s.name(model.lang), style = body(16, lineHeight = 1.55), color = if (on) p.ink3 else p.ink, textDecoration = if (on) TextDecoration.LineThrough else null, modifier = Modifier.weight(1f))
+                    if (s.link != null) {
+                        Box(Modifier.size(34.dp).clip(RoundedCornerShape(10.dp)).clickable(role = Role.Button) { model.openUrl(s.link) }, contentAlignment = Alignment.Center) { Ico("link", p.ink3, 18.dp) }
+                    }
+                }
+            }
+        }
+        if (plan.years.size > 1) {
+            FieldLabel(model.t("renew.years"))
+            Seg(plan.years.map { it.toString() to model.words.yearCount(it) }, years.toString()) { v -> model.update { it.setRenewYears(carId, v.toInt()) } }
+        }
+        Spacer(Modifier.height(12.dp))
+        WideButton(model.t("renew.done"), icon = "done") { model.update("renew.done_toast") { it.finishRenewal(carId) } }
     }
 }
