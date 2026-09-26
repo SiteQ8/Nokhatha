@@ -31,9 +31,11 @@ class NokhathaWidget : AppWidgetProvider() {
         }
 
         fun render(ctx: Context): RemoteViews {
-            val v = RemoteViews(ctx.packageName, R.layout.widget)
             val state = runCatching { AppState.fromJson(JSONObject(File(ctx.filesDir, "nokhatha.json").readText())) }.getOrNull()
             val lang = state?.settings?.lang ?: AppModel.deviceLang
+            // the widget reads in the app's language, whatever the phone's
+            val rtl = lang == "ar"
+            val v = RemoteViews(ctx.packageName, if (rtl) R.layout.widget_rtl else R.layout.widget)
             val catalog = Catalog.load { name -> ctx.assets.open(name).bufferedReader().use { it.readText() } }
             val w = Words(catalog.strings, lang)
             val today = Day.today()
@@ -44,7 +46,7 @@ class NokhathaWidget : AppWidgetProvider() {
             v.removeAllViews(R.id.rows)
             val rows = if (state == null) emptyList() else Brain(catalog, state, today).tasks().filter { it.due != null }.take(3)
             for (e in rows) {
-                val row = RemoteViews(ctx.packageName, R.layout.widget_row)
+                val row = RemoteViews(ctx.packageName, if (rtl) R.layout.widget_row_rtl else R.layout.widget_row)
                 row.setTextViewText(R.id.title, e.title(lang))
                 row.setTextViewText(R.id.due, w.due(e, today).first)
                 row.setTextColor(R.id.due, ContextCompat.getColor(ctx, when (e.status) {
