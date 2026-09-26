@@ -55,7 +55,7 @@ async function loadData() {
   });
   const [seasons, tasks, strings, places, docs] = await Promise.all([get('seasons'), get('tasks'), get('strings'), get('places'), get('docs')]);
   D = {
-    seasons: seasons.seasons, groups: seasons.groups, bawarih: seasons.bawarih,
+    seasons: seasons.seasons, groups: seasons.groups, bawarih: seasons.bawarih, heat: seasons.heat,
     templates: tasks.templates, areas: tasks.areas, trades: tasks.trades, travel: tasks.travel, strings,
   };
   D.tpl = Object.fromEntries(D.templates.map((x) => [x.id, x]));
@@ -116,7 +116,7 @@ function evalItem(it) {
   const asset = findAsset(it.asset);
   const every = everyOf(it);
   const car = asset && asset.kind === 'car' ? asset : null;
-  const nd = E.nextDue({ ...it, every }, { today: TODAY, seasons: D.seasons, bawarih: D.bawarih, car });
+  const nd = E.nextDue({ ...it, every }, { today: TODAY, seasons: D.seasons, bawarih: D.bawarih, heat: D.heat, car });
   const lead = every.fixed ? every.lead || 30 : state.settings.lead;
   const st = E.statusOf(nd.due, TODAY, lead);
   return { it, asset, every, tpl: tplOf(it), due: nd.due, by: nd.by, status: st.status, days: st.days };
@@ -215,7 +215,8 @@ function everyText(e) {
   if (e.months) parts.push(monthCount(e.months));
   if (e.days) parts.push(dayCount(e.days));
   let s = e.km ? t('every.km', { km: parts[0], time: parts[1] }) : t('every.plain', { n: parts[0] });
-  if (e.bawarih) s += t('every.bawarih', { n: dayCount(e.bawarih) });
+  if (e.heat) s += t('every.heat', { n: dayCount(e.heat) });
+  else if (e.bawarih) s += t('every.bawarih', { n: dayCount(e.bawarih) });
   return s;
 }
 

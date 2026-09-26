@@ -326,16 +326,17 @@ public struct Every: Codable, Hashable, Sendable {
     public var fixed: Bool?
     public var lead: Int?
     public var repeatMonths: Int?
+    public var heat: Int?
 
     enum CodingKeys: String, CodingKey {
-        case days, months, km, bawarih, season, offset, fixed, lead
+        case days, months, km, bawarih, season, offset, fixed, lead, heat
         case repeatMonths = "repeat"
     }
 
     public init(days: Int? = nil, months: Int? = nil, km: Int? = nil, bawarih: Int? = nil, season: String? = nil,
-                offset: Int? = nil, fixed: Bool? = nil, lead: Int? = nil, repeatMonths: Int? = nil) {
+                offset: Int? = nil, fixed: Bool? = nil, lead: Int? = nil, repeatMonths: Int? = nil, heat: Int? = nil) {
         self.days = days; self.months = months; self.km = km; self.bawarih = bawarih; self.season = season
-        self.offset = offset; self.fixed = fixed; self.lead = lead; self.repeatMonths = repeatMonths
+        self.offset = offset; self.fixed = fixed; self.lead = lead; self.repeatMonths = repeatMonths; self.heat = heat
     }
 }
 
@@ -362,7 +363,7 @@ public struct Due: Hashable, Sendable {
 /// JS truthiness for optional numbers: absent and zero both mean "not set".
 @inline(__always) func set(_ v: Int?) -> Int? { (v ?? 0) != 0 ? v : nil }
 
-public func nextDue(_ item: DueInput, today: Day, seasons: [Season], bawarih: Window?, car: CarOdometer?) -> Due {
+public func nextDue(_ item: DueInput, today: Day, seasons: [Season], bawarih: Window?, car: CarOdometer?, heat: Window? = nil) -> Due {
     let s = item.every
     var res: Due
     if s.fixed == true {
@@ -376,6 +377,7 @@ public func nextDue(_ item: DueInput, today: Day, seasons: [Season], bawarih: Wi
             if let m = set(s.months) { due = last.addingMonths(m) }
             if var n = set(s.days) {
                 if let b = set(s.bawarih), let w = bawarih, inWindow(last, w) { n = b }
+                if let h = set(s.heat), let w = heat, inWindow(last, w) { n = min(n, h) }
                 let t = last.adding(n)
                 due = due.map { min($0, t) } ?? t
             }

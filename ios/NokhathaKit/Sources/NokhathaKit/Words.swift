@@ -67,7 +67,8 @@ public struct Words: Sendable {
         } else {
             s = t("every.plain", ["n": dayCount(e.days ?? 30)])
         }
-        if let b = e.bawarih { s += t("every.bawarih", ["n": dayCount(b)]) }
+        if let h = e.heat { s += t("every.heat", ["n": dayCount(h)]) }
+        else if let b = e.bawarih { s += t("every.bawarih", ["n": dayCount(b)]) }
         return s
     }
 

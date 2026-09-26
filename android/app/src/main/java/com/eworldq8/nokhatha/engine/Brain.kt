@@ -36,7 +36,7 @@ class Brain(val catalog: Catalog, var state: AppState, val today: Day) {
         val e = every(item)
         val nd = nextDue(
             DueInput(e, Day.parse(item.lastDone), item.lastKm, Day.parse(item.due), Day.parse(item.snoozeUntil), Day.parse(item.firstDue)),
-            today, catalog.seasons, catalog.bawarih, a.car,
+            today, catalog.seasons, catalog.bawarih, a.car, catalog.heat,
         )
         val lead = if (e.fixed == true) e.lead ?: 30 else state.settings.lead
         val st = statusOf(nd.due, today, lead)
@@ -390,7 +390,8 @@ class Words(private val strings: Map<String, Map<String, String>>, val lang: Str
             e.months != null -> t("every.plain", mapOf("n" to monthCount(e.months)))
             else -> t("every.plain", mapOf("n" to dayCount(e.days ?: 30)))
         }
-        if (e.bawarih != null) s += t("every.bawarih", mapOf("n" to dayCount(e.bawarih)))
+        if (e.heat != null) s += t("every.heat", mapOf("n" to dayCount(e.heat)))
+        else if (e.bawarih != null) s += t("every.bawarih", mapOf("n" to dayCount(e.bawarih)))
         return s
     }
 

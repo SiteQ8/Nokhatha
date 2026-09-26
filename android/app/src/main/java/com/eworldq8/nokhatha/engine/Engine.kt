@@ -262,7 +262,7 @@ fun kmOn(car: Odometer, day: Day): Int? {
 data class Every(
     val days: Int? = null, val months: Int? = null, val km: Int? = null, val bawarih: Int? = null,
     val season: String? = null, val offset: Int? = null, val fixed: Boolean? = null, val lead: Int? = null,
-    val repeatMonths: Int? = null,
+    val repeatMonths: Int? = null, val heat: Int? = null,
 )
 
 class DueInput(
@@ -275,7 +275,7 @@ data class Due(val due: Day?, val by: String)
 /** JS truthiness for optional numbers: absent and zero both mean "not set". */
 internal fun set(v: Int?): Int? = if (v != null && v != 0) v else null
 
-fun nextDue(item: DueInput, today: Day, seasons: List<Season>, bawarih: Window?, car: Odometer?): Due {
+fun nextDue(item: DueInput, today: Day, seasons: List<Season>, bawarih: Window?, car: Odometer?, heat: Window? = null): Due {
     val s = item.every
     var res: Due = when {
         s.fixed == true -> if (item.due != null) Due(item.due, "fixed") else Due(null, "unset")
@@ -290,6 +290,8 @@ fun nextDue(item: DueInput, today: Day, seasons: List<Season>, bawarih: Window?,
                     var n = d0
                     val b = set(s.bawarih)
                     if (b != null && bawarih != null && inWindow(last, bawarih)) n = b
+                    val h = set(s.heat)
+                    if (h != null && heat != null && inWindow(last, heat)) n = minOf(n, h)
                     val t = last.plus(n)
                     due = due?.let { if (it < t) it else t } ?: t
                 }

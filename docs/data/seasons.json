@@ -157,15 +157,33 @@
     }
   ],
   "groups": {
-    "safari": { "ar": "الصفري", "en": "Autumn" },
-    "shita": { "ar": "الشتاء", "en": "Winter" },
-    "rabi": { "ar": "الربيع", "en": "Spring" },
-    "qaith": { "ar": "القيظ", "en": "Summer" }
+    "safari": {
+      "ar": "الصفري",
+      "en": "Autumn"
+    },
+    "shita": {
+      "ar": "الشتاء",
+      "en": "Winter"
+    },
+    "rabi": {
+      "ar": "الربيع",
+      "en": "Spring"
+    },
+    "qaith": {
+      "ar": "القيظ",
+      "en": "Summer"
+    }
   },
   "bawarih": {
     "start": "06-07",
     "end": "07-28",
     "ar": "البوارح",
     "en": "the Bawarih winds"
+  },
+  "heat": {
+    "start": "06-01",
+    "end": "09-15",
+    "ar": "القيظ",
+    "en": "the summer heat"
   }
 }

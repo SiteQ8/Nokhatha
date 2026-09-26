@@ -16,11 +16,11 @@ private fun JSONObject.opt(k: String, v: Any?): JSONObject { if (v != null) put(
 
 fun everyFrom(o: JSONObject?): Every? = o?.let {
     Every(it.int("days"), it.int("months"), it.int("km"), it.int("bawarih"), it.str("season"), it.int("offset"),
-        it.bool("fixed"), it.int("lead"), it.int("repeat"))
+        it.bool("fixed"), it.int("lead"), it.int("repeat"), it.int("heat"))
 }
 
 fun Every.toJson(): JSONObject = JSONObject().opt("days", days).opt("months", months).opt("km", km).opt("bawarih", bawarih)
-    .opt("season", season).opt("offset", offset).opt("fixed", fixed).opt("lead", lead).opt("repeat", repeatMonths)
+    .opt("season", season).opt("offset", offset).opt("fixed", fixed).opt("lead", lead).opt("repeat", repeatMonths).opt("heat", heat)
 
 // ---------------------------------------------------------------- catalog
 
@@ -64,7 +64,8 @@ data class RenewPlan(val portalAr: String, val portalEn: String, val years: List
 }
 
 class Catalog(
-    val seasons: List<Season>, val bawarih: Window, val templates: List<Template>, val areas: Map<String, List<Named>>,
+    val seasons: List<Season>, val bawarih: Window, val templates: List<Template>,
+    val heat: Window?, val areas: Map<String, List<Named>>,
     val trades: List<Named>, val travel: List<Named>, val thingTypes: List<Named>, val places: List<Place>,
     val strings: Map<String, Map<String, String>>, val docTypes: List<DocType> = emptyList(), val who: List<Named> = emptyList(),
     val renewal: Map<String, RenewPlan> = emptyMap(),
@@ -107,6 +108,7 @@ class Catalog(
                         it.str("note_ar"), it.str("note_en"), it.str("hint_ar"), it.str("hint_en"))
                 },
                 bawarih = s.getJSONObject("bawarih").let { Window(it.getString("start"), it.getString("end")) },
+                heat = s.optJSONObject("heat")?.let { Window(it.getString("start"), it.getString("end")) },
                 templates = t.getJSONArray("templates").map {
                     Template(it.getString("id"), it.getString("kind"), it.getString("area"), it.getString("icon"), it.str("trade"),
                         it.optBoolean("default", false), it.str("needs"), it.str("for"), everyFrom(it.getJSONObject("every"))!!,

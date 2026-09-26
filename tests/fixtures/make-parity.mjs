@@ -23,7 +23,7 @@ const rank = { overdue: 0, today: 1, soon: 2, unset: 3, ok: 4 };
 const evals = state.items.filter((i) => i.enabled !== false && asset(i.asset)).map((it) => {
   const a = asset(it.asset);
   const every = it.every || (tpl[it.tpl] || {}).every || { months: 6 };
-  const nd = E.nextDue({ ...it, every }, { today, seasons: seasons.seasons, bawarih: seasons.bawarih, car: a.kind === 'car' ? a : null });
+  const nd = E.nextDue({ ...it, every }, { today, seasons: seasons.seasons, bawarih: seasons.bawarih, heat: seasons.heat, car: a.kind === 'car' ? a : null });
   const lead = every.fixed ? every.lead || 30 : state.settings.lead;
   const st = E.statusOf(nd.due, today, lead);
   return { id: it.id, due: nd.due, by: nd.by, status: st.status, days: st.days };

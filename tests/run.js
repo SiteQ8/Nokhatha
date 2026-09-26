@@ -24,6 +24,7 @@ const ok = (cond, msg) => {
 function resolve(x) {
   if (x === '$seasons') return SEA.seasons;
   if (x === '$bawarih') return SEA.bawarih;
+  if (x === '$heat') return SEA.heat;
   if (Array.isArray(x)) return x.map(resolve);
   if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, resolve(v)]));
   return x;

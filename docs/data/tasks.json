@@ -155,12 +155,13 @@
       "default": true,
       "every": {
         "days": 30,
-        "bawarih": 14
+        "bawarih": 14,
+        "heat": 14
       },
       "ar": "نظّف فلاتر المكيفات",
       "en": "Clean the AC filters",
-      "why_ar": "الغبار يسد الفلتر فيشتغل المكيف أكثر ويبرّد أقل، وفي البوارح يتعبى أسرع فنقرّب الموعد لكل أسبوعين.",
-      "why_en": "Dust clogs the filter so the unit works harder and cools less, and during the Bawarih it fills faster, so the reminder comes every two weeks."
+      "why_ar": "الغبار يسد الفلتر فيشتغل المكيف أكثر ويبرّد أقل، وفي الحر والبوارح يتعبى أسرع فنقرّب الموعد لكل أسبوعين.",
+      "why_en": "Dust clogs the filter so the unit works harder and cools less, and in the heat and the Bawarih it fills faster, so the reminder comes every two weeks."
     },
     {
       "id": "ac_service",

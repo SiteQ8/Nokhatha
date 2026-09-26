@@ -20,6 +20,10 @@ final class VectorTests: XCTestCase {
         let b = seasonsDoc["bawarih"] as! [String: Any]
         return Window(start: b["start"] as! String, end: b["end"] as! String)
     }()
+    static let heat: Window = {
+        let b = seasonsDoc["heat"] as! [String: Any]
+        return Window(start: b["start"] as! String, end: b["end"] as! String)
+    }()
 
     // MARK: argument and result conversion
 
@@ -32,6 +36,7 @@ final class VectorTests: XCTestCase {
     }
     func window(_ x: Any?) -> Window {
         if let s = x as? String, s == "$bawarih" { return Self.bawarih }
+        if let s = x as? String, s == "$heat" { return Self.heat }
         return decode(Window.self, x)
     }
     func car(_ x: Any?) -> CarOdometer? { x == nil || x is NSNull ? nil : decode(CarOdometer.self, x) }
@@ -69,7 +74,7 @@ final class VectorTests: XCTestCase {
             let ctx = a[1] as! [String: Any]
             let input = DueInput(every: decode(Every.self, item["every"]), lastDone: day(item["lastDone"]), lastKm: item["lastKm"].flatMap { $0 is NSNull ? nil : int($0) },
                                  due: day(item["due"]), snoozeUntil: day(item["snoozeUntil"]), firstDue: day(item["firstDue"]))
-            let d = nextDue(input, today: day(ctx["today"])!, seasons: S, bawarih: ctx["bawarih"] == nil ? nil : window(ctx["bawarih"]), car: car(ctx["car"]))
+            let d = nextDue(input, today: day(ctx["today"])!, seasons: S, bawarih: ctx["bawarih"] == nil ? nil : window(ctx["bawarih"]), car: car(ctx["car"]), heat: ctx["heat"] == nil ? nil : window(ctx["heat"]))
             return ["due": iso(d.due), "by": d.by] as [String: Any]
         case "statusOf":
             let s = statusOf(day(a[0]), today: day(a[1])!, lead: int(a[2]))

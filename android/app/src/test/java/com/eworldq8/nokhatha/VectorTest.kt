@@ -19,7 +19,7 @@ class VectorTest {
     private fun day(x: Any?): Day? = (x as? String)?.let { Day.parse(it) }
     private fun iso(d: Day?): Any = d?.iso ?: JSONObject.NULL
     private fun int(x: Any?): Int = (x as Number).toInt()
-    private fun window(x: Any?): Window = if (x == "\$bawarih") catalog.bawarih else (x as JSONObject).let { Window(it.getString("start"), it.getString("end")) }
+    private fun window(x: Any?): Window = if (x == "\$bawarih") catalog.bawarih else if (x == "\$heat") catalog.heat!! else (x as JSONObject).let { Window(it.getString("start"), it.getString("end")) }
     private fun car(x: Any?): Odometer? = (x as? JSONObject)?.let { o ->
         val r = o.getJSONArray("readings")
         Odometer(o.optInt("dailyKm", 40), (0 until r.length()).map { Reading(r.getJSONObject(it).getString("date"), r.getJSONObject(it).getInt("km")) })
@@ -55,7 +55,7 @@ class VectorTest {
                 val ctx = g(1) as JSONObject
                 val input = DueInput(everyFrom(item.getJSONObject("every"))!!, day(nul(item, "lastDone")), nul(item, "lastKm")?.let { int(it) },
                     day(nul(item, "due")), day(nul(item, "snoozeUntil")), day(nul(item, "firstDue")))
-                val d = nextDue(input, day(ctx.get("today"))!!, seasons, nul(ctx, "bawarih")?.let { window(it) }, car(nul(ctx, "car")))
+                val d = nextDue(input, day(ctx.get("today"))!!, seasons, nul(ctx, "bawarih")?.let { window(it) }, car(nul(ctx, "car")), nul(ctx, "heat")?.let { window(it) })
                 JSONObject().put("due", iso(d.due)).put("by", d.by)
             }
             "statusOf" -> statusOf(day(g(0)), day(g(1))!!, int(g(2))).let { JSONObject().put("status", it.status).put("days", it.days ?: JSONObject.NULL) }
@@ -183,6 +183,7 @@ class VectorTest {
         assertEquals("سهيل", center.title)
         assertEquals("باقي 20 يوم على الوسم", center.line2)
         assertEquals("كل 30 يوم، وكل 14 يوم بالبوارح", w.every(Every(days = 30, bawarih = 14), catalog))
+        assertEquals("كل 30 يوم، وكل 14 يوم بالقيظ", w.every(Every(days = 30, bawarih = 14, heat = 14), catalog))
     }
 }
 

@@ -61,6 +61,7 @@ struct SeasonsDoc: Codable {
     let seasons: [Season]
     let groups: [String: [String: String]]
     let bawarih: Window
+    let heat: Window?
 }
 
 struct PlacesDoc: Codable { let places: [Place] }
@@ -69,6 +70,7 @@ public struct Catalog: Sendable {
     public let seasons: [Season]
     public let groups: [String: [String: String]]
     public let bawarih: Window
+    public let heat: Window?
     public let templates: [Template]
     public let areas: [String: [Named]]
     public let trades: [Named]
@@ -95,7 +97,7 @@ public struct Catalog: Sendable {
         let p = try read("places.json", PlacesDoc.self)
         let strings = try read("strings.json", [String: [String: String]].self)
         let d = try read("docs.json", DocsDoc.self)
-        return Catalog(seasons: s.seasons, groups: s.groups, bawarih: s.bawarih, templates: t.templates, areas: t.areas,
+        return Catalog(seasons: s.seasons, groups: s.groups, bawarih: s.bawarih, heat: s.heat, templates: t.templates, areas: t.areas,
                        trades: t.trades, travel: t.travel, thingTypes: t.thingTypes, places: p.places, strings: strings,
                        docTypes: d.types, who: d.who, renewal: d.renewal)
     }

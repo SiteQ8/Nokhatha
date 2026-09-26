@@ -69,7 +69,7 @@ public struct Brain: Sendable {
         let input = DueInput(every: e, lastDone: item.lastDone.flatMap(Day.init(iso:)), lastKm: item.lastKm,
                              due: item.due.flatMap(Day.init(iso:)), snoozeUntil: item.snoozeUntil.flatMap(Day.init(iso:)),
                              firstDue: item.firstDue.flatMap(Day.init(iso:)))
-        let nd = nextDue(input, today: today, seasons: catalog.seasons, bawarih: catalog.bawarih, car: asset.car)
+        let nd = nextDue(input, today: today, seasons: catalog.seasons, bawarih: catalog.bawarih, car: asset.car, heat: catalog.heat)
         let lead = e.fixed == true ? (e.lead ?? 30) : state.settings.lead
         let st = statusOf(nd.due, today: today, lead: lead)
         return Evaluated(item: item, asset: asset, tpl: item.tpl.flatMap { tpls[$0] }, every: e, due: nd.due, by: nd.by, status: st.status, days: st.days)

@@ -688,6 +688,20 @@
  },
  "tasks": [
   {
+   "id": "0714212e3b48",
+   "due": "2026-09-06",
+   "by": "time",
+   "status": "overdue",
+   "days": -19
+  },
+  {
+   "id": "697683909daa",
+   "due": "2026-09-19",
+   "by": "time",
+   "status": "overdue",
+   "days": -6
+  },
+  {
    "id": "d2dfecf90613",
    "due": "2026-09-19",
    "by": "time",
@@ -700,13 +714,6 @@
    "by": "time",
    "status": "overdue",
    "days": -4
-  },
-  {
-   "id": "0714212e3b48",
-   "due": "2026-09-22",
-   "by": "time",
-   "status": "overdue",
-   "days": -3
   },
   {
    "id": "313e4b586572",
@@ -763,13 +770,6 @@
    "by": "time",
    "status": "ok",
    "days": 8
-  },
-  {
-   "id": "697683909daa",
-   "due": "2026-10-05",
-   "by": "time",
-   "status": "ok",
-   "days": 10
   },
   {
    "id": "c4d1deebf805",

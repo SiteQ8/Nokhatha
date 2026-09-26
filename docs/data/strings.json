@@ -404,7 +404,8 @@
     "share.task": "{title} ({asset}) موعدها {date}، من تطبيق نُوخذة",
     "share.task_nodate": "{title} ({asset})، من تطبيق نُوخذة",
     "backup.share": "شفّر وشارك",
-    "backup.share_body": "الملف مشفّر بكلمة السر، فأرسله لأهل البيت أو لجهازك الثاني ويفتح من الإعدادات ثم استرجع."
+    "backup.share_body": "الملف مشفّر بكلمة السر، فأرسله لأهل البيت أو لجهازك الثاني ويفتح من الإعدادات ثم استرجع.",
+    "every.heat": "، وكل {n} بالقيظ"
   },
   "en": {
     "app.name": "Nokhatha",
@@ -811,6 +812,7 @@
     "share.task": "{title} ({asset}) is due {date}, from the Nokhatha app",
     "share.task_nodate": "{title} ({asset}), from the Nokhatha app",
     "backup.share": "Encrypt and share",
-    "backup.share_body": "The file is locked with the password; send it to the family or your other device and open it from Settings, then Restore."
+    "backup.share_body": "The file is locked with the password; send it to the family or your other device and open it from Settings, then Restore.",
+    "every.heat": ", every {n} in the summer heat"
   }
 }

@@ -255,6 +255,7 @@ export function nextDue(item, ctx) {
       if (s.days) {
         let n = s.days;
         if (s.bawarih && ctx.bawarih && inWindow(item.lastDone, ctx.bawarih)) n = s.bawarih;
+        if (s.heat && ctx.heat && inWindow(item.lastDone, ctx.heat)) n = Math.min(n, s.heat);
         const t = addDays(item.lastDone, n);
         due = due ? minISO(due, t) : t;
       }
