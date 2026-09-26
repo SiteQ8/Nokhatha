@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -76,12 +77,12 @@ fun SettingsScreen(model: AppModel) {
     fun set(f: (Settings) -> Settings) = model.update { b -> b.state = b.state.copy(settings = f(b.state.settings)) }
     Page {
         SubHead(model, model.t("more.settings"))
-        SettingRow("chat", model.t("settings.lang")) { Seg(listOf("ar" to "عربي", "en" to "English"), model.lang) { model.setLang(it) } }
+        SettingRow("chat", model.t("settings.lang")) { Seg(listOf("ar" to "عربي", "en" to "English"), model.lang, compact = true) { model.setLang(it) } }
         SettingRow("sun", model.t("settings.theme")) {
-            Seg(listOf("auto" to model.t("settings.auto"), "light" to model.t("settings.light"), "dark" to model.t("settings.dark")), s.theme) { v -> set { it.copy(theme = v) } }
+            Seg(listOf("auto" to model.t("settings.auto"), "light" to model.t("settings.light"), "dark" to model.t("settings.dark")), s.theme, compact = true) { v -> set { it.copy(theme = v) } }
         }
         SettingRow("globe", model.t("settings.country")) {
-            Select(s.country, Brain.countries.keys.map { it to model.t("country.$it") }) { c ->
+            Select(s.country, Brain.countries.keys.map { it to model.t("country.$it") }, Modifier.width(200.dp)) { c ->
                 set { st ->
                     val before = Brain.countries[st.country]?.third
                     st.copy(country = c, currency = if (st.currency == before) Brain.countries[c]?.third ?: "KWD" else st.currency)
@@ -89,10 +90,10 @@ fun SettingsScreen(model: AppModel) {
             }
         }
         SettingRow("wallet", model.t("settings.currency")) {
-            Select(s.currency, currencies.keys.map { it to "$it ${model.t("cur.$it")}" }) { c -> set { it.copy(currency = c) } }
+            Select(s.currency, currencies.keys.map { it to "$it ${model.t("cur.$it")}" }, Modifier.width(200.dp)) { c -> set { it.copy(currency = c) } }
         }
         SettingRow("snooze", model.t("settings.lead")) {
-            Seg(listOf(3, 7, 14).map { it.toString() to w.dayCount(it) }, s.lead.toString()) { v -> set { it.copy(lead = v.toInt()) } }
+            Seg(listOf(3, 7, 14).map { it.toString() to w.dayCount(it) }, s.lead.toString(), compact = true) { v -> set { it.copy(lead = v.toInt()) } }
         }
 
         SmallHead(model.t("settings.calendar"))
@@ -111,7 +112,7 @@ fun SettingsScreen(model: AppModel) {
         val wxOn = s.weather?.on == true
         val places = model.wxPlaces()
         SettingRow("globe", model.t("wx.place")) {
-            Select(s.weather?.place ?: places.firstOrNull()?.id ?: "", places.map { it.id to it.name(model.lang) }) { model.setWeatherPlace(it) }
+            Select(s.weather?.place ?: places.firstOrNull()?.id ?: "", places.map { it.id to it.name(model.lang) }, Modifier.width(200.dp)) { model.setWeatherPlace(it) }
         }
         Spacer(Modifier.height(14.dp))
         if (wxOn) WideButton(model.t("wx.off"), primary = false, icon = "close") { model.setWeather(false) }
@@ -478,13 +479,9 @@ fun SpendScreen(model: AppModel) {
     Page {
         SubHead(model, model.t("more.spend"))
         Row(Modifier.fillMaxWidth().padding(bottom = 14.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
-                WideButton((year - 1).toString(), primary = false, height = 40.dp, block = false, icon = "back") { year-- }
-            }
+            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) { YearButton((year - 1).toString(), forward = true) { year-- } }
             Text(year.toString(), style = title(22), color = p.ink, textAlign = TextAlign.Center)
-            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                if (year < thisYear) WideButton((year + 1).toString(), primary = false, height = 40.dp, block = false, icon = "next") { year++ }
-            }
+            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) { if (year < thisYear) YearButton((year + 1).toString(), forward = false) { year++ } }
         }
         if (r.blocks.isEmpty()) EmptyNote("wallet", model.t("empty.spend"))
         r.blocks.forEachIndexed { i, b ->
@@ -529,3 +526,18 @@ fun SpendScreen(model: AppModel) {
         }
     }
 }
+
+/** The web's year link: a quiet 40px button with the chevron after the year. */
+@Composable
+fun YearButton(text: String, forward: Boolean, onClick: () -> Unit) {
+    val p = pal()
+    Row(Modifier.height(40.dp).clip(RoundedCornerShape(14.dp)).clickable(role = Role.Button, onClick = onClick).padding(horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        if (!forward) Ico("back", p.ink2, 18.dp, if (model_rtl()) Modifier.scale(-1f, 1f) else Modifier)
+        Text(text, style = body(15, FontWeight.SemiBold, 1.2), color = p.ink)
+        if (forward) Chevron(p.ink2, 18.dp)
+    }
+}
+
+@Composable
+private fun model_rtl() = androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl

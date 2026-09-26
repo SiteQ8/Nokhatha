@@ -35,7 +35,7 @@ data class DialDot(val days: Int, val status: String)
 @Composable
 fun Dial(today: Day, catalog: Catalog, dots: List<DialDot>, center: Words.Center, modifier: Modifier = Modifier) {
     val p = pal()
-    val side = minOf(LocalConfiguration.current.screenWidthDp - 36, 380)
+    val side = minOf(LocalConfiguration.current.screenWidthDp - 36, 358)
     Box(modifier.fillMaxWidth().semantics { contentDescription = "${center.title}، ${center.line2}" }, contentAlignment = Alignment.Center) {
         Box(Modifier.size(side.dp), contentAlignment = Alignment.Center) {
             Canvas(Modifier.fillMaxSize()) {

@@ -24,7 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
@@ -131,18 +133,34 @@ fun PageHead(title: String, band: String, back: (() -> Unit)? = null, backText: 
     }
 }
 
-/** The web's .segc: equal parts in one tray, the chosen one raised. */
+/** The web's switch: green when on, a pale track with a white thumb when off. */
 @Composable
-fun Seg(options: List<Pair<String, String>>, selected: String, modifier: Modifier = Modifier.fillMaxWidth(), onSelect: (String) -> Unit) {
+fun webSwitch(): SwitchColors {
     val p = pal()
+    return SwitchDefaults.colors(
+        checkedTrackColor = p.ok, checkedThumbColor = p.onInk, checkedBorderColor = Color.Transparent,
+        uncheckedTrackColor = p.ink.copy(alpha = 0.14f), uncheckedThumbColor = p.surface, uncheckedBorderColor = Color.Transparent,
+    )
+}
+
+/** The web's .segc: equal parts in one tray, the chosen one raised. Compact sizes the parts by the widest word, as the web does off a field. */
+@Composable
+fun Seg(options: List<Pair<String, String>>, selected: String, modifier: Modifier = Modifier.fillMaxWidth(), compact: Boolean = false, onSelect: (String) -> Unit) {
+    val p = pal()
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val partWidth = if (compact) remember(options) {
+        val widest = options.maxOf { measurer.measure(it.second, body(14, FontWeight.Bold, 1.2), softWrap = false, maxLines = 1).size.width }
+        with(density) { widest.toDp() } + 24.dp
+    } else null
     Row(
-        modifier.clip(RoundedCornerShape(13.dp)).background(p.ink.copy(alpha = 0.06f)).border(1.dp, p.line, RoundedCornerShape(13.dp)).padding(3.dp),
+        (if (compact) Modifier else modifier).clip(RoundedCornerShape(13.dp)).background(p.ink.copy(alpha = 0.06f)).border(1.dp, p.line, RoundedCornerShape(13.dp)).padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(3.dp),
     ) {
         for ((value, label) in options) {
             val on = value == selected
             Box(
-                Modifier.weight(1f).height(38.dp)
+                (if (partWidth != null) Modifier.width(partWidth) else Modifier.weight(1f)).height(38.dp)
                     .then(if (on) Modifier.shadow(1.5.dp, RoundedCornerShape(10.dp)) else Modifier)
                     .clip(RoundedCornerShape(10.dp)).background(if (on) p.surface else Color.Transparent)
                     .clickable(role = Role.RadioButton) { onSelect(value) }.semantics { this.selected = on }
@@ -259,7 +277,7 @@ fun SettingRow(icon: String, label: String, control: @Composable () -> Unit) {
                 Ico(icon, p.ink3, 20.dp)
                 Text(label, style = body(16, FontWeight.SemiBold, 1.3), color = p.ink)
             }
-            Box(Modifier.width(200.dp)) { control() }
+            control()
         }
         RowLine()
     }
@@ -328,7 +346,7 @@ fun SwitchCard(rows: List<Triple<String, Boolean, (Boolean) -> Unit>>) {
             if (i > 0) RowLine()
             Row(Modifier.fillMaxWidth().clickable { set(!on) }.padding(horizontal = 14.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(label, style = body(15.5), color = p.ink, modifier = Modifier.weight(1f))
-                Switch(on, set, colors = SwitchDefaults.colors(checkedTrackColor = p.ok, checkedThumbColor = p.onInk))
+                Switch(on, set, colors = webSwitch())
             }
         }
     }

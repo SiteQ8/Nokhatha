@@ -26,11 +26,15 @@ import com.eworldq8.nokhatha.engine.*
 @Composable
 fun Sheet(model: AppModel, title: String?, onClose: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     val p = pal()
-    ModalBottomSheet(onDismissRequest = onClose, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = p.surface) {
+    ModalBottomSheet(onDismissRequest = onClose, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = p.surface, dragHandle = null) {
         CompositionLocalProvider(LocalLayoutDirection provides if (model.isArabic) LayoutDirection.Rtl else LayoutDirection.Ltr) {
-            Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).padding(bottom = 34.dp)) {
-                if (title != null) Text(title, style = title(22, 1.35), color = p.ink, modifier = Modifier.padding(end = 44.dp))
-                content()
+            Box(Modifier.fillMaxWidth()) {
+                Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).padding(top = 22.dp, bottom = 34.dp)) {
+                    if (title != null) Text(title, style = title(22, 1.35), color = p.ink, modifier = Modifier.padding(end = 44.dp))
+                    content()
+                }
+                Box(Modifier.align(Alignment.TopEnd).padding(12.dp).size(40.dp).clip(CircleShape).background(p.ink.copy(alpha = 0.06f)).clickable(role = Role.Button, onClick = onClose),
+                    contentAlignment = Alignment.Center) { Ico("close", p.ink2, 20.dp) }
             }
         }
     }
