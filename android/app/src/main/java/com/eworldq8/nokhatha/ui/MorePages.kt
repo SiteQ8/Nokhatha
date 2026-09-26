@@ -533,11 +533,8 @@ fun YearButton(text: String, forward: Boolean, onClick: () -> Unit) {
     val p = pal()
     Row(Modifier.height(40.dp).clip(RoundedCornerShape(14.dp)).clickable(role = Role.Button, onClick = onClick).padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        if (!forward) Ico("back", p.ink2, 18.dp, if (model_rtl()) Modifier.scale(-1f, 1f) else Modifier)
+        if (!forward) Ico("back", p.ink2, 18.dp)
         Text(text, style = body(15, FontWeight.SemiBold, 1.2), color = p.ink)
-        if (forward) Chevron(p.ink2, 18.dp)
+        if (forward) Ico("next", p.ink2, 18.dp)
     }
 }
-
-@Composable
-private fun model_rtl() = androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl
