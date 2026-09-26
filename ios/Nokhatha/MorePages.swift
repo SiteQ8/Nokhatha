@@ -3,6 +3,7 @@ import NokhathaKit
 import PhotosUI
 import SwiftUI
 import UIKit
+import UniformTypeIdentifiers
 
 struct MoreScreen: View {
     @EnvironmentObject var model: AppModel
@@ -53,8 +54,7 @@ struct DocsScreen: View {
     @State private var adding = false
     var body: some View {
         let list = model.brain.docs()
-        var groups: [String] = []
-        for g in list.map({ $0.d.who ?? "" }) where !groups.contains(g) { groups.append(g) }
+        let groups = DocsScreen.whoGroups(list)
         Page {
             SubHead(title: model.t("more.docs"))
             Lede(text: model.t("docs.lede"))
@@ -66,6 +66,14 @@ struct DocsScreen: View {
             WideButton(title: model.t("act.add_doc"), primary: false, icon: "plus") { adding = true }.padding(.top, 16)
         }
         .sheet(isPresented: $adding) { DocSheet(existing: nil) { adding = false } }
+    }
+}
+
+extension DocsScreen {
+    static func whoGroups(_ list: [DocView]) -> [String] {
+        var groups: [String] = []
+        for g in list.map({ $0.d.who ?? "" }) where !groups.contains(g) { groups.append(g) }
+        return groups
     }
 }
 

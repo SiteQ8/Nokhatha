@@ -15,6 +15,15 @@ struct TaskSheet: View {
     @State private var addTech = false
     @State private var interval = false
 
+    private func facts(hasKm: Bool) -> [(String, String)] {
+        let w = model.words
+        var out: [(String, String)] = [(model.t("item.every"), w.every(e.every, catalog: model.catalog))]
+        out.append((model.t("item.last"), e.item.lastDone.flatMap { Day(iso: $0) }.map { w.date($0, today: model.today) } ?? model.t("item.never")))
+        if let due = e.due { out.append((model.t("item.next"), w.date(due, today: model.today))) }
+        if hasKm, let k = e.item.lastKm { out.append((model.t("item.at_km"), w.km(k))) }
+        return out
+    }
+
     var body: some View {
         let w = model.words
         let line = w.due(e, today: model.today)
@@ -39,10 +48,7 @@ struct TaskSheet: View {
                     .padding(.horizontal, 16).padding(.vertical, 14).frame(maxWidth: .infinity, alignment: .leading)
                     .background(Theme.bg, in: RoundedRectangle(cornerRadius: 16, style: .continuous)).padding(.top, 14)
             }
-            Facts(items: [(model.t("item.every"), w.every(e.every, catalog: model.catalog)),
-                          (model.t("item.last"), e.item.lastDone.flatMap { Day(iso: $0) }.map { w.date($0, today: model.today) } ?? model.t("item.never"))]
-                  + (e.due.map { [(model.t("item.next"), w.date($0, today: model.today))] } ?? [])
-                  + (hasKm && e.item.lastKm != nil ? [(model.t("item.at_km"), w.km(e.item.lastKm!))] : []))
+            Facts(items: facts(hasKm: hasKm))
             if e.every.fixed == true {
                 DayField(label: model.t("item.expiry"), day: $pick)
                 WideButton(title: model.t("act.save")) { model.update("toast.saved") { $0.setDue(e.item.id, pick) }; onClose() }.padding(.top, 14)

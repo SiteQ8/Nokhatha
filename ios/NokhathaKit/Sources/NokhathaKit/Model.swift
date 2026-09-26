@@ -253,6 +253,9 @@ public struct Warranty: Codable, Hashable, Sendable, Identifiable {
     public var bought: String
     public var months: Int
     public var receipt: String?
+    public init(id: String, name: String, store: String? = nil, bought: String, months: Int, receipt: String? = nil) {
+        self.id = id; self.name = name; self.store = store; self.bought = bought; self.months = months; self.receipt = receipt
+    }
 }
 
 public struct Tech: Codable, Hashable, Sendable, Identifiable {
@@ -261,6 +264,9 @@ public struct Tech: Codable, Hashable, Sendable, Identifiable {
     public var trade: String
     public var phone: String
     public var note: String?
+    public init(id: String, name: String, trade: String, phone: String, note: String? = nil) {
+        self.id = id; self.name = name; self.trade = trade; self.phone = phone; self.note = note
+    }
 }
 
 public struct WeatherSetting: Codable, Hashable, Sendable {
