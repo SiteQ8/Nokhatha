@@ -25,6 +25,10 @@ for combo in "home task" "subs sub" "home addtask" "home edit" "car odo"; do
   sleep 7
   adb exec-out screencap -p > "shots/ar-sheet-$2.png"
 done
+adb shell am start -S -W -n "$PKG/.MainActivity" --ez sample true --ez widget true --es lang ar
+sleep 6
+adb exec-out screencap -p > shots/ar-widget.png
+adb shell pm clear "$PKG" >/dev/null
 for page in settings docs warranties techs travel spend about things; do
   adb shell am start -S -W -n "$PKG/.MainActivity" --ez sample true --es tab more --es page "$page" --es lang ar
   sleep 6

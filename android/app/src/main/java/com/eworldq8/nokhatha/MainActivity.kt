@@ -130,6 +130,7 @@ class AppModel(private val ctx: Context, intent: Intent?) {
         val s = state ?: return
         runCatching { file.writeText(s.toJson().toString()) }
         Reminders.schedule(ctx)
+        runCatching { NokhathaWidget.refresh(ctx) }
     }
 
     fun update(toastKey: String? = null, vars: Map<String, String> = emptyMap(), f: (Brain) -> Unit) {
@@ -185,6 +186,7 @@ class AppModel(private val ctx: Context, intent: Intent?) {
     fun eraseAll() {
         file.delete()
         receipts.deleteRecursively()
+        runCatching { NokhathaWidget.refresh(ctx) }
         state = null
         onboarding = null
         page = null
@@ -444,12 +446,15 @@ object Reminders {
 }
 
 class ReminderReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) = Reminders.notifyDue(context)
+    override fun onReceive(context: Context, intent: Intent) {
+        Reminders.notifyDue(context)
+        runCatching { NokhathaWidget.refresh(context) }
+    }
 }
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED) Reminders.schedule(context)
+        if (intent.action == Intent.ACTION_BOOT_COMPLETED) { Reminders.schedule(context); runCatching { NokhathaWidget.refresh(context) } }
     }
 }
 
@@ -460,6 +465,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         model = AppModel(applicationContext, intent)
+        if (intent?.getBooleanExtra("widget", false) == true) {
+            // the screenshot run: the widget drawn inside the app, with the sample saved so it has dates to show
+            model.state?.let { s -> runCatching { java.io.File(applicationContext.filesDir, "nokhatha.json").writeText(s.toJson().toString()) } }
+            val frame = android.widget.FrameLayout(this).apply { setBackgroundColor(android.graphics.Color.parseColor("#EEF1F4")); setPadding(40, 200, 40, 0) }
+            val views = NokhathaWidget.render(applicationContext).apply(applicationContext, frame)
+            frame.addView(views, android.widget.FrameLayout.LayoutParams(android.widget.FrameLayout.LayoutParams.MATCH_PARENT, 520))
+            setContentView(frame)
+            return
+        }
         setContent { Root(model) }
     }
 

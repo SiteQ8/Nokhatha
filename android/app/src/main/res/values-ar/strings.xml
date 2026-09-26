@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">نُوخذة</string>
     <string name="channel_due">تذكيرات المواعيد</string>
+    <string name="widget_desc">أقرب مواعيدك والموسم الحالي</string>
 </resources>

@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Nokhatha</string>
     <string name="channel_due">Due reminders</string>
+    <string name="widget_desc">Your next few dates and the current season</string>
 </resources>

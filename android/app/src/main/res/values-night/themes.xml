@@ -6,4 +6,13 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+    <color name="widget_surface">#FF1B2238</color>
+    <color name="widget_bg">#FF121728</color>
+    <color name="widget_line">#FF2B3453</color>
+    <color name="widget_ink">#FFEEF1F4</color>
+    <color name="widget_ink2">#FFBAC1D5</color>
+    <color name="widget_ink3">#FF8B94AE</color>
+    <color name="widget_overdue">#FFE8676C</color>
+    <color name="widget_soon">#FFE7AF4B</color>
+    <color name="widget_ok">#FF41B8AC</color>
 </resources>
