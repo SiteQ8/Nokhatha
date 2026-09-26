@@ -1140,6 +1140,7 @@ ${ev.every.season ? '' : `<button class="btn" data-act="interval" data-id="${esc
   if (logs.length) {
     h += `<h3 class="sh-h">${t('item.history')}</h3><ul class="hist">${logs.map((l) => `<li><span>${esc(dateText(l.date))}</span>${l.km != null ? `<span>${esc(kmText(l.km))}</span>` : ''}${l.cost != null ? `<span>${esc(money(l.cost, l.cur || cur))}</span>` : ''}</li>`).join('')}</ul>`;
   }
+  h += `<a class="btn btn-quiet btn-block" href="${esc(shareLink(ev))}" target="_blank" rel="noopener noreferrer">${icon('chat')}<span>${t('act.share')}</span></a>`;
   h += `<button class="btn btn-quiet btn-danger btn-block" data-act="${it.tpl ? 'stop-item' : 'delete-item'}" data-id="${esc(id)}">${icon('trash')}<span>${it.tpl ? t('act.stop') : t('act.delete')}</span></button>`;
   openSheet(h, title);
 }
@@ -1274,7 +1275,8 @@ function backupSheet() {
   openSheet(`<h2 class="sh-title">${t('act.backup')}</h2><p class="lede small">${t('backup.body')}</p>
 <label class="field"><span>${t('backup.pass')}</span><input class="input ltr" type="password" name="pass" autocomplete="new-password"></label>
 <label class="field"><span>${t('backup.pass2')}</span><input class="input ltr" type="password" name="pass2" autocomplete="new-password"></label>
-<button class="btn btn-primary btn-block" data-act="do-backup">${icon('lock')}<span>${t('backup.go')}</span></button>`, t('act.backup'));
+<button class="btn btn-primary btn-block" data-act="do-backup">${icon('lock')}<span>${t('backup.go')}</span></button>
+${navigator.canShare ? `<p class="fine">${t('backup.share_body')}</p><button class="btn btn-block" data-act="do-backup-share">${icon('upload')}<span>${t('backup.share')}</span></button>` : ''}`, t('act.backup'));
 }
 
 function restoreSheet() {
@@ -1324,7 +1326,17 @@ function exportICS() {
   toast(t('toast.ics', { n: events.length }));
 }
 
-async function doBackup() {
+/** A WhatsApp message with the task, its asset and date, for whoever is doing it. */
+function shareText(ev) {
+  const vars = { title: itemTitle(ev), asset: ev.asset ? ev.asset.name : '', date: ev.due ? dateText(ev.due) : '' };
+  return t(ev.due ? 'share.task' : 'share.task_nodate', vars);
+}
+
+function shareLink(ev) {
+  return 'https://wa.me/?text=' + encodeURIComponent(shareText(ev));
+}
+
+async function doBackup(share = false) {
   const pass = val('pass');
   if (pass.length < 8) return toast(t('backup.short'));
   if (pass !== val('pass2')) return toast(t('backup.mismatch'));
@@ -1334,7 +1346,10 @@ async function doBackup() {
     const receipts = {};
     for (const r of await S.allReceipts().catch(() => [])) receipts[r.id] = { type: r.blob.type, data: await blobToB64(r.blob) };
     const file = await encryptBackup({ state, receipts }, pass);
-    download(JSON.stringify(file), `nokhatha-backup-${TODAY}.json`, 'application/json');
+    const name = `nokhatha-backup-${TODAY}.json`;
+    const blob = new File([JSON.stringify(file)], name, { type: 'application/json' });
+    if (share && navigator.canShare && navigator.canShare({ files: [blob] })) await navigator.share({ files: [blob], title: name });
+    else download(JSON.stringify(file), name, 'application/json');
     state.settings.lastBackup = TODAY;
     S.save(state);
     closeSheet(true);
@@ -1737,6 +1752,7 @@ async function onClick(e) {
     case 'ics': exportICS(); break;
     case 'backup': backupSheet(); break;
     case 'do-backup': await doBackup(); break;
+    case 'do-backup-share': await doBackup(true); break;
     case 'restore': restoreSheet(); break;
     case 'do-restore': await doRestore(); break;
     case 'demo': {

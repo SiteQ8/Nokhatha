@@ -167,11 +167,22 @@ fun BackupSheet(model: AppModel, onClose: () -> Unit) {
         FieldLabel(model.t("backup.pass2"))
         Input(pass2, { pass2 = it }, "", password = true)
         Spacer(Modifier.height(12.dp))
-        if (busy) BusyButton() else WideButton(model.t("backup.go"), icon = "lock") {
-            when {
-                pass.length < 8 -> model.say("backup.short")
-                pass != pass2 -> model.say("backup.mismatch")
-                else -> save.launch("nokhatha-backup-${model.today.iso}.json")
+        fun valid(): Boolean = when {
+            pass.length < 8 -> { model.say("backup.short"); false }
+            pass != pass2 -> { model.say("backup.mismatch"); false }
+            else -> true
+        }
+        if (busy) BusyButton() else WideButton(model.t("backup.go"), icon = "lock") { if (valid()) save.launch("nokhatha-backup-${model.today.iso}.json") }
+        Fine(model.t("backup.share_body"))
+        Spacer(Modifier.height(8.dp))
+        if (!busy) WideButton(model.t("backup.share"), primary = false, icon = "upload") {
+            if (valid()) {
+                busy = true
+                scope.launch {
+                    val ok = model.shareBackup(pass)
+                    busy = false
+                    if (ok) { model.say("backup.done"); onClose() } else model.say("backup.failed")
+                }
             }
         }
     }

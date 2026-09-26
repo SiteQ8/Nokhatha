@@ -35,16 +35,23 @@ struct SubHead: View {
     var body: some View { PageHead(title: title, band: "more", back: { model.page = nil }, backText: model.t("tab.more")) }
 }
 
-/// The share sheet, for the calendar file and the backup.
+/// The share sheet, for the calendar file, the backup and a task's message.
 struct ShareSheet: UIViewControllerRepresentable {
-    let url: URL
-    func makeUIViewController(context: Context) -> UIActivityViewController { UIActivityViewController(activityItems: [url], applicationActivities: nil) }
+    var url: URL? = nil
+    var text: String? = nil
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        var items: [Any] = []
+        if let url { items.append(url) }
+        if let text { items.append(text) }
+        return UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
     func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
 }
 
 struct ShareItem: Identifiable {
     let id = UUID()
-    let url: URL
+    var url: URL? = nil
+    var text: String? = nil
 }
 
 // MARK: - documents
@@ -245,7 +252,7 @@ struct SettingsScreen: View {
         .sheet(isPresented: Binding(get: { sheet != nil }, set: { if !$0 { sheet = nil } })) {
             if sheet == "backup" { BackupSheet { sheet = nil } } else { RestoreSheet { sheet = nil } }
         }
-        .sheet(item: $share) { item in ShareSheet(url: item.url) }
+        .sheet(item: $share) { item in ShareSheet(url: item.url, text: item.text) }
         .alert(confirm == "wipe" ? model.t("confirm.wipe") : model.t("confirm.sample"), isPresented: Binding(get: { confirm != nil }, set: { if !$0 { confirm = nil } })) {
             Button(confirm == "wipe" ? model.t("act.wipe") : model.t("welcome.demo"), role: .destructive) {
                 if confirm == "wipe" { model.eraseAll() } else { model.startWithSample(); model.page = nil; model.tab = "today" }
@@ -271,10 +278,11 @@ struct BackupSheet: View {
             Input(text: $pass, placeholder: "", password: true)
             FieldLabel(text: model.t("backup.pass2"))
             Input(text: $pass2, placeholder: "", password: true)
+            Fine(text: model.t("backup.share_body"))
             if busy {
                 ProgressView().frame(maxWidth: .infinity).frame(height: 48).padding(.top, 12)
             } else {
-                WideButton(title: model.t("backup.go"), icon: "lock") {
+                WideButton(title: model.t("backup.share"), icon: "lock") {
                     if pass.count < 8 { model.say("backup.short"); return }
                     if pass != pass2 { model.say("backup.mismatch"); return }
                     busy = true
@@ -287,7 +295,7 @@ struct BackupSheet: View {
                 .padding(.top, 12)
             }
         }
-        .sheet(item: $share, onDismiss: onClose) { item in ShareSheet(url: item.url) }
+        .sheet(item: $share, onDismiss: onClose) { item in ShareSheet(url: item.url, text: item.text) }
     }
 }
 

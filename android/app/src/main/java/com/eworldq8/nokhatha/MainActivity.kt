@@ -252,7 +252,7 @@ class AppModel(private val ctx: Context, intent: Intent?) {
                 runCatching { File(receipts, id).readBytes() }.getOrNull()?.let { rs.put(id, JSONObject().put("type", "image/jpeg").put("data", B64.encode(it))) }
             }
             val text = Backup.encrypt(JSONObject().put("state", s.toJson()).put("receipts", rs).toString(), pass)
-            ctx.contentResolver.openOutputStream(uri)?.use { it.write(text.toByteArray()) } ?: error("no file")
+            if (uri.scheme == "file") File(uri.path!!).writeText(text) else ctx.contentResolver.openOutputStream(uri)?.use { it.write(text.toByteArray()) } ?: error("no file")
         }.isSuccess
     }.also { ok ->
         if (ok) { state = state?.let { it.copy(settings = it.settings.copy(lastBackup = today.iso)) }; save() }
@@ -294,6 +294,24 @@ class AppModel(private val ctx: Context, intent: Intent?) {
     }
 
     fun openUrl(url: String) = open(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+
+    /** A task as a message for whoever is doing it: the phone's own share sheet, WhatsApp among its choices. */
+    fun shareTask(e: Evaluated) {
+        val vars = mapOf("title" to e.title(lang), "asset" to e.asset.name, "date" to (e.due?.let { words.date(it, today) } ?: ""))
+        val text = t(if (e.due != null) "share.task" else "share.task_nodate", vars)
+        open(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), null))
+    }
+
+    /** The encrypted backup handed to the share sheet, for the family or another device. */
+    suspend fun shareBackup(pass: String): Boolean {
+        val dir = File(ctx.cacheDir, "share").apply { mkdirs() }
+        val file = File(dir, "nokhatha-backup-${today.iso}.json")
+        val ok = writeBackup(Uri.fromFile(file), pass)
+        if (!ok) return false
+        val uri = FileProvider.getUriForFile(ctx, ctx.packageName + ".files", file)
+        open(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("application/json").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), null))
+        return true
+    }
     fun dial(phone: String) = open(Intent(Intent.ACTION_DIAL, Uri.parse("tel:+" + phoneDigits(phone, state?.settings?.country ?: "KW"))))
     fun whatsapp(phone: String) = open(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/" + phoneDigits(phone, state?.settings?.country ?: "KW"))))
 

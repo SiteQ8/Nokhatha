@@ -38,6 +38,11 @@
         "en": "Electrical"
       },
       {
+        "id": "bills",
+        "ar": "الفواتير",
+        "en": "Bills"
+      },
+      {
         "id": "custom",
         "ar": "مهامك",
         "en": "Your tasks"
@@ -956,6 +961,20 @@
       "en": "Deworming",
       "why_ar": "الديدان تنتقل بسهولة من الحيوان للبيت، والجرعة كل ثلاث شهور تكفي أغلب الحالات.",
       "why_en": "Worms pass easily from pets to the home, and a dose every three months covers most cases."
+    },
+    {
+      "id": "power_bill",
+      "kind": "home",
+      "area": "bills",
+      "icon": "bolt",
+      "default": false,
+      "every": {
+        "months": 1
+      },
+      "ar": "سدّد فاتورة الكهرباء والماي",
+      "en": "Pay the electricity and water bill",
+      "why_ar": "الفاتورة تقفز في الصيف لأن التكييف ياخذ أكثر من نصف الاستهلاك، فتابعها كل شهر قبل ما تتراكم، واضبط المكيف على 24 درجة ونظّف الفلاتر كل أسبوعين بالحر.",
+      "why_en": "The bill jumps in summer because cooling takes more than half of the power, so keep up with it monthly before it piles up, set the AC to 24 and clean the filters every two weeks in the heat."
     }
   ],
   "travel": [

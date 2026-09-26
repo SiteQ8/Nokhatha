@@ -2,4 +2,5 @@
 <!-- The only folder shared with another app: where the camera writes a receipt photo. -->
 <paths>
     <cache-path name="camera" path="camera/" />
+    <cache-path name="share" path="share/" />
 </paths>

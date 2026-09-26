@@ -192,6 +192,7 @@ fun TaskSheet(model: AppModel, e: Evaluated, onClose: () -> Unit) {
             }
         }
         Spacer(Modifier.height(12.dp))
+        WideButton(model.t("act.share"), quiet = true, icon = "chat") { model.shareTask(e) }
         WideButton(if (e.item.tpl == null) model.t("act.delete") else model.t("act.stop"), primary = false, danger = true, icon = "trash") {
             model.update(if (e.item.tpl == null) "toast.deleted" else "toast.stopped") { it.stop(e.item.id) }
             onClose()

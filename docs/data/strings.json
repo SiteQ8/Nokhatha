@@ -399,7 +399,12 @@
     "renew.years": "مدة التجديد",
     "renew.done": "تم التجديد",
     "renew.done_toast": "ضبطنا مواعيد الدفتر والتأمين والفحص الجاية",
-    "renew.open": "افتح"
+    "renew.open": "افتح",
+    "act.share": "أرسلها",
+    "share.task": "{title} ({asset}) موعدها {date}، من تطبيق نُوخذة",
+    "share.task_nodate": "{title} ({asset})، من تطبيق نُوخذة",
+    "backup.share": "شفّر وشارك",
+    "backup.share_body": "الملف مشفّر بكلمة السر، فأرسله لأهل البيت أو لجهازك الثاني ويفتح من الإعدادات ثم استرجع."
   },
   "en": {
     "app.name": "Nokhatha",
@@ -801,6 +806,11 @@
     "renew.years": "Renew for",
     "renew.done": "Renewed",
     "renew.done_toast": "The next registration, insurance and inspection dates are set",
-    "renew.open": "Open"
+    "renew.open": "Open",
+    "act.share": "Send it",
+    "share.task": "{title} ({asset}) is due {date}, from the Nokhatha app",
+    "share.task_nodate": "{title} ({asset}), from the Nokhatha app",
+    "backup.share": "Encrypt and share",
+    "backup.share_body": "The file is locked with the password; send it to the family or your other device and open it from Settings, then Restore."
   }
 }
