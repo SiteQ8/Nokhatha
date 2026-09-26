@@ -14,6 +14,7 @@ struct TaskSheet: View {
     @State private var cost = ""
     @State private var addTech = false
     @State private var interval = false
+    @State private var share: ShareItem?
 
     private func facts(hasKm: Bool) -> [(String, String)] {
         let w = model.words
@@ -109,11 +110,15 @@ struct TaskSheet: View {
                 }
                 .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Theme.line, lineWidth: 1))
             }
+            WideButton(title: model.t("act.share"), quiet: true, icon: "chat") {
+                let vars = ["title": e.title(model.lang), "asset": e.asset.name, "date": e.due.map { w.date($0, today: model.today) } ?? ""]
+                share = ShareItem(text: model.t(e.due != nil ? "share.task" : "share.task_nodate", vars))
+            }
+            .padding(.top, 12)
             WideButton(title: e.item.tpl == nil ? model.t("act.delete") : model.t("act.stop"), danger: true, icon: "trash") {
                 model.update(e.item.tpl == nil ? "toast.deleted" : "toast.stopped") { $0.stop(e.item.id) }
                 onClose()
             }
-            .padding(.top, 12)
         }
         .onAppear {
             pick = e.due ?? model.today.adding(30)
@@ -122,6 +127,7 @@ struct TaskSheet: View {
         }
         .sheet(isPresented: $addTech) { TechSheet(existing: nil, trade0: e.tpl?.trade ?? "ac") { addTech = false } }
         .sheet(isPresented: $interval) { IntervalSheet(e: e) { interval = false; onClose() } }
+        .sheet(item: $share) { item in ShareSheet(url: item.url, text: item.text) }
     }
 }
 
