@@ -26,6 +26,12 @@ enum Theme {
     static let ok = Color.adaptive(0x127A74, 0x41B8AC)
     static let onInk = Color.adaptive(0xEEF1F4, 0x121728)
     static let gold = Color(hex: 0xC98A1B)
+    static let rutab = Color.adaptive(0xC98A1B, 0xE7AF4B)
+    static let sand = Color.adaptive(0xE4D8C4, 0x121728)
+    static let bandInk = Color.adaptive(0x1C2340, 0xEEF1F4)
+
+    /// The soft background behind a row's icon, as the web's tint colours.
+    static func tintBg(_ status: String) -> Color { tint(status).opacity(0.12) }
 
     static let safari = Color.adaptive(0xA3C8C8, 0x204750)
     static let shita = Color.adaptive(0xB8BCC8, 0x363C50)
@@ -73,18 +79,8 @@ enum Symbol {
         "sliders": "slider.horizontal.3", "info": "info.circle", "chat": "message", "globe": "globe", "snooze": "clock.badge",
         "calendar": "calendar", "lock": "lock", "upload": "square.and.arrow.up", "download": "square.and.arrow.down", "code": "chevron.left.forwardslash.chevron.right",
         "camera": "camera", "photo": "photo.on.rectangle", "done": "checkmark", "next": "chevron.right", "back": "chevron.left",
+        "id": "person.text.rectangle", "passport": "book.closed", "licence": "creditcard", "stamp": "checkmark.seal", "heart": "heart",
+        "briefcase": "briefcase", "alert": "exclamationmark.triangle", "link": "arrow.up.right.square",
     ]
     static func name(_ icon: String) -> String { map[icon] ?? "sparkle" }
-}
-
-struct Card<Content: View>: View {
-    var padding: CGFloat = 16
-    @ViewBuilder var content: Content
-    var body: some View {
-        content
-            .padding(padding)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Theme.line, lineWidth: 1))
-    }
 }

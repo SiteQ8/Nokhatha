@@ -31,6 +31,7 @@ targets:
         CFBundleDevelopmentRegion: ar
         CFBundleLocalizations: [ar, en]
         ITSAppUsesNonExemptEncryption: false
+        NSCameraUsageDescription: لتصوير فاتورة الجهاز وحفظها مع ضمانه على جهازك
         LSApplicationCategoryType: public.app-category.productivity
         UILaunchScreen:
           UIColorName: AccentColor
@@ -46,7 +47,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.eworldq8.nokhatha
         DEVELOPMENT_TEAM: FKZPXUFH45
-        MARKETING_VERSION: 1.0.0
+        MARKETING_VERSION: 1.1.0
         CURRENT_PROJECT_VERSION: 1
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_VERSION: "5.0"

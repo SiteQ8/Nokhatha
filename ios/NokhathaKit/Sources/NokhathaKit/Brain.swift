@@ -133,6 +133,12 @@ public struct Brain: Sendable {
         state.items[i] = item
     }
 
+    /// A licence or insurance gets its expiry date set by hand.
+    public mutating func setDue(_ id: String, _ day: Day) {
+        guard let i = state.items.firstIndex(where: { $0.id == id }) else { return }
+        state.items[i].due = day.iso
+    }
+
     public mutating func snooze(_ id: String, days: Int = 7) {
         guard let i = state.items.firstIndex(where: { $0.id == id }) else { return }
         state.items[i].snoozeUntil = today.adding(days).iso
@@ -314,6 +320,23 @@ public struct Brain: Sendable {
     }
 
     public mutating func deleteSub(_ id: String) { state.subs.removeAll { $0.id == id } }
+
+    /// A cancelled subscription comes back as it was.
+    public mutating func restoreSub(_ id: String) {
+        guard let i = state.subs.firstIndex(where: { $0.id == id }) else { return }
+        state.subs[i].cancelled = nil
+        state.subs[i].cancelledOn = nil
+    }
+
+    /// Every n days or months, keeping the kilometre rule; nil returns a suggested task to its own interval.
+    public mutating func setInterval(_ itemId: String, n: Int?, unit: String, km: Int?) {
+        guard let i = state.items.firstIndex(where: { $0.id == itemId }) else { return }
+        guard let n else { state.items[i].every = nil; return }
+        let base = every(state.items[i])
+        var next = unit == "days" ? Every(days: n) : Every(months: min(n, 120))
+        if let baseKm = base.km, baseKm != 0 { next.km = km ?? baseKm }
+        state.items[i].every = next
+    }
 
     // MARK: sample household, the same as the web app's
 

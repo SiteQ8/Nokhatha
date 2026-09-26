@@ -31,6 +31,15 @@ enum Reminders {
             let day = max(s.next.adding(-2), today)
             byDay[day, default: []].append((words.t("ask.q", ["name": s.sub.name]), false))
         }
+        for w in brain.warranties() where w.days >= 0 && w.days <= 60 {
+            let day = max(w.end.adding(-14), today)
+            byDay[day, default: []].append((words.t("ics.warranty", ["name": w.w.name]), false))
+        }
+        for x in brain.docs() where x.days <= 60 {
+            guard let end = Day(iso: x.d.expiry) else { continue }
+            let day = x.days < 0 ? today : max(end.adding(-min(x.days, x.type.lead)), today)
+            byDay[day, default: []].append((words.t("ics.doc", ["name": brain.docTitle(x.d, lang: model.lang)]), x.days < 0))
+        }
         let now = Date()
         let hour = Calendar.current.component(.hour, from: now)
         for (day, lines) in byDay.sorted(by: { $0.key < $1.key }).prefix(60) {

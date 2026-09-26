@@ -26,6 +26,7 @@ public struct Words: Sendable {
 
     public func dayCount(_ n: Int) -> String { isArabic ? countAr(n, "day") : "\(n) day\(n == 1 ? "" : "s")" }
     public func monthCount(_ n: Int) -> String { isArabic ? countAr(n, "month") : "\(n) month\(n == 1 ? "" : "s")" }
+    public func yearCount(_ n: Int) -> String { isArabic ? countAr(n, "year") : "\(n) year\(n == 1 ? "" : "s")" }
 
     public func km(_ n: Int) -> String {
         let s = groupThousands(String(n))
