@@ -32,6 +32,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -91,6 +92,8 @@ class AppModel(private val ctx: Context, intent: Intent?) {
     var onboarding by mutableStateOf<Onboarding?>(null)
     /** The page open from More: things, warranties, techs, travel, spend, settings or about. */
     var page by mutableStateOf<String?>(null)
+    /** A sheet to open on launch, for the screenshot run: task, sub, addtask, edit, odo. */
+    var autoSheet by mutableStateOf<String?>(null)
     private val file = File(ctx.filesDir, "nokhatha.json")
     private val receipts = File(ctx.filesDir, "receipts")
     private val wxPrefs = ctx.getSharedPreferences("weather", Context.MODE_PRIVATE)
@@ -102,6 +105,7 @@ class AppModel(private val ctx: Context, intent: Intent?) {
         val lang0 = intent?.getStringExtra("lang")
         tab = intent?.getStringExtra("tab") ?: "today"
         page = intent?.getStringExtra("page")
+        autoSheet = intent?.getStringExtra("sheet")
         when {
             intent?.getStringExtra("screen") == "setup" -> {
                 state = AppState(settings = Settings(lang = lang0 ?: deviceLang))
@@ -500,9 +504,10 @@ fun Tabs(model: AppModel) {
     BackHandler(enabled = model.page != null || model.tab != "today") { if (model.page != null) model.page = null else model.tab = "today" }
     Scaffold(
         containerColor = p.bg,
+        topBar = { TopBar(model, season = model.tab != "today") },
         bottomBar = { TabBar(model) { model.page = null } },
     ) { pad ->
-        Box(Modifier.padding(pad).fillMaxSize()) {
+        Box(Modifier.padding(top = pad.calculateTopPadding()).fillMaxSize()) {
             when (model.tab) {
                 "today" -> TodayScreen(model)
                 "home" -> AssetsScreen(model, AssetKind.HOME)
@@ -523,36 +528,34 @@ fun Tabs(model: AppModel) {
     }
 }
 
-/** The tab bar. Every label keeps to one line: it measures itself and shrinks to fit its tab,
- *  so "Subscriptions" never breaks, on a small phone or with the device's font size turned up. */
+/** The web's tab bar: five equal columns, a 24px icon over an 11.5px label, a red dot over the one that is on. */
 @Composable
 fun TabBar(model: AppModel, onPick: () -> Unit) {
     val p = pal()
-    Column(Modifier.fillMaxWidth().background(p.surface)) {
+    Column(Modifier.fillMaxWidth().background(p.surface.copy(alpha = 0.96f))) {
         HorizontalDivider(color = p.line)
-        Row(Modifier.fillMaxWidth().navigationBarsPadding().height(66.dp)) {
+        Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 6.dp, vertical = 6.dp)) {
             for ((key, icon) in listOf("today" to "today", "home" to "home", "car" to "car", "subs" to "repeat", "more" to "more")) {
                 val on = model.tab == key
                 val label = model.t("tab.$key")
                 Column(
-                    Modifier.weight(1f).fillMaxHeight()
+                    Modifier.weight(1f).clip(RoundedCornerShape(12.dp))
                         .clickable(role = Role.Tab) { model.tab = key; onPick() }
-                        .semantics { selected = on; contentDescription = label },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
+                        .semantics { selected = on; contentDescription = label }
+                        .padding(top = 9.dp, bottom = 5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(3.dp),
                 ) {
-                    Box(Modifier.width(56.dp).height(30.dp).clip(RoundedCornerShape(15.dp)).background(if (on) p.ink.copy(alpha = 0.08f) else Color.Transparent),
-                        contentAlignment = Alignment.Center) { Ico(icon, if (on) p.ink else p.ink3, 23.dp) }
-                    Spacer(Modifier.height(3.dp))
-                    FitText(label, body(if (model.isArabic) 12 else 11, if (on) FontWeight.Bold else FontWeight.Normal), if (on) p.ink else p.ink3,
-                        Modifier.fillMaxWidth().padding(horizontal = 2.dp).clearAndSetSemantics { })
+                    Box(contentAlignment = Alignment.TopCenter) {
+                        Ico(icon, if (on) p.ink else p.ink3, 24.dp, Modifier.padding(top = 4.dp))
+                        if (on) Box(Modifier.size(6.dp).clip(CircleShape).background(p.sadu).offset(y = (-7).dp))
+                    }
+                    FitText(label, body(11.5, FontWeight.SemiBold, 1.2), if (on) p.ink else p.ink3, Modifier.fillMaxWidth().padding(horizontal = 2.dp).clearAndSetSemantics { })
                 }
             }
         }
     }
 }
 
-/** One line of text that shrinks its font until it fits the width it is given, down to 8sp. */
 @Composable
 fun FitText(text: String, style: TextStyle, color: Color, modifier: Modifier = Modifier) {
     val measurer = rememberTextMeasurer()
@@ -573,8 +576,8 @@ fun ToastBar(model: AppModel, modifier: Modifier) {
         if (model.toast?.id == toast.id) model.toast = null
     }
     Row(
-        modifier.padding(start = 14.dp, end = 14.dp, bottom = 96.dp).fillMaxWidth().height(50.dp)
-            .clip(RoundedCornerShape(16.dp)).background(p.ink).padding(horizontal = 16.dp),
+        modifier.padding(start = 14.dp, end = 14.dp, bottom = 100.dp).fillMaxWidth().heightIn(min = 50.dp)
+            .clip(RoundedCornerShape(16.dp)).background(p.ink).padding(horizontal = 16.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(toast.text, style = body(14, FontWeight.Medium), color = p.onInk, modifier = Modifier.weight(1f), maxLines = 1)

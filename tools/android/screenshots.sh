@@ -19,6 +19,12 @@ for lang in ar en; do
     adb exec-out screencap -p > "shots/$lang-$tab.png"
   done
 done
+for combo in "home task" "subs sub" "home addtask" "home edit" "car odo"; do
+  set -- $combo
+  adb shell am start -S -W -n "$PKG/.MainActivity" --ez sample true --es tab "$1" --es sheet "$2" --es lang ar
+  sleep 7
+  adb exec-out screencap -p > "shots/ar-sheet-$2.png"
+done
 for page in settings warranties techs travel spend about things; do
   adb shell am start -S -W -n "$PKG/.MainActivity" --ez sample true --es tab more --es page "$page" --es lang ar
   sleep 6
