@@ -111,7 +111,11 @@ class AppModel(private val ctx: Context, intent: Intent?) {
                 state = AppState(settings = Settings(lang = lang0 ?: deviceLang))
                 onboarding = Onboarding.Setup
             }
-            intent?.getBooleanExtra("sample", false) == true -> state = Brain.sample(catalog, lang0 ?: deviceLang, today)
+            intent?.getBooleanExtra("sample", false) == true -> {
+                val s = Brain.sample(catalog, lang0 ?: deviceLang, today)
+                // the screenshot run's long names: a home named the way people name them, to keep the rows honest
+                state = if (intent.getBooleanExtra("long", false)) s.copy(homes = s.homes.map { it.copy(name = if (it.name == "البيت" || it.name == "Home") "بيت أبو محمد في الجهراء القديمة" else it.name) }) else s
+            }
             file.exists() -> state = runCatching { AppState.fromJson(JSONObject(file.readText())) }.getOrNull()
             lang0 != null -> state = AppState(settings = Settings(lang = lang0))
         }

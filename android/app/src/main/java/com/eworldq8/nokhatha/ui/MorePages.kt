@@ -304,10 +304,7 @@ fun DocRow(model: AppModel, x: DocView) {
                     Text(rel, style = body(13.5, FontWeight.SemiBold, 1.5), color = p.tint(x.status), maxLines = 1)
                     Day.parse(x.d.expiry)?.let { Text(w.date(it, model.today), style = body(13.5, lineHeight = 1.5), color = p.ink3, maxLines = 1) }
                 }
-                if (need != null) {
-                    Text(need, style = body(12, FontWeight.SemiBold, 1.6), color = p.ink2,
-                        modifier = Modifier.clip(CircleShape).background(p.ink.copy(alpha = 0.07f)).padding(horizontal = 8.dp))
-                }
+                if (need != null) MetaTag(need)
             }
         }
         Text(model.t("act.renewed"), style = body(13.5, FontWeight.Bold, 1.2), color = p.ink,
@@ -414,10 +411,7 @@ fun WarrantyRow(model: AppModel, x: WarrantyView) {
                 Text(rel, style = body(13.5, FontWeight.SemiBold, 1.5), color = p.tint(x.status), maxLines = 1)
                 Text(w.date(x.end, model.today), style = body(13.5, lineHeight = 1.5), color = p.ink3, maxLines = 1)
             }
-            if (!x.w.store.isNullOrBlank()) {
-                Text(x.w.store, style = body(12, FontWeight.SemiBold, 1.6), color = p.ink2,
-                    modifier = Modifier.clip(CircleShape).background(p.ink.copy(alpha = 0.07f)).padding(horizontal = 8.dp))
-            }
+            if (!x.w.store.isNullOrBlank()) MetaTag(x.w.store)
         }
         if (x.w.receipt != null) Ico("receipt", p.ink3, 18.dp)
     }
@@ -645,9 +639,9 @@ fun SpendScreen(model: AppModel) {
                     Row(Modifier.fillMaxWidth().padding(start = 14.dp, end = 12.dp, top = 14.dp, bottom = 14.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(l.title, style = body(15.5, FontWeight.SemiBold, 1.45), color = p.ink)
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                Text(w.date(l.date, model.today), style = body(13.5, lineHeight = 1.5), color = p.ink3)
-                                l.asset?.let { Text(it, style = body(12, FontWeight.SemiBold, 1.6), color = p.ink2, modifier = Modifier.clip(CircleShape).background(p.ink.copy(alpha = 0.07f)).padding(horizontal = 8.dp)) }
+                            MetaLine {
+                                Text(w.date(l.date, model.today), style = body(13.5, lineHeight = 1.5), color = p.ink3, maxLines = 1)
+                                l.asset?.let { MetaTag(it) }
                             }
                         }
                         Text(w.money(l.cost, l.currency), style = body(15, FontWeight.Bold, 1.3), color = p.ink)

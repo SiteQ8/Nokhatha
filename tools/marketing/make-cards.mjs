@@ -2,7 +2,7 @@
 // colours and fonts, Arabic and English. Portrait cards 1080x1350 and a wide banner 1600x900.
 // Needs the site served locally (python3 -m http.server 8765 in docs/) and the renders from
 // tools/marketing/capture.mjs in /tmp/mkt/shots. Output: the folder given as the first argument.
-import { chromium } from '/home/claude/.npm-global/lib/node_modules/playwright/index.mjs';
+const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright');
 import { readFileSync } from 'node:fs';
 import { mkdirSync } from 'node:fs';
 

@@ -1,6 +1,6 @@
 // Renders of the web app's pages at 3x, Arabic and English, on the sample home, for the marketing cards.
 // Needs the site served locally: (cd docs && python3 -m http.server 8765). Writes /tmp/mkt/shots/<lang>-<page>.png.
-import { chromium } from '/home/claude/.npm-global/lib/node_modules/playwright/index.mjs';
+const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright');
 import { mkdirSync } from 'node:fs';
 mkdirSync('/tmp/mkt/shots', { recursive: true });
 const b = await chromium.launch();

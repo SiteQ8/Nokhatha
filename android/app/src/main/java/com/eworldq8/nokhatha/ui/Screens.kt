@@ -54,13 +54,10 @@ fun TaskRow(model: AppModel, e: Evaluated, showAsset: Boolean) {
             RowIcon(e.icon, p.tint(e.status), p.tintBg(e.status))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(e.title(model.lang), style = body(15.5, FontWeight.SemiBold, 1.45), color = p.ink, maxLines = 2)
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                MetaLine {
                     Text(line.first, style = body(13.5, FontWeight.SemiBold, 1.5), color = p.tint(e.status), maxLines = 1)
                     line.second?.let { Text(it, style = body(13.5, lineHeight = 1.5), color = p.ink3, maxLines = 1) }
-                    if (showAsset) {
-                        Text(e.asset.name, style = body(12, FontWeight.SemiBold, 1.6), color = p.ink2,
-                            modifier = Modifier.clip(CircleShape).background(p.ink.copy(alpha = 0.07f)).padding(horizontal = 8.dp))
-                    }
+                    if (showAsset) MetaTag(e.asset.name)
                 }
                 model.brain().progress(e)?.let { ProgressLine(it, p.tint(e.status)) }
             }

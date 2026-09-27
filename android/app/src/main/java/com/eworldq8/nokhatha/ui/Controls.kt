@@ -32,6 +32,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -350,4 +351,19 @@ fun SwitchCard(rows: List<Triple<String, Boolean, (Boolean) -> Unit>>) {
             }
         }
     }
+}
+
+/** A pill inside a row's meta line, as the web's .asset: always one line, cut with dots when long. */
+@Composable
+fun MetaTag(text: String) {
+    val p = pal()
+    Text(text, style = body(12, FontWeight.SemiBold, 1.6), color = p.ink2, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.widthIn(max = 180.dp).clip(CircleShape).background(p.ink.copy(alpha = 0.07f)).padding(horizontal = 8.dp))
+}
+
+/** The web's .row-meta: items 10 apart that move to the next line whole when the row is narrow. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun MetaLine(content: @Composable () -> Unit) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) { content() }
 }
