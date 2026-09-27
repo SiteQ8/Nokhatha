@@ -121,6 +121,7 @@ struct TodayScreen: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(w.greeting(hour: Calendar.current.component(.hour, from: Date()))).font(Theme.title(24)).foregroundStyle(Theme.ink)
                 Text(w.longDate(model.today)).font(Theme.body(14)).foregroundStyle(Theme.ink3)
+                Text(w.hijri(model.today)).font(Theme.body(13)).foregroundStyle(Theme.ink3)
             }
             .padding(.top, 2).padding(.bottom, 4)
             DialView(today: model.today, catalog: model.catalog, dots: dots, center: w.seasonCenter(season, catalog: model.catalog, today: model.today))
@@ -136,6 +137,7 @@ struct TodayScreen: View {
                 .padding(.top, 6)
             }
             WeatherCard()
+            EventCard()
             SectionTitle(text: model.t("today.now"), count: now.count)
             if now.isEmpty { EmptyNote(icon: "done", text: model.t("today.clear")) } else { TaskList(rows: now, showAsset: true) }
             if let first = talk.first { AskCard(s: first).padding(.top, 14) }
@@ -591,6 +593,30 @@ struct WeatherCard: View {
             .background(calm ? Theme.surface : Theme.rutab.opacity(0.12), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(calm ? Theme.line : Theme.rutab.opacity(0.3), lineWidth: 1))
             .padding(.top, 4).padding(.bottom, 14)
+        }
+    }
+}
+
+/// Ramadan or an Eid within 60 days: the days left, and a way to the checklist before Ramadan.
+struct EventCard: View {
+    @EnvironmentObject var model: AppModel
+    var body: some View {
+        let ev = nextHijriEvent(model.today)
+        if ev.now || ev.days <= 60 {
+            let n = model.words.dayCount(ev.days)
+            let text = ev.now ? model.t("event.ramadan_now", ["n": n]) : model.t("event.\(ev.id)_in", ["n": n])
+            HStack(spacing: 10) {
+                Image(systemName: Symbol.name("moon")).font(.system(size: 17)).foregroundStyle(Theme.rutab)
+                Text(text).font(Theme.body(14.5, "SemiBold")).foregroundStyle(Theme.ink).lineSpacing(4)
+                Spacer(minLength: 0)
+                if ev.id == "ramadan" && !ev.now {
+                    WideButton(title: model.t("event.prep"), quiet: true, icon: "moon", height: 36, block: false) { model.tab = "more"; model.page = "ramadan" }
+                }
+            }
+            .padding(.horizontal, 16).padding(.vertical, 12).frame(maxWidth: .infinity, alignment: .leading)
+            .background(Theme.rutab.opacity(0.12), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.rutab.opacity(0.3), lineWidth: 1))
+            .padding(.bottom, 14)
         }
     }
 }

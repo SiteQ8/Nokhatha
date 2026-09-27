@@ -542,3 +542,55 @@ export function toICS(events, { stamp, calName }) {
   L.push('END:VCALENDAR');
   return L.map(foldLine).join('\r\n') + '\r\n';
 }
+
+/* ------------------------------------------------------------- Hijri */
+
+// The tabular Islamic calendar (the arithmetic rule most calendars use), which matches
+// Umm al-Qura on the first of Ramadan and the Eids for the years around now; real months
+// follow the moon, so a day either way is possible and the words say "about".
+
+function jdn(y, m, d) {
+  const a = Math.floor((14 - m) / 12);
+  const yy = y + 4800 - a;
+  const mm = m + 12 * a - 3;
+  return d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045;
+}
+
+function fromJdn(j) {
+  const a = j + 32044;
+  const b = Math.floor((4 * a + 3) / 146097);
+  const c = a - Math.floor((146097 * b) / 4);
+  const d = Math.floor((4 * c + 3) / 1461);
+  const e = c - Math.floor((1461 * d) / 4);
+  const m = Math.floor((5 * e + 2) / 153);
+  return { y: 100 * b + d - 4800 + Math.floor(m / 10), m: m + 3 - 12 * Math.floor(m / 10), d: e - Math.floor((153 * m + 2) / 5) + 1 };
+}
+
+/** The Hijri year, month (1 to 12) and day of a Gregorian ISO date. */
+export function toHijri(iso) {
+  const g = parseISO(iso);
+  let l = jdn(g.y, g.m, g.d) - 1948440 + 10632;
+  const n = Math.floor((l - 1) / 10631);
+  l = l - 10631 * n + 354;
+  const j = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) + Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
+  l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+  const m = Math.floor((24 * l) / 709);
+  return { y: 30 * n + j - 30, m, d: l - Math.floor((709 * m) / 24) };
+}
+
+/** The Gregorian ISO date of a Hijri year, month and day. */
+export function fromHijri(y, m, d) {
+  const j = Math.floor((11 * y + 3) / 30) + 354 * y + 30 * m - Math.floor((m - 1) / 2) + d + 1948440 - 385;
+  const g = fromJdn(j);
+  return `${g.y}-${String(g.m).padStart(2, '0')}-${String(g.d).padStart(2, '0')}`;
+}
+
+/** Ramadan while it runs (with the days left to Eid), otherwise the next of Ramadan, Eid al-Fitr and Eid al-Adha with the days left to it. */
+export function nextHijriEvent(iso) {
+  const h = toHijri(iso);
+  if (h.m === 9) { const eid = fromHijri(h.y, 10, 1); return { id: 'ramadan', now: true, days: dayNumber(eid) - dayNumber(iso), year: h.y, date: eid }; }
+  const list = [];
+  for (const y of [h.y, h.y + 1]) list.push({ id: 'ramadan', date: fromHijri(y, 9, 1), year: y }, { id: 'fitr', date: fromHijri(y, 10, 1), year: y }, { id: 'adha', date: fromHijri(y, 12, 10), year: y });
+  const next = list.filter((e) => e.date > iso).sort((a, b) => a.date.localeCompare(b.date))[0];
+  return { ...next, now: false, days: dayNumber(next.date) - dayNumber(iso) };
+}

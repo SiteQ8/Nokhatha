@@ -733,3 +733,68 @@ public func toICS(_ events: [CalendarEvent], stamp: String, calName: String) -> 
     lines.append("END:VCALENDAR")
     return lines.map(foldLine).joined(separator: "\r\n") + "\r\n"
 }
+
+// MARK: - Hijri
+// The tabular Islamic calendar, the same arithmetic as the web engine.
+
+public struct Hijri: Hashable, Sendable {
+    public let y: Int
+    public let m: Int
+    public let d: Int
+}
+
+/// Ramadan while it runs (days left to Eid), else the next of Ramadan and the two Eids with the days left to it.
+public struct HijriEvent: Hashable, Sendable {
+    public let id: String
+    public let now: Bool
+    public let days: Int
+    public let year: Int
+    public let date: Day
+}
+
+private func fdiv(_ a: Int, _ b: Int) -> Int { Int((Double(a) / Double(b)).rounded(.down)) }
+
+private func jdn(_ y: Int, _ m: Int, _ d: Int) -> Int {
+    let a = fdiv(14 - m, 12)
+    let yy = y + 4800 - a
+    let mm = m + 12 * a - 3
+    return d + fdiv(153 * mm + 2, 5) + 365 * yy + fdiv(yy, 4) - fdiv(yy, 100) + fdiv(yy, 400) - 32045
+}
+
+private func fromJdn(_ j: Int) -> Day {
+    let a = j + 32044
+    let b = fdiv(4 * a + 3, 146097)
+    let c = a - fdiv(146097 * b, 4)
+    let d = fdiv(4 * c + 3, 1461)
+    let e = c - fdiv(1461 * d, 4)
+    let m = fdiv(5 * e + 2, 153)
+    return Day(y: 100 * b + d - 4800 + fdiv(m, 10), m: m + 3 - 12 * fdiv(m, 10), d: e - fdiv(153 * m + 2, 5) + 1)
+}
+
+public func toHijri(_ day: Day) -> Hijri {
+    let g = day.ymd
+    var l = jdn(g.y, g.m, g.d) - 1948440 + 10632
+    let n = fdiv(l - 1, 10631)
+    l = l - 10631 * n + 354
+    let j = fdiv(10985 - l, 5316) * fdiv(50 * l, 17719) + fdiv(l, 5670) * fdiv(43 * l, 15238)
+    l = l - fdiv(30 - j, 15) * fdiv(17719 * j, 50) - fdiv(j, 16) * fdiv(15238 * j, 43) + 29
+    let m = fdiv(24 * l, 709)
+    return Hijri(y: 30 * n + j - 30, m: m, d: l - fdiv(709 * m, 24))
+}
+
+public func fromHijri(_ y: Int, _ m: Int, _ d: Int) -> Day {
+    fromJdn(fdiv(11 * y + 3, 30) + 354 * y + 30 * m - fdiv(m - 1, 2) + d + 1948440 - 385)
+}
+
+public func nextHijriEvent(_ day: Day) -> HijriEvent {
+    let h = toHijri(day)
+    if h.m == 9 { let eid = fromHijri(h.y, 10, 1); return HijriEvent(id: "ramadan", now: true, days: eid.n - day.n, year: h.y, date: eid) }
+    var list: [HijriEvent] = []
+    for y in [h.y, h.y + 1] {
+        list.append(HijriEvent(id: "ramadan", now: false, days: 0, year: y, date: fromHijri(y, 9, 1)))
+        list.append(HijriEvent(id: "fitr", now: false, days: 0, year: y, date: fromHijri(y, 10, 1)))
+        list.append(HijriEvent(id: "adha", now: false, days: 0, year: y, date: fromHijri(y, 12, 10)))
+    }
+    let next = list.filter { $0.date > day }.min { $0.date.n < $1.date.n }!
+    return HijriEvent(id: next.id, now: false, days: next.date.n - day.n, year: next.year, date: next.date)
+}

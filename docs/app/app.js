@@ -56,7 +56,7 @@ async function loadData() {
   const [seasons, tasks, strings, places, docs] = await Promise.all([get('seasons'), get('tasks'), get('strings'), get('places'), get('docs')]);
   D = {
     seasons: seasons.seasons, groups: seasons.groups, bawarih: seasons.bawarih, heat: seasons.heat,
-    templates: tasks.templates, areas: tasks.areas, trades: tasks.trades, travel: tasks.travel, strings,
+    templates: tasks.templates, areas: tasks.areas, trades: tasks.trades, travel: tasks.travel, ramadan: tasks.ramadan, strings,
   };
   D.tpl = Object.fromEntries(D.templates.map((x) => [x.id, x]));
   D.season = Object.fromEntries(D.seasons.map((x) => [x.id, x]));
@@ -285,13 +285,14 @@ function viewToday() {
   const cur = totals[state.settings.currency] ? state.settings.currency : Object.keys(totals)[0];
   return `<div class="today">
 <section class="today-dial">
-<p class="greet"><span>${greeting()}</span><span class="greet-d">${longDate(TODAY)}</span></p>
+<p class="greet"><span>${greeting()}</span><span class="greet-d">${longDate(TODAY)}</span><span class="greet-h">${esc(hijriText(TODAY))}</span></p>
 <div class="dial-wrap${intro ? ' intro' : ''}">${dial}</div>
 <p class="tip">${icon('spark')}<span>${esc(D.season[season.id]['hint_' + L()])}</span></p>
 </section>
 <section class="today-list">
 ${installTip()}
 ${weatherCard()}
+${eventCard()}
 <div class="sec"><h2>${t('today.now')}</h2>${now.length ? `<span class="count">${now.length}</span>` : ''}</div>
 ${now.length ? `<ul class="list">${now.map((e) => row(e, true)).join('')}</ul>` : `<div class="empty">${icon('done')}<p>${t('today.clear')}</p></div>`}
 ${talk.length ? askCard(talk[0]) : ''}
@@ -417,6 +418,7 @@ function viewMore() {
     ['warranties', 'seal', 'more.warranties', state.warranties.length || null],
     ['techs', 'wrench', 'more.techs', state.techs.length || null],
     ['travel', 'plane', 'more.travel', state.travel.done.length ? `${state.travel.done.length}/${D.travel.length}` : null],
+    ['ramadan', 'moon', 'more.ramadan', ramadanDone().length ? `${ramadanDone().length}/${D.ramadan.length}` : null],
     ['spend', 'wallet', 'more.spend', null],
     ['settings', 'sliders', 'more.settings', null],
     ['about', 'info', 'more.about', null],
@@ -574,6 +576,45 @@ function viewTravel() {
 <ul class="list checks">${D.travel.map((x) => `<li><label class="check-row"><input type="checkbox" data-act="travel" value="${esc(x.id)}"${done.has(x.id) ? ' checked' : ''}>
 <span class="box">${icon('done')}</span><span>${esc(nm(x))}</span></label></li>`).join('')}</ul>
 <div class="actions"><button class="btn btn-quiet" data-act="travel-reset">${icon('repeat')}<span>${t('travel.reset')}</span></button></div>`;
+}
+
+/** The Ramadan the checklist is for: the one running, or the next one. */
+function ramadanYear() {
+  const ev = E.nextHijriEvent(TODAY);
+  if (ev.id === 'ramadan') return ev.year;
+  const h = E.toHijri(TODAY);
+  return h.m > 9 ? h.y + 1 : h.y;
+}
+
+/** The ticks for that Ramadan; an older year's ticks are forgotten. */
+function ramadanDone() {
+  return state.ramadan.year === ramadanYear() ? state.ramadan.done : [];
+}
+
+function viewRamadan() {
+  const done = new Set(ramadanDone());
+  return `${pageHead(t('more.ramadan'), 'more', '', true)}
+<p class="lede">${t('ramadan.lede')}</p>
+<p class="progress-l">${t('ramadan.progress', { n: done.size, of: D.ramadan.length, y: ramadanYear() })}</p>
+<ul class="list checks">${D.ramadan.map((x) => `<li><label class="check-row"><input type="checkbox" data-act="ramadan" value="${esc(x.id)}"${done.has(x.id) ? ' checked' : ''}>
+<span class="box">${icon('done')}</span><span>${esc(nm(x))}</span></label></li>`).join('')}</ul>
+<div class="actions"><button class="btn btn-quiet" data-act="ramadan-reset">${icon('repeat')}<span>${t('ramadan.reset')}</span></button></div>`;
+}
+
+/** The Hijri date in words. */
+function hijriText(iso) {
+  const h = E.toHijri(iso);
+  return t('hijri.date', { d: h.d, m: t('hijri.' + h.m), y: h.y });
+}
+
+/** Ramadan or an Eid within 60 days: a line with the days left and a way to the checklist. */
+function eventCard() {
+  const ev = E.nextHijriEvent(TODAY);
+  if (!ev.now && ev.days > 60) return '';
+  const n = dayCount(ev.days);
+  const text = ev.now ? t('event.ramadan_now', { n }) : t(`event.${ev.id}_in`, { n });
+  const link = ev.id === 'ramadan' && !ev.now ? `<a class="btn btn-quiet" href="#/ramadan">${icon('moon')}<span>${t('event.prep')}</span></a>` : '';
+  return `<div class="event">${icon('moon')}<span>${esc(text)}</span>${link}</div>`;
 }
 
 function viewSpend(r) {
@@ -875,7 +916,7 @@ function render() {
     const v = r.id === '2' ? viewSetup() : r.id === '3' ? viewLast() : viewWelcome();
     out = `<main class="onb" id="main">${v}</main>`;
   } else {
-    const V = { today: viewToday, home: viewHome, car: viewCar, subs: viewSubs, more: viewMore, things: viewThings, docs: viewDocs, warranties: viewWarranties, techs: viewTechs, travel: viewTravel, spend: viewSpend, settings: viewSettings, about: viewAbout }[r.name] || viewToday;
+    const V = { today: viewToday, home: viewHome, car: viewCar, subs: viewSubs, more: viewMore, things: viewThings, docs: viewDocs, ramadan: viewRamadan, warranties: viewWarranties, techs: viewTechs, travel: viewTravel, spend: viewSpend, settings: viewSettings, about: viewAbout }[r.name] || viewToday;
     out = shell(r, V(r));
   }
   $('#app').innerHTML = out;
@@ -1673,6 +1714,7 @@ async function onClick(e) {
       commit();
       break;
     }
+    case 'ramadan-reset': state.ramadan = { year: ramadanYear(), done: [] }; commit(); break;
     case 'add-doc': docSheet(null); break;
     case 'doc': docSheet(id); break;
     case 'fill-who': { const input = $('#sheet-root [name="who"]'); if (input) input.value = el.dataset.v; break; }
@@ -1875,6 +1917,17 @@ function onChange(e) {
     car.renewal = car.renewal || { done: [], years: plan.years[0] };
     car.renewal.done = el.checked ? [...new Set([...car.renewal.done, el.value])] : car.renewal.done.filter((x) => x !== el.value);
     commit(true);
+    return;
+  }
+  if (el.matches('[data-act="ramadan"]')) {
+    const year = ramadanYear();
+    const set = new Set(ramadanDone());
+    if (el.checked) set.add(el.value);
+    else set.delete(el.value);
+    state.ramadan = { year, done: D.ramadan.map((x) => x.id).filter((x) => set.has(x)) };
+    commit(true);
+    const p = $('.progress-l');
+    if (p) p.textContent = t('ramadan.progress', { n: state.ramadan.done.length, of: D.ramadan.length, y: year });
     return;
   }
   if (el.matches('[data-act="travel"]')) {

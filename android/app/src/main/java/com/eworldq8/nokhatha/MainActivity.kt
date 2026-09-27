@@ -565,6 +565,7 @@ fun Tabs(model: AppModel) {
                 else -> when (model.page) {
                     "things" -> AssetsScreen(model, AssetKind.THING) { model.page = null }
                     "docs" -> DocsScreen(model)
+                    "ramadan" -> RamadanScreen(model)
                     "warranties" -> WarrantiesScreen(model)
                     "techs" -> TechsScreen(model)
                     "travel" -> TravelScreen(model)

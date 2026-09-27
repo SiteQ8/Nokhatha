@@ -358,6 +358,9 @@ class Words(private val strings: Map<String, Map<String, String>>, val lang: Str
     fun dayCount(n: Int) = if (isArabic) countAr(n, "day") else "$n day${if (n == 1) "" else "s"}"
     fun monthCount(n: Int) = if (isArabic) countAr(n, "month") else "$n month${if (n == 1) "" else "s"}"
     fun yearCount(n: Int) = if (isArabic) countAr(n, "year") else "$n year${if (n == 1) "" else "s"}"
+
+    /** The Hijri date in words. */
+    fun hijri(day: Day): String { val h = toHijri(day); return t("hijri.date", mapOf("d" to h.d.toString(), "m" to t("hijri.${h.m}"), "y" to h.y.toString())) }
     fun km(n: Int) = groupThousands(n.toString()) + if (isArabic) " كم" else " km"
 
     fun due(e: Evaluated, today: Day): Pair<String, String?> {

@@ -121,6 +121,7 @@ fun TodayScreen(model: AppModel) {
         Column(Modifier.padding(top = 2.dp, bottom = 4.dp)) {
             Text(w.greeting(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)), style = title(24), color = p.ink)
             Text(w.longDate(model.today), style = body(14), color = p.ink3)
+            Text(w.hijri(model.today), style = body(13), color = p.ink3)
         }
         Box(Modifier.padding(top = 4.dp, bottom = 10.dp)) { Dial(model.today, model.catalog, dots, w.seasonCenter(season, model.catalog, model.today)) }
         model.catalog.season(season.id)?.hint(model.lang)?.let { hint ->
@@ -132,6 +133,7 @@ fun TodayScreen(model: AppModel) {
         }
         LaunchedEffect(model.state?.settings?.weather) { model.refreshWeather() }
         WeatherCard(model)
+        EventCard(model)
         SectionTitle(model.t("today.now"), now.size)
         if (now.isEmpty()) EmptyNote("done", model.t("today.clear")) else TaskList(model, now, true)
         talk.firstOrNull()?.let { Box(Modifier.padding(top = 14.dp)) { AskCard(model, it) } }
@@ -495,5 +497,22 @@ fun RenewalCard(model: AppModel, carId: String) {
         }
         Spacer(Modifier.height(12.dp))
         WideButton(model.t("renew.done"), icon = "done") { model.update("renew.done_toast") { it.finishRenewal(carId) } }
+    }
+}
+
+/** Ramadan or an Eid within 60 days: the days left, and a way to the checklist before Ramadan. */
+@Composable
+fun EventCard(model: AppModel) {
+    val ev = nextHijriEvent(model.today)
+    if (!ev.now && ev.days > 60) return
+    val p = pal()
+    val n = model.words.dayCount(ev.days)
+    val text = if (ev.now) model.t("event.ramadan_now", mapOf("n" to n)) else model.t("event.${ev.id}_in", mapOf("n" to n))
+    val shape = RoundedCornerShape(18.dp)
+    Row(Modifier.padding(bottom = 14.dp).fillMaxWidth().clip(shape).background(p.rutab.copy(alpha = 0.12f)).border(1.dp, p.rutab.copy(alpha = 0.3f), shape).padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Ico("moon", p.rutab, 20.dp)
+        Text(text, style = body(14.5, FontWeight.SemiBold, 1.6), color = p.ink, modifier = Modifier.weight(1f))
+        if (ev.id == "ramadan" && !ev.now) WideButton(model.t("event.prep"), quiet = true, height = 36.dp, block = false, icon = "moon") { model.tab = "more"; model.page = "ramadan" }
     }
 }

@@ -15,6 +15,7 @@ struct MoreScreen: View {
             ("warranties", "seal", s.warranties.isEmpty ? nil : String(s.warranties.count)),
             ("techs", "wrench", s.techs.isEmpty ? nil : String(s.techs.count)),
             ("travel", "plane", s.travel.done.isEmpty ? nil : "\(s.travel.done.count)/\(model.catalog.travel.count)"),
+            ("ramadan", "moon", model.brain.ramadanDone().isEmpty ? nil : "\(model.brain.ramadanDone().count)/\(model.catalog.ramadan.count)"),
             ("spend", "wallet", nil), ("settings", "sliders", nil), ("about", "info", nil),
         ]
         Page {
@@ -647,6 +648,38 @@ struct TechSheet: View {
         .alert(model.t("confirm.tech"), isPresented: $confirm) {
             Button(model.t("act.delete"), role: .destructive) { if let x = existing { model.update("toast.deleted") { b in b.state.techs.removeAll { $0.id == x.id } }; onClose() } }
             Button(model.t("act.cancel"), role: .cancel) {}
+        }
+    }
+}
+
+// MARK: - Ramadan
+
+struct RamadanScreen: View {
+    @EnvironmentObject var model: AppModel
+    var body: some View {
+        let b = model.brain
+        let done = Set(b.ramadanDone())
+        let list = model.catalog.ramadan
+        Page {
+            SubHead(title: model.t("more.ramadan"))
+            Lede(text: model.t("ramadan.lede"))
+            Text(model.t("ramadan.progress", ["n": String(done.count), "of": String(list.count), "y": String(b.ramadanYear())])).font(Theme.body(14, "Bold")).foregroundStyle(Theme.ink2).padding(.bottom, 10)
+            ListCard {
+                ForEach(Array(list.enumerated()), id: \.element.id) { i, x in
+                    if i > 0 { RowLine() }
+                    let on = done.contains(x.id)
+                    Button { model.update { $0.setRamadan(x.id, on: !on) } } label: {
+                        HStack(spacing: 12) {
+                            CheckBox(on: on)
+                            Text(x.name(model.lang)).font(Theme.body(16)).foregroundStyle(on ? Theme.ink3 : Theme.ink).strikethrough(on).multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
+                        }
+                        .padding(.horizontal, 16).padding(.vertical, 13).contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            WideButton(title: model.t("ramadan.reset"), quiet: true, icon: "repeat") { model.update { $0.resetRamadan() } }.padding(.top, 16)
         }
     }
 }

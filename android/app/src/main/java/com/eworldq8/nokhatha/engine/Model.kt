@@ -67,6 +67,7 @@ class Catalog(
     val seasons: List<Season>, val bawarih: Window, val templates: List<Template>,
     val heat: Window?, val areas: Map<String, List<Named>>,
     val trades: List<Named>, val travel: List<Named>, val thingTypes: List<Named>, val places: List<Place>,
+    val ramadan: List<Named> = emptyList(),
     val strings: Map<String, Map<String, String>>, val docTypes: List<DocType> = emptyList(), val who: List<Named> = emptyList(),
     val renewal: Map<String, RenewPlan> = emptyMap(),
 ) {
@@ -117,6 +118,7 @@ class Catalog(
                 areas = areas,
                 trades = t.getJSONArray("trades").map(named),
                 travel = t.getJSONArray("travel").map(named),
+                ramadan = t.optJSONArray("ramadan")?.map(named) ?: emptyList(),
                 thingTypes = t.getJSONArray("thingTypes").map(named),
                 places = p.getJSONArray("places").map { Place(it.getString("id"), it.getString("country"), it.getString("ar"), it.getString("en"), it.getDouble("lat"), it.getDouble("lon")) },
                 strings = strings,
@@ -167,7 +169,7 @@ data class AppState(
     val v: Int = 1, val settings: Settings = Settings(), val homes: List<Home> = emptyList(), val cars: List<Car> = emptyList(),
     val things: List<Thing> = emptyList(), val items: List<Item> = emptyList(), val subs: List<Sub> = emptyList(),
     val warranties: List<Warranty> = emptyList(), val techs: List<Tech> = emptyList(), val travelDone: List<String> = emptyList(),
-    val sample: Boolean? = null, val docs: List<Doc> = emptyList(),
+    val sample: Boolean? = null, val docs: List<Doc> = emptyList(), val ramadanYear: Int = 0, val ramadanDone: List<String> = emptyList(),
 ) {
     val isEmpty: Boolean get() = homes.isEmpty() && cars.isEmpty() && things.isEmpty() && subs.isEmpty()
 
@@ -202,6 +204,7 @@ data class AppState(
             }))
             .put("techs", JSONArray(techs.map { t -> JSONObject().put("id", t.id).put("name", t.name).put("trade", t.trade).put("phone", t.phone).opt("note", t.note) }))
             .put("travel", JSONObject().put("done", JSONArray(travelDone)))
+            .put("ramadan", JSONObject().put("year", ramadanYear).put("done", JSONArray(ramadanDone)))
             .put("docs", JSONArray(docs.map { d -> JSONObject().put("id", d.id).put("type", d.type).opt("who", d.who).opt("name", d.name).put("expiry", d.expiry).opt("note", d.note) }))
             .opt("sample", sample)
     }
@@ -238,6 +241,8 @@ data class AppState(
                 travelDone = (if (o.has("travel") && !o.isNull("travel")) o.getJSONObject("travel").arr("done") else JSONArray()).let { a -> (0 until a.length()).map { a.getString(it) } },
                 sample = o.bool("sample"),
                 docs = o.arr("docs").map { Doc(it.getString("id"), it.getString("type"), it.str("who"), it.str("name"), it.getString("expiry"), it.str("note")) },
+                ramadanYear = o.optJSONObject("ramadan")?.optInt("year", 0) ?: 0,
+                ramadanDone = (o.optJSONObject("ramadan")?.optJSONArray("done") ?: JSONArray()).let { a -> (0 until a.length()).map { i -> a.getString(i) } },
             )
         }
     }

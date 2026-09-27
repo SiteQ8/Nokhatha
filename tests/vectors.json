@@ -2230,6 +2230,142 @@
     "$heat"
    ],
    "out": false
+  },
+  {
+   "fn": "toHijri",
+   "args": [
+    "2026-09-26"
+   ],
+   "out": {
+    "y": 1448,
+    "m": 4,
+    "d": 13
+   }
+  },
+  {
+   "fn": "toHijri",
+   "args": [
+    "2026-02-18"
+   ],
+   "out": {
+    "y": 1447,
+    "m": 9,
+    "d": 1
+   }
+  },
+  {
+   "fn": "toHijri",
+   "args": [
+    "2024-03-11"
+   ],
+   "out": {
+    "y": 1445,
+    "m": 9,
+    "d": 1
+   }
+  },
+  {
+   "fn": "toHijri",
+   "args": [
+    "2026-05-27"
+   ],
+   "out": {
+    "y": 1447,
+    "m": 12,
+    "d": 10
+   }
+  },
+  {
+   "fn": "fromHijri",
+   "args": [
+    1447,
+    9,
+    1
+   ],
+   "out": "2026-02-18"
+  },
+  {
+   "fn": "fromHijri",
+   "args": [
+    1447,
+    10,
+    1
+   ],
+   "out": "2026-03-20"
+  },
+  {
+   "fn": "fromHijri",
+   "args": [
+    1448,
+    9,
+    1
+   ],
+   "out": "2027-02-08"
+  },
+  {
+   "fn": "nextHijriEvent",
+   "args": [
+    "2026-09-26"
+   ],
+   "out": {
+    "id": "ramadan",
+    "now": false,
+    "days": 135,
+    "year": 1448,
+    "date": "2027-02-08"
+   }
+  },
+  {
+   "fn": "nextHijriEvent",
+   "args": [
+    "2026-02-10"
+   ],
+   "out": {
+    "id": "ramadan",
+    "now": false,
+    "days": 8,
+    "year": 1447,
+    "date": "2026-02-18"
+   }
+  },
+  {
+   "fn": "nextHijriEvent",
+   "args": [
+    "2026-02-25"
+   ],
+   "out": {
+    "id": "ramadan",
+    "now": true,
+    "days": 23,
+    "year": 1447,
+    "date": "2026-03-20"
+   }
+  },
+  {
+   "fn": "nextHijriEvent",
+   "args": [
+    "2026-03-15"
+   ],
+   "out": {
+    "id": "ramadan",
+    "now": true,
+    "days": 5,
+    "year": 1447,
+    "date": "2026-03-20"
+   }
+  },
+  {
+   "fn": "nextHijriEvent",
+   "args": [
+    "2026-05-20"
+   ],
+   "out": {
+    "id": "adha",
+    "now": false,
+    "days": 7,
+    "year": 1447,
+    "date": "2026-05-27"
+   }
   }
  ]
 }

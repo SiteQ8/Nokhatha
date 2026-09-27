@@ -277,3 +277,26 @@ public extension Brain {
         state.cars[ci].renewal = nil
     }
 }
+
+// MARK: - Ramadan
+
+public extension Brain {
+    /// The Ramadan the checklist is for: the one running, or the next one.
+    func ramadanYear() -> Int {
+        let ev = nextHijriEvent(today)
+        if ev.id == "ramadan" { return ev.year }
+        let h = toHijri(today)
+        return h.m > 9 ? h.y + 1 : h.y
+    }
+
+    /// The ticks for that Ramadan; an older year's ticks are forgotten.
+    func ramadanDone() -> [String] { state.ramadan.year == ramadanYear() ? state.ramadan.done : [] }
+
+    mutating func setRamadan(_ id: String, on: Bool) {
+        var done = Set(ramadanDone())
+        if on { done.insert(id) } else { done.remove(id) }
+        state.ramadan = RamadanState(year: ramadanYear(), done: catalog.ramadan.map(\.id).filter { done.contains($0) })
+    }
+
+    mutating func resetRamadan() { state.ramadan = RamadanState(year: ramadanYear(), done: []) }
+}

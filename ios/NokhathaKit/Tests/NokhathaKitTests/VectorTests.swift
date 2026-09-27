@@ -96,6 +96,9 @@ final class VectorTests: XCTestCase {
         case "normalizeDigits": return normalizeDigits(str(a[0]))
         case "parseMoney": return parseMoney(str(a[0]), str(a[1])) as Any? ?? NSNull()
         case "countAr": return countAr(int(a[0]), str(a[1]))
+        case "toHijri": let h = toHijri(day(a[0])!); return ["y": h.y, "m": h.m, "d": h.d]
+        case "fromHijri": return fromHijri(int(a[0]), int(a[1]), int(a[2])).iso
+        case "nextHijriEvent": let e = nextHijriEvent(day(a[0])!); return ["id": e.id, "now": e.now, "days": e.days, "year": e.year, "date": e.date.iso]
         case "relative": return relative(int(a[0]), str(a[1]))
         case "formatDate": return formatDate(day(a[0])!, str(a[1]), refYear: a.count > 2 ? int(a[2]) : nil)
         case "toICS":

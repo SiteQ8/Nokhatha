@@ -595,3 +595,54 @@ fun toICS(events: List<CalendarEvent>, stamp: String, calName: String): String {
     lines += "END:VCALENDAR"
     return lines.joinToString("\r\n") { foldLine(it) } + "\r\n"
 }
+
+// ---------------------------------------------------------------- Hijri
+// The tabular Islamic calendar, the same arithmetic as the web engine.
+
+data class Hijri(val y: Int, val m: Int, val d: Int)
+
+/** Ramadan while it runs (days left to Eid), else the next of Ramadan and the two Eids with the days left to it. */
+data class HijriEvent(val id: String, val now: Boolean, val days: Int, val year: Int, val date: Day)
+
+private fun jdn(y: Int, m: Int, d: Int): Int {
+    val a = Math.floorDiv(14 - m, 12)
+    val yy = y + 4800 - a
+    val mm = m + 12 * a - 3
+    return d + Math.floorDiv(153 * mm + 2, 5) + 365 * yy + Math.floorDiv(yy, 4) - Math.floorDiv(yy, 100) + Math.floorDiv(yy, 400) - 32045
+}
+
+private fun fromJdn(j: Int): Day {
+    val a = j + 32044
+    val b = Math.floorDiv(4 * a + 3, 146097)
+    val c = a - Math.floorDiv(146097 * b, 4)
+    val d = Math.floorDiv(4 * c + 3, 1461)
+    val e = c - Math.floorDiv(1461 * d, 4)
+    val m = Math.floorDiv(5 * e + 2, 153)
+    return Day.of(100 * b + d - 4800 + Math.floorDiv(m, 10), m + 3 - 12 * Math.floorDiv(m, 10), e - Math.floorDiv(153 * m + 2, 5) + 1)
+}
+
+fun toHijri(day: Day): Hijri {
+    val (gy, gm, gd) = day.ymd
+    var l = jdn(gy, gm, gd) - 1948440 + 10632
+    val n = Math.floorDiv(l - 1, 10631)
+    l = l - 10631 * n + 354
+    val j = Math.floorDiv(10985 - l, 5316) * Math.floorDiv(50 * l, 17719) + Math.floorDiv(l, 5670) * Math.floorDiv(43 * l, 15238)
+    l = l - Math.floorDiv(30 - j, 15) * Math.floorDiv(17719 * j, 50) - Math.floorDiv(j, 16) * Math.floorDiv(15238 * j, 43) + 29
+    val m = Math.floorDiv(24 * l, 709)
+    return Hijri(30 * n + j - 30, m, l - Math.floorDiv(709 * m, 24))
+}
+
+fun fromHijri(y: Int, m: Int, d: Int): Day = fromJdn(Math.floorDiv(11 * y + 3, 30) + 354 * y + 30 * m - Math.floorDiv(m - 1, 2) + d + 1948440 - 385)
+
+fun nextHijriEvent(day: Day): HijriEvent {
+    val h = toHijri(day)
+    if (h.m == 9) { val eid = fromHijri(h.y, 10, 1); return HijriEvent("ramadan", true, eid.n - day.n, h.y, eid) }
+    val list = ArrayList<HijriEvent>()
+    for (y in listOf(h.y, h.y + 1)) {
+        list += HijriEvent("ramadan", false, 0, y, fromHijri(y, 9, 1))
+        list += HijriEvent("fitr", false, 0, y, fromHijri(y, 10, 1))
+        list += HijriEvent("adha", false, 0, y, fromHijri(y, 12, 10))
+    }
+    val next = list.filter { it.date > day }.minByOrNull { it.date.n }!!
+    return next.copy(days = next.date.n - day.n)
+}

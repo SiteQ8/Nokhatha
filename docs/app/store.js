@@ -23,6 +23,7 @@ export function blank(lang) {
     techs: [],
     docs: [],
     travel: { done: [] },
+    ramadan: { year: 0, done: [] },
   };
 }
 
@@ -31,6 +32,7 @@ export function normalize(s) {
   const out = { ...b, ...(s || {}), settings: { ...b.settings, ...((s && s.settings) || {}) }, travel: { ...b.travel, ...((s && s.travel) || {}) } };
   for (const k of ['homes', 'cars', 'things', 'items', 'subs', 'warranties', 'techs', 'docs']) if (!Array.isArray(out[k])) out[k] = [];
   if (!Array.isArray(out.travel.done)) out.travel.done = [];
+  if (!out.ramadan || !Array.isArray(out.ramadan.done)) out.ramadan = { year: 0, done: [] };
   return out;
 }
 

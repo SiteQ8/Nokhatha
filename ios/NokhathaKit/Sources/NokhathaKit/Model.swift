@@ -54,6 +54,7 @@ struct TasksDoc: Codable {
     let areas: [String: [Named]]
     let trades: [Named]
     let travel: [Named]
+    let ramadan: [Named]?
     let thingTypes: [Named]
 }
 
@@ -75,6 +76,7 @@ public struct Catalog: Sendable {
     public let areas: [String: [Named]]
     public let trades: [Named]
     public let travel: [Named]
+    public let ramadan: [Named]
     public let thingTypes: [Named]
     public let places: [Place]
     public let strings: [String: [String: String]]
@@ -98,7 +100,7 @@ public struct Catalog: Sendable {
         let strings = try read("strings.json", [String: [String: String]].self)
         let d = try read("docs.json", DocsDoc.self)
         return Catalog(seasons: s.seasons, groups: s.groups, bawarih: s.bawarih, heat: s.heat, templates: t.templates, areas: t.areas,
-                       trades: t.trades, travel: t.travel, thingTypes: t.thingTypes, places: p.places, strings: strings,
+                       trades: t.trades, travel: t.travel, ramadan: t.ramadan ?? [], thingTypes: t.thingTypes, places: p.places, strings: strings,
                        docTypes: d.types, who: d.who, renewal: d.renewal)
     }
 }
@@ -311,6 +313,13 @@ public struct Travel: Codable, Hashable, Sendable {
     public var done: [String] = []
 }
 
+/// The ticks of the checklist before one Ramadan, by its Hijri year.
+public struct RamadanState: Codable, Hashable, Sendable {
+    public var year: Int = 0
+    public var done: [String] = []
+    public init(year: Int = 0, done: [String] = []) { self.year = year; self.done = done }
+}
+
 public struct AppState: Codable, Hashable, Sendable {
     public var v = 1
     public var settings = Settings()
@@ -324,6 +333,7 @@ public struct AppState: Codable, Hashable, Sendable {
     public var travel = Travel()
     public var sample: Bool?
     public var docs: [Doc] = []
+    public var ramadan = RamadanState()
 
     public init(lang: String = "ar") { settings.lang = lang }
 
@@ -341,6 +351,7 @@ public struct AppState: Codable, Hashable, Sendable {
         travel = try c.decodeIfPresent(Travel.self, forKey: .travel) ?? Travel()
         sample = try c.decodeIfPresent(Bool.self, forKey: .sample)
         docs = try c.decodeIfPresent([Doc].self, forKey: .docs) ?? []
+        ramadan = try c.decodeIfPresent(RamadanState.self, forKey: .ramadan) ?? RamadanState()
     }
 
     public var isEmpty: Bool { homes.isEmpty && cars.isEmpty && things.isEmpty && subs.isEmpty }

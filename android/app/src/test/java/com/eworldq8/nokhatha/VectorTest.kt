@@ -73,6 +73,9 @@ class VectorTest {
             "normalizeDigits" -> normalizeDigits(g(0) as String)
             "parseMoney" -> parseMoney(g(0) as String, g(1) as String) ?: JSONObject.NULL
             "countAr" -> countAr(int(g(0)), g(1) as String)
+            "toHijri" -> toHijri(day(g(0))!!).let { JSONObject().put("y", it.y).put("m", it.m).put("d", it.d) }
+            "fromHijri" -> fromHijri(int(g(0)), int(g(1)), int(g(2))).iso
+            "nextHijriEvent" -> nextHijriEvent(day(g(0))!!).let { JSONObject().put("id", it.id).put("now", it.now).put("days", it.days).put("year", it.year).put("date", it.date.iso) }
             "relative" -> relative(int(g(0)), g(1) as String)
             "formatDate" -> formatDate(day(g(0))!!, g(1) as String, g(2)?.let { int(it) })
             "toICS" -> {

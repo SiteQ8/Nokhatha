@@ -42,6 +42,7 @@ fun MoreScreen(model: AppModel) {
         Triple("warranties", "seal", s.warranties.size.takeIf { it > 0 }?.toString()),
         Triple("techs", "wrench", s.techs.size.takeIf { it > 0 }?.toString()),
         Triple("travel", "plane", if (s.travelDone.isNotEmpty()) "${s.travelDone.size}/${model.catalog.travel.size}" else null),
+        Triple("ramadan", "moon", model.brain().ramadanDone().size.takeIf { it > 0 }?.let { "$it/${model.catalog.ramadan.size}" }),
         Triple("spend", "wallet", null),
         Triple("settings", "sliders", null),
         Triple("about", "info", null),
@@ -565,6 +566,32 @@ fun TechSheet(model: AppModel, existing: Tech?, trade0: String, onClose: () -> U
 }
 
 // ---------------------------------------------------------------- travel
+
+@Composable
+fun RamadanScreen(model: AppModel) {
+    val p = pal()
+    val b = model.brain()
+    val done = b.ramadanDone().toSet()
+    val list = model.catalog.ramadan
+    Page {
+        SubHead(model, model.t("more.ramadan"))
+        Lede(model.t("ramadan.lede"))
+        Text(model.t("ramadan.progress", mapOf("n" to done.size.toString(), "of" to list.size.toString(), "y" to b.ramadanYear().toString())), style = body(14, FontWeight.Bold), color = p.ink2, modifier = Modifier.padding(bottom = 10.dp))
+        ListCard {
+            list.forEachIndexed { i, x ->
+                if (i > 0) RowLine()
+                val on = done.contains(x.id)
+                Row(Modifier.fillMaxWidth().clickable(role = Role.Checkbox) { model.update { it.setRamadan(x.id, !on) } }
+                    .padding(horizontal = 16.dp, vertical = 13.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Box(Modifier.size(24.dp).clip(RoundedCornerShape(7.dp)).background(if (on) p.ok else Color.Transparent).border(1.6.dp, if (on) p.ok else p.line, RoundedCornerShape(7.dp)),
+                        contentAlignment = Alignment.Center) { if (on) Ico("done", p.onInk, 16.dp) }
+                    Text(x.name(model.lang), style = body(16, lineHeight = 1.55), color = if (on) p.ink3 else p.ink, textDecoration = if (on) TextDecoration.LineThrough else null)
+                }
+            }
+        }
+        Box(Modifier.padding(top = 16.dp)) { WideButton(model.t("ramadan.reset"), quiet = true, icon = "repeat") { model.update { it.resetRamadan() } } }
+    }
+}
 
 @Composable
 fun TravelScreen(model: AppModel) {

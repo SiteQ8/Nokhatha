@@ -78,6 +78,7 @@ struct Tabs: View {
                     switch model.page {
                     case "things": AssetsScreen(kind: .thing) { model.page = nil }
                     case "docs": DocsScreen()
+                    case "ramadan": RamadanScreen()
                     case "warranties": WarrantiesScreen()
                     case "techs": TechsScreen()
                     case "travel": TravelScreen()

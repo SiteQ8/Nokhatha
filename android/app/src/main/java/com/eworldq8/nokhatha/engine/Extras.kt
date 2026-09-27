@@ -274,3 +274,24 @@ fun Brain.finishRenewal(carId: String) {
     }
     state = state.copy(cars = state.cars.map { if (it.id == carId) it.copy(renewal = null) else it })
 }
+
+// ---------------------------------------------------------------- Ramadan
+
+/** The Ramadan the checklist is for: the one running, or the next one. */
+fun Brain.ramadanYear(): Int {
+    val ev = nextHijriEvent(today)
+    if (ev.id == "ramadan") return ev.year
+    val h = toHijri(today)
+    return if (h.m > 9) h.y + 1 else h.y
+}
+
+/** The ticks for that Ramadan; an older year's ticks are forgotten. */
+fun Brain.ramadanDone(): List<String> = if (state.ramadanYear == ramadanYear()) state.ramadanDone else emptyList()
+
+fun Brain.setRamadan(id: String, on: Boolean) {
+    val done = ramadanDone().toMutableSet()
+    if (on) done += id else done -= id
+    state = state.copy(ramadanYear = ramadanYear(), ramadanDone = catalog.ramadan.map { it.id }.filter { it in done })
+}
+
+fun Brain.resetRamadan() { state = state.copy(ramadanYear = ramadanYear(), ramadanDone = emptyList()) }

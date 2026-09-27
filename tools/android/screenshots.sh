@@ -32,7 +32,7 @@ adb shell am start -S -W -n "$PKG/.MainActivity" --ez sample true --ez widget tr
 sleep 6
 adb exec-out screencap -p > shots/ar-widget.png
 adb shell pm clear "$PKG" >/dev/null
-for page in settings docs warranties techs travel spend about things; do
+for page in settings docs warranties techs travel ramadan spend about things; do
   adb shell am start -S -W -n "$PKG/.MainActivity" --ez sample true --es tab more --es page "$page" --es lang ar
   sleep 6
   adb exec-out screencap -p > "shots/ar-page-$page.png"

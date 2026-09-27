@@ -1084,5 +1084,52 @@
       "en": "Something else",
       "icon": "box"
     }
+  ],
+  "ramadan": [
+    {
+      "id": "deep_clean",
+      "ar": "تنظيف عميق للبيت والمجالس",
+      "en": "Deep clean the house and the majlis"
+    },
+    {
+      "id": "ac",
+      "ar": "صيانة المكيفات قبل السهر والضيوف",
+      "en": "Service the AC before the long evenings and the guests"
+    },
+    {
+      "id": "pests",
+      "ar": "رش الحشرات قبل موسم الطبخ",
+      "en": "Pest control before the cooking season"
+    },
+    {
+      "id": "kitchen",
+      "ar": "فحص الفرن والثلاجة والفريزر",
+      "en": "Check the oven, the fridge and the freezer"
+    },
+    {
+      "id": "tank",
+      "ar": "تنظيف خزان الماي",
+      "en": "Clean the water tank"
+    },
+    {
+      "id": "pantry",
+      "ar": "تخزين المؤن الأساسية",
+      "en": "Stock the pantry"
+    },
+    {
+      "id": "guests",
+      "ar": "تجهيز غرفة الضيوف والديوانية",
+      "en": "Ready the guest room and the diwaniya"
+    },
+    {
+      "id": "lights",
+      "ar": "فحص الإضاءة الخارجية والزينة",
+      "en": "Check the outdoor lights and the decorations"
+    },
+    {
+      "id": "car",
+      "ar": "صيانة السيارة قبل زحمة رمضان",
+      "en": "Service the car before the Ramadan traffic"
+    }
   ]
 }

@@ -478,3 +478,10 @@ select.input { appearance: none; background-image: none; cursor: pointer; }
 .check-row .step-link { margin-inline-start: auto; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: var(--ink-3); }
 .check-row .step-link:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
 .check-row .step-link .ic { width: 18px; height: 18px; }
+
+/* the Hijri date under the greeting, and the Ramadan or Eid line */
+.greet-h { display: block; font-size: 13px; color: var(--ink-3); }
+.event { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; padding: 12px 16px; border-radius: 18px; background: color-mix(in srgb, var(--rutab) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--rutab) 30%, transparent); font-size: 14.5px; font-weight: 600; line-height: 1.6; }
+.event > .ic { flex: none; color: var(--rutab); }
+.event > span { flex: 1; }
+.event .btn { height: 36px; padding: 0 10px; font-size: 13.5px; }
