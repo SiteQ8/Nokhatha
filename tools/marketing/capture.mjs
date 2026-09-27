@@ -11,7 +11,7 @@ for (const lang of ['ar', 'en']) {
   await page.waitForTimeout(400);
   if (lang === 'en') { const seg = page.locator('[data-act="set"][data-name="lang"][data-v="en"]'); if (await seg.count()) { await seg.first().click(); await page.waitForTimeout(300); } }
   const demo = page.locator('[data-act="demo"]'); if (await demo.count()) { await demo.first().click(); await page.waitForTimeout(700); }
-  for (const p of ['today', 'home', 'car', 'subs', 'docs', 'settings', 'spend', 'warranties']) {
+  for (const p of ['today', 'home', 'car', 'subs', 'docs', 'settings', 'spend', 'warranties', 'ramadan']) {
     await page.goto('http://localhost:8765/app/#/' + p); await page.reload({ waitUntil: 'networkidle' }); await page.waitForTimeout(600);
     await page.screenshot({ path: `/tmp/mkt/shots/${lang}-${p}.png` });
   }
