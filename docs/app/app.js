@@ -701,8 +701,21 @@ function weatherCard() {
   if (!w || !w.on || !c || c.lat !== w.lat || c.lon !== w.lon) return '';
   const list = W.alerts(c.sum, TODAY).slice(0, 2);
   const src = '<a class="wx-src" href="https://open-meteo.com" target="_blank" rel="noopener noreferrer">Open-Meteo</a>';
-  if (!list.length) return `<div class="wx calm">${icon('sun')}<span>${esc(t('wx.calm', { place: wxPlaceName(w) }))}</span>${src}</div>`;
-  return `<div class="wx">${list.map((a) => `<p class="wx-a wx-${a.kind}">${icon(WX_ICON[a.kind])}<span>${esc(wxText(a))}</span></p>`).join('')}${src}</div>`;
+  const now = wxNow(c.sum, w);
+  if (!list.length) return `<div class="wx calm${now ? ' has-now' : ''}">${now}<p class="wx-a wx-calm">${icon('sun')}<span>${esc(t('wx.calm', { place: wxPlaceName(w) }))}</span></p>${src}</div>`;
+  return `<div class="wx${now ? ' has-now' : ''}">${now}${list.map((a) => `<p class="wx-a wx-${a.kind}">${icon(WX_ICON[a.kind])}<span>${esc(wxText(a))}</span></p>`).join('')}${src}</div>`;
+}
+
+/** The temperature now, how it feels, and today's range, at the top of the weather card. */
+function wxNow(sum, w) {
+  const n = sum && sum.now;
+  if (!n) return '';
+  const day = sum.days.find((x) => x.date === TODAY);
+  const bits = [];
+  if (n.feels != null && n.feels !== n.temp) bits.push(t('wx.feels', { t: n.feels }));
+  if (day && day.tmax != null && day.tmin != null) bits.push(t('wx.range', { max: Math.round(day.tmax), min: Math.round(day.tmin) }));
+  if (n.humidity != null) bits.push(t('wx.humidity', { h: n.humidity }));
+  return `<div class="wx-now"><b>${n.temp}°</b><span class="wx-now-t"><span class="wx-now-p">${esc(t('wx.now', { place: wxPlaceName(w) }))}</span><span class="wx-now-d">${esc(bits.join(L() === 'ar' ? '، ' : ', '))}</span></span></div>`;
 }
 
 function weatherSection() {

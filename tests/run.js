@@ -198,6 +198,9 @@ ok(kinds(place(120, 120, { tmin: [30, 3, 30], chance: [60, 0, 0] })) === '0:rain
 const clean = place(149, 149);
 ok(clean.dusty >= 150 && kinds(clean) === '', 'dust never flagged under the floor');
 ok(Wx.nextDay('2026-12-31') === '2027-01-01' && Wx.nextDay('2028-02-28') === '2028-02-29', 'weather next day');
+const withNow = Wx.summarize({ daily: { time: ['2026-09-25'], temperature_2m_max: [44], temperature_2m_min: [30] }, current: { time: '2026-09-25T13:00', temperature_2m: 41.4, apparent_temperature: 45.6, relative_humidity_2m: 38.2 } }, { hourly: { time: [], pm10: [] } });
+ok(withNow.now && withNow.now.temp === 41 && withNow.now.feels === 46 && withNow.now.humidity === 38, `temperature now: ${JSON.stringify(withNow.now)}`);
+ok(place(120, 130).now === null, 'no temperature block without a current reading');
 ok(/latitude=29\.4&longitude=48/.test(Wx.urls(29.4, 48).forecast) && /past_days=60/.test(Wx.urls(29.4, 48).air), 'weather urls');
 
 console.log(`${vectorCount} vectors and ${pass + fail - vectorCount} property checks: ${pass} passed, ${fail} failed`);

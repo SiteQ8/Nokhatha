@@ -12,7 +12,7 @@ struct NokhathaApp: App {
             RootView()
                 .environmentObject(model)
                 .onChange(of: phase) { _, now in
-                    if now == .active { model.refreshDay(); Reminders.schedule(model: model) }
+                    if now == .active { model.refreshDay(); Reminders.schedule(model: model); Task { await model.refreshWeather() } }
                 }
         }
     }

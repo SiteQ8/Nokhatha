@@ -423,6 +423,20 @@ fun WeatherCard(model: AppModel) {
     Box(Modifier.padding(top = 4.dp, bottom = 14.dp).fillMaxWidth().clip(shape).background(if (calm) p.surface else p.rutab.copy(alpha = 0.12f))
         .border(1.dp, if (calm) p.line else p.rutab.copy(alpha = 0.3f), shape).padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 26.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            model.weatherNow()?.let { (now, day) ->
+                val bits = ArrayList<String>()
+                if (now.feels != null && now.feels != now.temp) bits += model.t("wx.feels", mapOf("t" to now.feels.toString()))
+                if (day?.tmax != null && day.tmin != null) bits += model.t("wx.range", mapOf("max" to Math.round(day.tmax).toString(), "min" to Math.round(day.tmin).toString()))
+                if (now.humidity != null) bits += model.t("wx.humidity", mapOf("h" to now.humidity.toString()))
+                Row(Modifier.padding(bottom = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Text("${now.temp}°", style = title(36, 1.0), color = p.ink)
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(model.t("wx.now", mapOf("place" to model.wxPlaceName())), style = body(14, FontWeight.SemiBold, 1.3), color = p.ink)
+                        Text(bits.joinToString(if (model.isArabic) "، " else ", "), style = body(13, lineHeight = 1.5), color = p.ink2)
+                    }
+                }
+                RowLine()
+            }
             if (calm) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Ico("sun", p.ok, 20.dp, Modifier.padding(top = 3.dp))

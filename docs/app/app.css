@@ -453,8 +453,14 @@ select.input { appearance: none; background-image: none; cursor: pointer; }
 /* weather */
 .wx { position: relative; display: grid; gap: 6px; margin: 4px 0 14px; padding: 14px 16px 26px; border-radius: 18px;
   background: color-mix(in srgb, var(--rutab) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--rutab) 30%, var(--line)); }
-.wx.calm { display: flex; align-items: flex-start; gap: 10px; padding-bottom: 26px; background: var(--surface); border-color: var(--line); color: var(--ink-2); font-size: 14.5px; line-height: 1.7; }
-.wx.calm > .ic { color: var(--ok); margin-top: 3px; }
+.wx.calm { padding-bottom: 26px; background: var(--surface); border-color: var(--line); }
+.wx-a.wx-calm { font-weight: 400; color: var(--ink-2); }
+.wx-a.wx-calm .ic { color: var(--ok); }
+.wx-now { display: flex; align-items: center; gap: 14px; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+.wx-now b { font-family: var(--font-display); font-weight: 600; font-size: 36px; line-height: 1; color: var(--ink); letter-spacing: -1px; }
+.wx-now-t { display: grid; gap: 2px; min-width: 0; }
+.wx-now-p { font-size: 14px; font-weight: 600; color: var(--ink); }
+.wx-now-d { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
 .wx-a { display: flex; align-items: flex-start; gap: 10px; margin: 0; font-size: 14.5px; font-weight: 600; line-height: 1.7; }
 .wx-a .ic { flex: none; margin-top: 3px; color: var(--soon-ink); }
 .wx-a.wx-dust_heavy .ic, .wx-a.wx-rain .ic, .wx-a.wx-wind .ic { color: var(--overdue); }

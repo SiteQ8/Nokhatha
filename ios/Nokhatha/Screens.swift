@@ -135,6 +135,7 @@ struct TodayScreen: View {
                 .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.line, lineWidth: 1))
                 .padding(.top, 6)
             }
+            WeatherCard()
             SectionTitle(text: model.t("today.now"), count: now.count)
             if now.isEmpty { EmptyNote(icon: "done", text: model.t("today.clear")) } else { TaskList(rows: now, showAsset: true) }
             if let first = talk.first { AskCard(s: first).padding(.top, 14) }
@@ -538,4 +539,58 @@ struct LastTimeScreen: View {
 func wholeNumber(_ s: String) -> Int? {
     let digits = normalizeDigits(s).filter { $0.isNumber }
     return digits.isEmpty ? nil : Int(digits)
+}
+
+/// The web's weather card: the reading now with today's range, then up to two alerts, or the calm line.
+struct WeatherCard: View {
+    @EnvironmentObject var model: AppModel
+
+    private func weatherBits(_ now: Weather.Now, _ day: Weather.DayWx?) -> [String] {
+        var bits: [String] = []
+        if let f = now.feels, f != now.temp { bits.append(model.t("wx.feels", ["t": String(f)])) }
+        if let d = day, let mx = d.tmax, let mn = d.tmin { bits.append(model.t("wx.range", ["max": String(Int(mx.rounded())), "min": String(Int(mn.rounded()))])) }
+        if let h = now.humidity { bits.append(model.t("wx.humidity", ["h": String(h)])) }
+        return bits
+    }
+
+    var body: some View {
+        if model.weatherShown {
+            let list = Array(model.weatherAlerts().prefix(2))
+            let calm = list.isEmpty
+            VStack(alignment: .leading, spacing: 6) {
+                if let (now, day) = model.weatherNow() {
+                    let bits = weatherBits(now, day)
+                    HStack(spacing: 14) {
+                        Text("\(now.temp)°").font(Theme.title(36)).foregroundStyle(Theme.ink)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(model.t("wx.now", ["place": model.wxPlaceName()])).font(Theme.body(14, "SemiBold")).foregroundStyle(Theme.ink)
+                            Text(bits.joined(separator: model.isArabic ? "، " : ", ")).font(Theme.body(13)).foregroundStyle(Theme.ink2)
+                        }
+                    }
+                    .padding(.bottom, 8)
+                    RowLine()
+                }
+                if calm {
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: Symbol.name("sun")).font(.system(size: 17)).foregroundStyle(Theme.ok).padding(.top, 3)
+                        Text(model.t("wx.calm", ["place": model.wxPlaceName()])).font(Theme.body(14.5)).foregroundStyle(Theme.ink2).lineSpacing(4)
+                    }
+                } else {
+                    ForEach(Array(list.enumerated()), id: \.offset) { _, a in
+                        let tone: Color = ["dust_heavy", "rain", "wind"].contains(a.kind) ? Theme.overdue : a.kind == "cold" ? Theme.ok : Theme.soon
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: Symbol.name(Weather.icons[a.kind] ?? "sun")).font(.system(size: 17)).foregroundStyle(tone).padding(.top, 3)
+                            Text(model.t("wx." + a.kind, ["day": model.t(a.day == 0 ? "wx.day0" : "wx.day1"), "t": a.value.map(String.init) ?? ""])).font(Theme.body(14.5, "SemiBold")).foregroundStyle(Theme.ink).lineSpacing(4)
+                        }
+                    }
+                }
+                Text("Open-Meteo").font(Theme.body(11)).foregroundStyle(Theme.ink3).frame(maxWidth: .infinity, alignment: .trailing).padding(.top, 2)
+                    .onTapGesture { model.openUrl("https://open-meteo.com") }
+            }
+            .padding(.horizontal, 16).padding(.top, 14).padding(.bottom, 8).frame(maxWidth: .infinity, alignment: .leading)
+            .background(calm ? Theme.surface : Theme.rutab.opacity(0.12), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(calm ? Theme.line : Theme.rutab.opacity(0.3), lineWidth: 1))
+            .padding(.top, 4).padding(.bottom, 14)
+        }
+    }
 }

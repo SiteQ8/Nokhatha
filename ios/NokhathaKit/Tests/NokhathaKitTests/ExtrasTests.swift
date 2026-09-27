@@ -103,3 +103,37 @@ final class DocsTests: XCTestCase {
         XCTAssertEqual(back.docs, fixture.state.docs)
     }
 }
+
+final class WeatherTests: XCTestCase {
+    /// The same made up place as the web's tests: 60 days of dust from 100 to 159.
+    func place(_ todayDust: Double, _ tomorrowDust: Double, tmax: [Double] = [44, 44, 44], tmin: [Double] = [30, 30, 30], rain: [Double] = [0, 0, 0], chance: [Double] = [0, 0, 0], gust: [Double] = [30, 30, 30], historyDays: Int = 60) -> Weather.Summary {
+        let today = Day(iso: "2026-09-25")!
+        var time: [String] = [], pm10: [Double] = []
+        for i in stride(from: historyDays, through: 1, by: -1) { time.append(today.adding(-i).iso + "T12:00"); pm10.append(Double(100 + historyDays - i)) }
+        time += [today.iso + "T12:00", today.adding(1).iso + "T12:00", today.adding(2).iso + "T12:00"]
+        pm10 += [todayDust, tomorrowDust, 120]
+        let daily: [String: Any] = ["time": [today.iso, today.adding(1).iso, today.adding(2).iso], "temperature_2m_max": tmax, "temperature_2m_min": tmin, "precipitation_sum": rain, "precipitation_probability_max": chance, "wind_gusts_10m_max": gust]
+        return Weather.summarize(forecast: ["daily": daily], air: ["hourly": ["time": time, "pm10": pm10]])
+    }
+    func kinds(_ s: Weather.Summary) -> String { Weather.alerts(s, today: Day(iso: "2026-09-25")!).map { "\($0.day):\($0.kind)" + ($0.value.map { "=\($0)" } ?? "") }.joined(separator: " ") }
+
+    func testAlertsLikeTheWeb() {
+        let s1 = place(160, 250, tmax: [49, 44, 44], rain: [0, 2, 0], gust: [30, 70, 30])
+        XCTAssertEqual(s1.dusty, 153); XCTAssertEqual(s1.heavy, 191)
+        XCTAssertEqual(kinds(s1), "0:dust 0:heat=49 1:dust_heavy 1:rain 1:wind")
+        XCTAssertEqual(kinds(place(120, 130)), "")
+        XCTAssertEqual(kinds(place(160, 250, historyDays: 10)), "")
+        XCTAssertEqual(kinds(place(120, 120, tmin: [30, 3, 30], chance: [60, 0, 0])), "0:rain 1:cold=3")
+        let clean = place(149, 149)
+        XCTAssertTrue(clean.dusty >= 150 && kinds(clean).isEmpty)
+    }
+
+    func testCurrentReadingAndCache() throws {
+        let s = Weather.summarize(forecast: ["daily": ["time": ["2026-09-25"], "temperature_2m_max": [44], "temperature_2m_min": [30]], "current": ["time": "2026-09-25T13:00", "temperature_2m": 41.4, "apparent_temperature": 45.6, "relative_humidity_2m": 38.2]], air: nil)
+        XCTAssertEqual(s.now, Weather.Now(temp: 41, feels: 46, humidity: 38, time: "2026-09-25T13:00"))
+        let cache = WeatherCache(lat: 29.37, lon: 47.98, at: 1, sum: s)
+        let back = try JSONDecoder().decode(WeatherCache.self, from: JSONEncoder().encode(cache))
+        XCTAssertEqual(back, cache)
+        XCTAssertNil(place(120, 130).now)
+    }
+}

@@ -355,6 +355,14 @@ class AppModel(private val ctx: Context, intent: Intent?) {
 
     val weatherShown: Boolean get() = state?.settings?.weather?.let { it.on && wx?.lat == it.lat && wx?.lon == it.lon } == true
 
+    /** The latest reading with today's forecast, when the cache belongs to the chosen place. */
+    fun weatherNow(): Pair<Weather.Now, Weather.DayWx?>? {
+        if (!weatherShown) return null
+        val sum = wx?.sum ?: return null
+        val now = sum.now ?: return null
+        return now to sum.days.firstOrNull { it.date == today.iso }
+    }
+
     suspend fun refreshWeather(force: Boolean = false) {
         val w = state?.settings?.weather ?: return
         val lat = w.lat ?: return

@@ -24,7 +24,7 @@
   function urls(lat, lon) {
     const at = `latitude=${lat}&longitude=${lon}&timezone=auto`;
     return {
-      forecast: `${FORECAST}?${at}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_gusts_10m_max&forecast_days=3`,
+      forecast: `${FORECAST}?${at}&current=temperature_2m,apparent_temperature,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_gusts_10m_max&forecast_days=3`,
       air: `${AIR}?${at}&hourly=pm10&past_days=60&forecast_days=3`,
     };
   }
@@ -60,7 +60,9 @@
     const p97 = percentile(history, 0.97);
     const dusty = Math.max(LIMITS.dustFloor, p90 == null ? Infinity : p90);
     const heavy = Math.max(dusty * 1.25, p97 == null ? Infinity : p97);
-    return { days, dusty: Math.round(dusty), heavy: Math.round(heavy), history: history.length };
+    const c = forecast && forecast.current;
+    const now = c && c.temperature_2m != null ? { temp: Math.round(c.temperature_2m), feels: c.apparent_temperature != null ? Math.round(c.apparent_temperature) : null, humidity: c.relative_humidity_2m != null ? Math.round(c.relative_humidity_2m) : null, time: c.time || null } : null;
+    return { days, dusty: Math.round(dusty), heavy: Math.round(heavy), history: history.length, now };
   }
 
   // Alerts for today (day 0) and tomorrow (day 1), most serious first.

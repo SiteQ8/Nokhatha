@@ -224,6 +224,22 @@ struct SettingsScreen: View {
                 Seg(options: [3, 7, 14].map { (String($0), w.dayCount($0)) }, selected: String(s.lead), compact: true) { v in model.update { $0.state.settings.lead = Int(v) ?? 7 } }
             }
 
+            SmallHead(text: model.t("settings.weather"))
+            Lede(text: model.t("wx.explain"), small: true)
+            let places = model.wxPlaces()
+            SettingRow(icon: "globe", label: model.t("wx.place")) {
+                Select(value: s.weather?.place ?? places.first?.id ?? "", options: places.map { ($0.id, $0.name(model.lang)) }, width: 200) { model.setWeatherPlace($0) }
+            }
+            if s.weather?.on == true {
+                WideButton(title: model.t("wx.off"), primary: false, icon: "close") { model.setWeather(on: false) }.padding(.top, 12)
+                if let c = model.wx, c.lat == s.weather?.lat {
+                    Fine(text: model.t("wx.updated", ["date": Date(timeIntervalSince1970: c.at).formatted(date: .long, time: .shortened)]))
+                }
+            } else {
+                WideButton(title: model.t("wx.on"), icon: "sun") { model.setWeather(on: true) }.padding(.top, 12)
+            }
+            Fine(text: model.t("wx.source"))
+
             SmallHead(text: model.t("settings.calendar"))
             Lede(text: model.t("settings.calendar_body"), small: true)
             WideButton(title: model.t("act.ics"), primary: false, icon: "calendar") { if let u = model.calendarFile() { share = ShareItem(url: u) } }

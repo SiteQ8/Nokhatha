@@ -405,7 +405,11 @@
     "share.task_nodate": "{title} ({asset})، من تطبيق نُوخذة",
     "backup.share": "شفّر وشارك",
     "backup.share_body": "الملف مشفّر بكلمة السر، فأرسله لأهل البيت أو لجهازك الثاني ويفتح من الإعدادات ثم استرجع.",
-    "every.heat": "، وكل {n} بالقيظ"
+    "every.heat": "، وكل {n} بالقيظ",
+    "wx.now": "الحين في {place}",
+    "wx.feels": "الشعور {t}°",
+    "wx.range": "الأعلى {max}° والأدنى {min}°",
+    "wx.humidity": "الرطوبة {h}%"
   },
   "en": {
     "app.name": "Nokhatha",
@@ -813,6 +817,10 @@
     "share.task_nodate": "{title} ({asset}), from the Nokhatha app",
     "backup.share": "Encrypt and share",
     "backup.share_body": "The file is locked with the password; send it to the family or your other device and open it from Settings, then Restore.",
-    "every.heat": ", every {n} in the summer heat"
+    "every.heat": ", every {n} in the summer heat",
+    "wx.now": "Now in {place}",
+    "wx.feels": "Feels like {t}°",
+    "wx.range": "High {max}°, low {min}°",
+    "wx.humidity": "Humidity {h}%"
   }
 }

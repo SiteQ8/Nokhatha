@@ -27,6 +27,8 @@ final class AppModel: ObservableObject {
     @Published var onboarding: Onboarding?
     /// The page open from More: things, docs, warranties, techs, travel, spend, settings or about.
     @Published var page: String?
+    /// The cached weather for the chosen area.
+    @Published var wx: WeatherCache?
     /// A sheet to open on launch, for the screenshot run: task, sub, addtask, edit, odo.
     @Published var autoSheet: String?
 
@@ -42,6 +44,7 @@ final class AppModel: ObservableObject {
         let defaults = UserDefaults.standard
         tab = defaults.string(forKey: "tab") ?? "today"
         page = defaults.string(forKey: "page")
+        if let d = try? Data(contentsOf: weatherFile) { wx = try? JSONDecoder().decode(WeatherCache.self, from: d) }
         autoSheet = defaults.string(forKey: "sheet")
         if defaults.string(forKey: "screen") == "setup" {
             state = AppState(lang: defaults.string(forKey: "lang") ?? AppModel.deviceLang)
@@ -260,6 +263,60 @@ final class AppModel: ObservableObject {
         onboarding = nil
         save()
         return nil
+    }
+
+    // MARK: weather
+
+    var weatherFile: URL { FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("weather.json") }
+
+    func wxPlaces() -> [Place] { catalog.places.filter { $0.country == country } }
+
+    func wxPlaceName() -> String {
+        guard let id = state?.settings.weather?.place else { return "" }
+        return catalog.places.first { $0.id == id }?.name(lang) ?? ""
+    }
+
+    var weatherShown: Bool {
+        guard let w = state?.settings.weather, w.on == true, let c = wx else { return false }
+        return c.lat == w.lat && c.lon == w.lon
+    }
+
+    func weatherAlerts() -> [Weather.Alert] { weatherShown ? Weather.alerts(wx!.sum, today: today) : [] }
+
+    /// The latest reading with today's forecast, when the cache belongs to the chosen place.
+    func weatherNow() -> (Weather.Now, Weather.DayWx?)? {
+        guard weatherShown, let now = wx?.sum.now else { return nil }
+        return (now, wx?.sum.days.first { $0.date == today.iso })
+    }
+
+    func setWeatherPlace(_ id: String) {
+        guard let p = catalog.places.first(where: { $0.id == id }) else { return }
+        update { b in
+            var w = b.state.settings.weather ?? WeatherSetting()
+            w.place = p.id; w.lat = p.lat; w.lon = p.lon
+            b.state.settings.weather = w
+        }
+        Task { await refreshWeather(force: true) }
+    }
+
+    func setWeather(on: Bool) {
+        if on, state?.settings.weather?.lat == nil, let first = wxPlaces().first { setWeatherPlace(first.id) }
+        update { b in
+            var w = b.state.settings.weather ?? WeatherSetting()
+            w.on = on
+            b.state.settings.weather = w
+        }
+        if on { Task { await refreshWeather(force: true) } }
+    }
+
+    /// Fetched when the weather is on and the cache is older than three hours or for another place.
+    func refreshWeather(force: Bool = false) async {
+        guard let w = state?.settings.weather, w.on == true, let lat = w.lat, let lon = w.lon else { return }
+        if !force, let c = wx, c.lat == lat, c.lon == lon, Date().timeIntervalSince1970 - c.at < 3 * 3600 { return }
+        guard let sum = await Weather.fetch(lat: lat, lon: lon) else { return }
+        let cache = WeatherCache(lat: lat, lon: lon, at: Date().timeIntervalSince1970, sum: sum)
+        wx = cache
+        if let d = try? JSONEncoder().encode(cache) { try? d.write(to: weatherFile, options: .atomic) }
     }
 
     // MARK: links

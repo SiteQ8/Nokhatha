@@ -18,13 +18,15 @@ object Weather {
     private val order = listOf("dust_heavy", "rain", "wind", "dust", "heat", "cold")
 
     data class DayWx(val date: String, val tmax: Double?, val tmin: Double?, val rain: Double?, val chance: Double?, val gust: Double?, val dust: Int?)
-    data class Summary(val days: List<DayWx>, val dusty: Int, val heavy: Int, val history: Int)
+    /** The reading at the time of the fetch: degrees, how it feels, humidity. */
+    data class Now(val temp: Int, val feels: Int?, val humidity: Int?, val time: String?)
+    data class Summary(val days: List<DayWx>, val dusty: Int, val heavy: Int, val history: Int, val now: Now? = null)
     data class Alert(val kind: String, val day: Int, val value: Int? = null)
 
     fun urls(lat: Double, lon: Double): Pair<String, String> {
         val at = "latitude=${num(lat)}&longitude=${num(lon)}&timezone=auto"
         return Pair(
-            "$FORECAST?$at&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_gusts_10m_max&forecast_days=3",
+            "$FORECAST?$at&current=temperature_2m,apparent_temperature,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_gusts_10m_max&forecast_days=3",
             "$AIR?$at&hourly=pm10&past_days=60&forecast_days=3",
         )
     }
@@ -63,7 +65,9 @@ object Weather {
         val p97 = percentile(history, 0.97)
         val dusty = maxOf(DUST_FLOOR, p90 ?: Double.POSITIVE_INFINITY)
         val heavy = maxOf(dusty * 1.25, p97 ?: Double.POSITIVE_INFINITY)
-        return Summary(days, roundOrMax(dusty), roundOrMax(heavy), history.size)
+        val c = forecast?.optJSONObject("current")
+        val now = c?.takeIf { it.has("temperature_2m") && !it.isNull("temperature_2m") }?.let { Now(Math.round(it.getDouble("temperature_2m")).toInt(), it.optDouble("apparent_temperature").takeIf { v -> !v.isNaN() }?.let { v -> Math.round(v).toInt() }, it.optDouble("relative_humidity_2m").takeIf { v -> !v.isNaN() }?.let { v -> Math.round(v).toInt() }, if (it.isNull("time")) null else it.optString("time")) }
+        return Summary(days, roundOrMax(dusty), roundOrMax(heavy), history.size, now)
     }
 
     private fun roundOrMax(v: Double) = if (v.isInfinite()) Int.MAX_VALUE else Math.round(v).toInt()
@@ -89,6 +93,7 @@ object Weather {
     // The summary is cached on the device as JSON, so alerts can be shown without the network.
 
     fun toJson(s: Summary): JSONObject = JSONObject().put("dusty", s.dusty).put("heavy", s.heavy).put("history", s.history)
+        .apply { s.now?.let { n -> put("now", JSONObject().put("temp", n.temp).put("feels", n.feels ?: JSONObject.NULL).put("humidity", n.humidity ?: JSONObject.NULL).put("time", n.time ?: JSONObject.NULL)) } }
         .put("days", JSONArray(s.days.map { d ->
             JSONObject().put("date", d.date).put("tmax", d.tmax ?: JSONObject.NULL).put("tmin", d.tmin ?: JSONObject.NULL).put("rain", d.rain ?: JSONObject.NULL)
                 .put("chance", d.chance ?: JSONObject.NULL).put("gust", d.gust ?: JSONObject.NULL).put("dust", d.dust ?: JSONObject.NULL)
@@ -100,7 +105,7 @@ object Weather {
         return Summary((0 until days.length()).map { i ->
             val d = days.getJSONObject(i)
             DayWx(d.getString("date"), d.d("tmax"), d.d("tmin"), d.d("rain"), d.d("chance"), d.d("gust"), d.d("dust")?.toInt())
-        }, o.getInt("dusty"), o.getInt("heavy"), o.getInt("history"))
+        }, o.getInt("dusty"), o.getInt("heavy"), o.getInt("history"), o.optJSONObject("now")?.let { n -> Now(n.getInt("temp"), n.d("feels")?.toInt(), n.d("humidity")?.toInt(), if (n.isNull("time")) null else n.optString("time")) })
     }
 
     val icons = mapOf("dust" to "dust", "dust_heavy" to "dust", "rain" to "rain", "wind" to "air", "heat" to "thermo", "cold" to "snow")

@@ -267,6 +267,15 @@ class ExtrasTest {
     }
 
     @Test
+    fun weatherCarriesTheCurrentReading() {
+        val forecast = JSONObject("""{"current":{"time":"2026-09-25T13:00","temperature_2m":41.4,"apparent_temperature":45.6,"relative_humidity_2m":38.2},"daily":{"time":["2026-09-25"],"temperature_2m_max":[44],"temperature_2m_min":[30]}}""")
+        val sum = Weather.summarize(forecast, JSONObject("""{"hourly":{"time":[],"pm10":[]}}"""))
+        assertEquals(Weather.Now(41, 46, 38, "2026-09-25T13:00"), sum.now)
+        assertEquals(sum.now, Weather.fromJson(JSONObject(Weather.toJson(sum).toString())).now)
+        assertEquals(null, Weather.summarize(JSONObject("""{"daily":{"time":[]}}"""), null).now)
+    }
+
+    @Test
     fun documentsAndRenewalLikeTheWeb() {
         val today = Day.parse("2026-09-25")!!
         val b = Brain(catalog, Brain.sample(catalog, "ar", today), today)
