@@ -278,6 +278,7 @@ public struct WeatherSetting: Codable, Hashable, Sendable {
     public var place: String?
     public var lat: Double?
     public var lon: Double?
+    public init(on: Bool? = nil, place: String? = nil, lat: Double? = nil, lon: Double? = nil) { self.on = on; self.place = place; self.lat = lat; self.lon = lon }
 }
 
 public struct Settings: Codable, Hashable, Sendable {
