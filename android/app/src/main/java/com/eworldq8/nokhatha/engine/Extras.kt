@@ -336,6 +336,17 @@ fun Brain.weekText(w: Words): String {
     return lines.joinToString("\n")
 }
 
+/** The coming seven days as short lines for the Friday letter: tasks, renewals, documents and the zakat anniversary after today and within a week. */
+fun Brain.weekAhead(w: Words): List<String> {
+    val end = today.plus(7)
+    val out = ArrayList<String>()
+    for (e in tasks().filter { it.due != null && it.due!! > today && it.due!! <= end }.sortedBy { it.due!!.n }) out += "${e.title(w.lang)}${w.comma}${e.asset.name}"
+    for (s in subs()) if (s.sub.cancelled != true && s.next > today && s.next <= end) out += w.t("ask.q", mapOf("name" to s.sub.name))
+    for (x in docs()) { val d = Day.parse(x.d.expiry) ?: continue; if (d > today && d <= end) out += w.t("ics.doc", mapOf("name" to docTitle(x.d, w.lang))) }
+    hawlNext()?.let { if (it.days in 1..7) out += w.t("hawl.head") }
+    return out
+}
+
 // ---------------------------------------------------------------- tires
 
 /** Tire age from the last four DOT digits: the week they were made, full months since, and ok / soon (four years) / overdue (five). */

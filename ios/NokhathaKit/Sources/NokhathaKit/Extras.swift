@@ -354,6 +354,19 @@ public extension Brain {
     }
 }
 
+public extension Brain {
+    /// The coming seven days as short lines for the Friday letter: tasks, renewals, documents and the zakat anniversary after a day and within a week of it.
+    func weekAhead(_ w: Words, from day: Day) -> [String] {
+        let end = day.adding(7)
+        var out: [String] = []
+        for e in tasks().filter({ $0.due != nil && $0.due! > day && $0.due! <= end }).sorted(by: { $0.due! < $1.due! }) { out.append("\(e.title(w.lang))\(w.comma)\(e.asset.name)") }
+        for s in subs() where s.sub.cancelled != true && s.next > day && s.next <= end { out.append(w.t("ask.q", ["name": s.sub.name])) }
+        for x in docs() { if let d = Day(iso: x.d.expiry), d > day, d <= end { out.append(w.t("ics.doc", ["name": docTitle(x.d, lang: w.lang)])) } }
+        if let h = hawlNext(), h.date > day, h.date <= end { out.append(w.t("hawl.head")) }
+        return out
+    }
+}
+
 // MARK: - tires
 
 /// Tire age from the last four DOT digits: the week they were made, full months since, and ok / soon (four years) / overdue (five).

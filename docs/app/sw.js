@@ -94,12 +94,14 @@ async function remind() {
   if (d.awayUntil && today <= d.awayUntil) return; // away on a trip, quiet until the return day
   const due = d.items.filter((x) => x.date <= today && (!x.until || today <= x.until));
   const sky = await weatherLine(d, today);
-  if (!due.length && !sky) return save({ ...seen, ran: now.toISOString() });
+  // Friday with nothing due: the week ahead instead, the dates of the coming seven days
+  const week = !due.length && now.getDay() === 5 && d.titleWeek ? weekAhead(d, today) : null;
+  if (!due.length && !sky && !week) return save({ ...seen, ran: now.toISOString() });
   const late = due.some((x) => x.date < today);
-  const lines = (sky ? [sky] : []).concat(due.slice(0, 3).map((x) => x.title));
-  const body = lines.join(d.sep) + (due.length > 3 ? d.sep + d.more : '');
+  const lines = (sky ? [sky] : []).concat(week ? week.lines : due.slice(0, 3).map((x) => x.title));
+  const body = lines.join(d.sep) + (due.length > 3 ? d.sep + d.more : week && week.more ? d.sep + week.more : '');
   try {
-    await self.registration.showNotification(due.length ? (late ? d.titleNow : d.titleToday) : d.weather.title, {
+    await self.registration.showNotification(due.length ? (late ? d.titleNow : d.titleToday) : week ? d.titleWeek : d.weather.title, {
       body, tag: 'nokhatha-due', lang: d.lang, dir: d.dir,
       icon: '../assets/icons/icon-192.png', badge: '../assets/icons/favicon-64.png', data: { url: './#/today' },
     });
@@ -108,6 +110,16 @@ async function remind() {
     return save({ ...seen, ran: now.toISOString(), blocked: true });
   }
   return save({ ran: now.toISOString(), notified: today });
+}
+
+// The coming seven days from the digest: up to three titles and how many more, or null when the week is empty.
+function weekAhead(d, today) {
+  const end = new Date(today + 'T12:00:00');
+  end.setDate(end.getDate() + 7);
+  const last = `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(end.getDate())}`;
+  const soon = d.items.filter((x) => x.date > today && x.date <= last && !x.until);
+  if (!soon.length) return null;
+  return { lines: soon.slice(0, 3).map((x) => x.title), more: soon.length > 3 ? (d.weekMore || '').replace('{n}', soon.length - 3) : '' };
 }
 
 // Only when the person turned weather alerts on: the forecast for their approximate area.

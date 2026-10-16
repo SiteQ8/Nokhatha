@@ -1050,6 +1050,7 @@ async function writeDigest() {
     const payload = {
       v: 1, lang: L(), dir: L() === 'ar' ? 'rtl' : 'ltr', notify: !!state.settings.notify, items: list, awayUntil: isAway() ? state.settings.awayUntil : null,
       titleNow: t('notify.title_now'), titleToday: t('notify.title_today'), more: t('notify.more'), sep: '\n',
+      titleWeek: t('notify.title_week'), weekMore: t('notify.week_more'),
       weather: null,
     };
     const w = state.settings.weather;

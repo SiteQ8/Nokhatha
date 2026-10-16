@@ -53,6 +53,22 @@ enum Reminders {
         }
         let now = Date()
         let hour = Calendar.current.component(.hour, from: now)
+        // the coming Friday with nothing due: the week ahead instead, the dates of the seven days after it
+        var friday = today
+        while friday.weekday != 5 || (friday == today && hour >= 9) { friday = friday.adding(1) }
+        if byDay[friday] == nil, brain.awayUntil().map({ friday > $0 }) ?? true {
+            let week = brain.weekAhead(words, from: friday)
+            if !week.isEmpty {
+                let content = UNMutableNotificationContent()
+                content.title = words.t("notify.title_week")
+                content.body = week.prefix(3).joined(separator: "\n") + (week.count > 3 ? "\n" + words.t("notify.week_more", ["n": String(week.count - 3)]) : "")
+                content.sound = .default
+                let p = friday.ymd
+                var when = DateComponents()
+                when.year = p.y; when.month = p.m; when.day = p.d; when.hour = 9
+                center.add(UNNotificationRequest(identifier: "week-\(friday.iso)", content: content, trigger: UNCalendarNotificationTrigger(dateMatching: when, repeats: false)))
+            }
+        }
         for (day, lines) in byDay.sorted(by: { $0.key < $1.key }).prefix(60) {
             if day == today && hour >= 9 { continue }
             let content = UNMutableNotificationContent()

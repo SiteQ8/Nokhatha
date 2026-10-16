@@ -493,15 +493,26 @@ object Reminders {
                 }
             }
         }
+        // Friday with nothing due: the week ahead instead, the dates of the coming seven days
+        var title = words.t(if (late) "notify.title_now" else "notify.title_today")
+        var more = if (lines.size > 3) words.t("notify.more") else ""
+        if (lines.isEmpty() && today.weekday == 5) {
+            val week = brain.weekAhead(words)
+            if (week.isNotEmpty()) {
+                title = words.t("notify.title_week")
+                lines += week.take(3)
+                more = if (week.size > 3) words.t("notify.week_more", mapOf("n" to (week.size - 3).toString())) else ""
+            }
+        }
         if (lines.isEmpty()) return
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
         val nm = ctx.getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= 26) nm.createNotificationChannel(NotificationChannel(CHANNEL, ctx.getString(R.string.channel_due), NotificationManager.IMPORTANCE_DEFAULT))
         val open = PendingIntent.getActivity(ctx, 2, Intent(ctx, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP), PendingIntent.FLAG_IMMUTABLE)
-        val text = lines.take(3).joinToString("\n") + if (lines.size > 3) "\n" + words.t("notify.more") else ""
+        val text = lines.take(3).joinToString("\n") + if (more.isNotEmpty()) "\n" + more else ""
         val n = NotificationCompat.Builder(ctx, CHANNEL)
             .setSmallIcon(R.drawable.ic_notify)
-            .setContentTitle(words.t(if (late) "notify.title_now" else "notify.title_today"))
+            .setContentTitle(title)
             .setContentText(lines.first())
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setContentIntent(open)
