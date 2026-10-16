@@ -2,16 +2,17 @@
 
 ## آيفون
 - 1.0.0 منشورة على App Store من 25 سبتمبر 2026 (READY_FOR_SALE).
-- 1.2.0 (البناء 8) مرفوعة ومقدّمة لمراجعة App Store في 16 أكتوبر 2026 مع الوصف الجديد وملاحظات الإصدار، وفي TestFlight لمجموعة المختبرين.
+- 1.2.0 (البناء 9) مقدّمة لمراجعة App Store في 16 أكتوبر 2026 مع الوصف الجديد وملاحظات الإصدار، وهي في TestFlight لمجموعة المختبرين، والبناء 9 حل محل البناء 8 قبل المراجعة لأن فاتورة الكهرباء لحقت عليه.
 - الودجت ينتظر App Group يُنشأ باليد مرة وحدة، والخطوات في ios/WIDGET.md.
 
 ## أندرويد
-- 1.1.0 (الرمز 12) في مسار الاختبار المغلق مع الوصف الجديد واللقطات وملاحظات الإصدار.
+- 1.1.1 (الرمز 13) في مسار الاختبار المغلق مع ملاحظات الإصدار بالعربي والإنجليزي، والوصف واللقطات من 1.1.0 ما زالت صالحة.
 - النشر للإنتاج مرفوض من Play بـ FAILED_PRECONDITION: حساب المطور الشخصي الجديد لازم يكمل اختبار مغلق بـ 12 مختبر لمدة 14 يوم، ثم يقدّم طلب "الوصول للإنتاج" من Play Console (Dashboard ثم Apply for production). هذي الخطوة ما لها واجهة برمجية وتحتاج صاحب الحساب.
-- بعد الموافقة: `gh workflow run android-release.yml -f version=1.1.0` ثم نقل الإصدار من alpha إلى production من الكونسول أو بسكربت tools/android/play-upload.py مع `--track production`.
+- بعد الموافقة: انطلاق android-release.yml من Actions برقم الإصدار، ثم نقل الإصدار من alpha إلى production من الكونسول أو بسكربت tools/android/play-upload.py مع `--track production`.
 
 ## الويب
 - منشور دائماً على nokhatha.3li.info من فرع main.
 
-## الوسوم
+## الوسوم والانطلاق
 - وكيل git في هذي الجلسة ما يسمح بدفع الوسوم، فالإصدارات تنطلق باليد من Actions بإدخال رقم الإصدار (workflow_dispatch في android-release.yml وios-release.yml)، والوسوم تنحط لاحقاً من جهاز فيه صلاحية كاملة.
+- من الطرفية: `gh api -X POST repos/SiteQ8/Nokhatha/actions/workflows/ios-release.yml/dispatches -f ref=main -f 'inputs[version]=1.2.1'` ونفسها لأندرويد.
