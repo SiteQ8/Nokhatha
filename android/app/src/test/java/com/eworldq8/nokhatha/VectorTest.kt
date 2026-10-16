@@ -75,7 +75,7 @@ class VectorTest {
             "countAr" -> countAr(int(g(0)), g(1) as String)
             "monthlyCosts" -> {
                 val items = (g(0) as JSONArray).let { a -> (0 until a.length()).map { i -> a.getJSONObject(i) } }.map { o ->
-                    Item(o.getString("id"), o.getString("asset"), o.str("tpl"), log = o.optJSONArray("log")?.let { la -> (0 until la.length()).map { j -> la.getJSONObject(j) }.map { l -> LogEntry(l.getString("date"), l.int("cost"), l.str("cur"), null) } } ?: emptyList())
+                    Item(o.getString("id"), o.getString("asset"), nul(o, "tpl") as String?, log = o.optJSONArray("log")?.let { la -> (0 until la.length()).map { j -> la.getJSONObject(j) }.map { l -> LogEntry(l.getString("date"), nul(l, "cost")?.let { int(it) }, nul(l, "cur") as String?, null) } } ?: emptyList())
                 }
                 JSONArray(monthlyCosts(items, g(1) as String, int(g(2)), g(3) as String).map { it ?: JSONObject.NULL })
             }
