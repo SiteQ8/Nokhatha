@@ -30,7 +30,9 @@ final class ExtrasTests: XCTestCase {
         XCTAssertTrue(kwd.subs > 0 && kwd.projected >= kwd.subs)
         XCTAssertEqual(report.logs.map(\.date.n), report.logs.map(\.date.n).sorted(by: >))
         let events = b.calendarEvents(Words(strings: Self.catalog.strings, lang: "ar"))
-        XCTAssertEqual(events.count, b.tasks().filter { $0.due != nil }.count + b.subs().filter { $0.sub.cancelled != true }.count + ws.filter { $0.end >= today }.count)
+        // every task, live subscription, running warranty and document, plus the sample's zakat anniversary
+        XCTAssertEqual(events.count, b.tasks().filter { $0.due != nil }.count + b.subs().filter { $0.sub.cancelled != true }.count + ws.filter { $0.end >= today }.count + b.docs().count + 1)
+        XCTAssertEqual(events.filter { $0.uid.hasPrefix("hawl-") }.count, 1)
         XCTAssertTrue(events.allSatisfy { $0.date >= today })
         let ics = toICS(events, stamp: utcStamp(Date(timeIntervalSince1970: 0)), calName: "نُوخذة")
         XCTAssertTrue(ics.hasPrefix("BEGIN:VCALENDAR\r\n") && ics.contains("DTSTAMP:19700101T000000Z"))

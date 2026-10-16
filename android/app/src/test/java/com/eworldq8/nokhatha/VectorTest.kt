@@ -341,7 +341,9 @@ class ExtrasTest {
         assertTrue(kwd.subs > 0 && kwd.projected >= kwd.subs)
         assertEquals(report.logs.sortedByDescending { it.date.n }, report.logs)
         val events = b.calendarEvents(Words(catalog.strings, "ar"))
-        assertEquals(b.tasks().count { it.due != null } + b.subs().count { it.sub.cancelled != true } + ws.count { it.end >= today } + b.docs().size, events.size)
+        // every task, live subscription, running warranty and document, plus the sample's zakat anniversary
+        assertEquals(b.tasks().count { it.due != null } + b.subs().count { it.sub.cancelled != true } + ws.count { it.end >= today } + b.docs().size + 1, events.size)
+        assertEquals(1, events.count { it.uid.startsWith("hawl-") })
         assertTrue(events.all { it.date >= today })
         val ics = toICS(events, utcStamp(0), "نُوخذة")
         assertTrue(ics.startsWith("BEGIN:VCALENDAR\r\n") && ics.contains("DTSTAMP:19700101T000000Z"))
