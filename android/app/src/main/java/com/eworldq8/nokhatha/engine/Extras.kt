@@ -295,3 +295,26 @@ fun Brain.setRamadan(id: String, on: Boolean) {
 }
 
 fun Brain.resetRamadan() { state = state.copy(ramadanYear = ramadanYear(), ramadanDone = emptyList()) }
+
+// ---------------------------------------------------------------- the week's digest
+
+/** The week ahead as one message for the household: overdue, due within seven days, renewals and documents. */
+fun Brain.weekText(w: Words): String {
+    val end = today.plus(7)
+    val sep = if (w.isArabic) "، " else ", "
+    val lines = ArrayList<String>()
+    lines += w.t("week.title"); lines += w.t("week.head", mapOf("from" to w.date(today, today), "to" to w.date(end, today))); lines += ""
+    val evs = tasks().filter { it.due != null }
+    val overdue = evs.filter { it.status == "overdue" }
+    val soon = evs.filter { it.status != "overdue" && it.due!! <= end }.sortedBy { it.due!!.n }
+    fun line(e: Evaluated) = "• ${e.title(w.lang)} (${e.asset.name})$sep${if (e.status == "overdue") w.rel(e.days ?: 0) else w.date(e.due!!, today)}"
+    if (overdue.isNotEmpty()) { lines += w.t("week.overdue") + ":"; overdue.forEach { lines += line(it) }; lines += "" }
+    if (soon.isNotEmpty()) { soon.forEach { lines += line(it) }; lines += "" }
+    val subs = subs().filter { it.sub.cancelled != true && it.next <= end }
+    if (subs.isNotEmpty()) { lines += w.t("week.subs") + ":"; subs.forEach { lines += "• ${it.sub.name}$sep${w.money(it.sub.amount, it.sub.currency)}$sep${w.date(it.next, today)}" }; lines += "" }
+    val docs = docs().filter { it.status != "ok" }
+    if (docs.isNotEmpty()) { lines += w.t("week.docs") + ":"; docs.forEach { x -> lines += "• ${docTitle(x.d, w.lang)}${x.d.who?.let { " ($it)" } ?: ""}$sep${Day.parse(x.d.expiry)?.let { w.date(it, today) } ?: x.d.expiry}" }; lines += "" }
+    if (overdue.isEmpty() && soon.isEmpty() && subs.isEmpty() && docs.isEmpty()) { lines += w.t("week.none"); lines += "" }
+    lines += w.t("week.foot")
+    return lines.joinToString("\n")
+}

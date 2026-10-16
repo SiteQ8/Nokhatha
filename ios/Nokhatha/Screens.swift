@@ -102,6 +102,7 @@ struct GroupedRows: View {
 
 struct TodayScreen: View {
     @EnvironmentObject var model: AppModel
+    @State private var share: ShareItem?
 
     var body: some View {
         let b = model.brain
@@ -175,7 +176,9 @@ struct TodayScreen: View {
                 SectionTitle(text: model.t("today.later"))
                 TaskList(rows: later, showAsset: true)
             }
+            WideButton(title: model.t("act.share_week"), quiet: true, icon: "chat") { share = ShareItem(text: b.weekText(w)) }.padding(.top, 16)
         }
+        .sheet(item: $share) { item in ShareSheet(url: item.url, text: item.text) }
     }
 }
 

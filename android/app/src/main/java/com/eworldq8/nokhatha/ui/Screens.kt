@@ -164,6 +164,7 @@ fun TodayScreen(model: AppModel) {
             SectionTitle(model.t("today.later"))
             TaskList(model, later, true)
         }
+        Box(Modifier.padding(top = 16.dp)) { WideButton(model.t("act.share_week"), quiet = true, icon = "chat") { model.shareWeek() } }
     }
 }
 

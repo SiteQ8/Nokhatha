@@ -432,7 +432,15 @@
     "act.listen": "اسمع",
     "act.listening": "يتكلم",
     "voice.label": "صوت النوخذة عن {season}",
-    "voice.failed": "ما قدرنا نشغّل الصوت"
+    "voice.failed": "ما قدرنا نشغّل الصوت",
+    "act.share_week": "أرسل أسبوع البيت",
+    "week.title": "أسبوع البيت من نُوخذة",
+    "week.head": "هذا الأسبوع ({from} إلى {to})",
+    "week.overdue": "فات موعده",
+    "week.subs": "اشتراكات تتجدد",
+    "week.docs": "أوراق تقرب تخلص",
+    "week.none": "ما في شي مستحق هذا الأسبوع، البيت مرتاح.",
+    "week.foot": "من تطبيق نُوخذة، nokhatha.3li.info"
   },
   "en": {
     "app.name": "Nokhatha",
@@ -867,6 +875,14 @@
     "act.listen": "Listen",
     "act.listening": "Playing",
     "voice.label": "The nokhatha on {season}",
-    "voice.failed": "The clip could not play"
+    "voice.failed": "The clip could not play",
+    "act.share_week": "Send the week",
+    "week.title": "The week from Nokhatha",
+    "week.head": "This week ({from} to {to})",
+    "week.overdue": "Overdue",
+    "week.subs": "Subscriptions renewing",
+    "week.docs": "Documents expiring soon",
+    "week.none": "Nothing due this week. The house is at ease.",
+    "week.foot": "From the Nokhatha app, nokhatha.3li.info"
   }
 }

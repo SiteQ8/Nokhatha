@@ -336,6 +336,9 @@ class AppModel(private val ctx: Context, intent: Intent?) {
         open(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), null))
     }
 
+    /** The week's digest to the household, through the phone's share sheet. */
+    fun shareWeek() = open(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, brain().weekText(words)), null))
+
     /** The encrypted backup handed to the share sheet, for the family or another device. */
     suspend fun shareBackup(pass: String): Boolean {
         val dir = File(ctx.cacheDir, "share").apply { mkdirs() }

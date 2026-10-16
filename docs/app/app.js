@@ -301,6 +301,7 @@ ${cur ? `<a class="strip" href="#/subs">${icon('repeat')}<span>${t('today.subs',
 ${warr.length ? `<div class="sec"><h2>${t('today.warranties')}</h2></div><ul class="list">${warr.map(warrantyRow).join('')}</ul>` : ''}
 ${docsSoon.length ? `<div class="sec"><h2>${t('today.docs')}</h2></div><ul class="list">${docsSoon.map(docRow).join('')}</ul>` : ''}
 ${later.length ? `<div class="sec"><h2>${t('today.later')}</h2></div><ul class="list">${later.map((e) => row(e, true)).join('')}</ul>` : ''}
+<div class="actions"><a class="btn btn-quiet" href="https://wa.me/?text=${encodeURIComponent(weekText())}" target="_blank" rel="noopener noreferrer">${icon('chat')}<span>${t('act.share_week')}</span></a></div>
 </section></div>`;
 }
 
@@ -1382,6 +1383,26 @@ function exportICS() {
 function shareText(ev) {
   const vars = { title: itemTitle(ev), asset: ev.asset ? ev.asset.name : '', date: ev.due ? dateText(ev.due) : '' };
   return t(ev.due ? 'share.task' : 'share.task_nodate', vars);
+}
+
+/** The week ahead as one message for the household: overdue, due within seven days, renewals and documents. */
+function weekText() {
+  const end = E.addDays(TODAY, 7);
+  const sep = L() === 'ar' ? '، ' : ', ';
+  const lines = [t('week.title'), t('week.head', { from: dateText(TODAY), to: dateText(end) }), ''];
+  const evs = items().filter((e) => e.due);
+  const overdue = evs.filter((e) => e.status === 'overdue');
+  const soon = evs.filter((e) => e.status !== 'overdue' && e.due <= end).sort((a, b) => a.due.localeCompare(b.due));
+  const line = (e) => `• ${itemTitle(e)}${e.asset ? ` (${e.asset.name})` : ''}${sep}${e.status === 'overdue' ? rel(e.days) : dateText(e.due)}`;
+  if (overdue.length) lines.push(t('week.overdue') + ':', ...overdue.map(line), '');
+  if (soon.length) lines.push(...soon.map(line), '');
+  const subs = state.subs.map(evalSub).filter((x) => !x.s.cancelled && x.next <= end);
+  if (subs.length) lines.push(t('week.subs') + ':', ...subs.map((x) => `• ${x.s.name}${sep}${E.formatMoney(x.s.amount, x.s.currency, L())}${sep}${dateText(x.next)}`), '');
+  const docs = state.docs.map((d) => evalDoc(d)).filter((x) => x.status !== 'ok');
+  if (docs.length) lines.push(t('week.docs') + ':', ...docs.map((x) => `• ${docTitle(x.d, x.ty)}${x.d.who ? ` (${x.d.who})` : ''}${sep}${dateText(x.d.expiry)}`), '');
+  if (!overdue.length && !soon.length && !subs.length && !docs.length) lines.push(t('week.none'), '');
+  lines.push(t('week.foot'));
+  return lines.join('\n');
 }
 
 function shareLink(ev) {
