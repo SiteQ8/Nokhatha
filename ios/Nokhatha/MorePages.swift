@@ -370,9 +370,7 @@ struct AboutScreen: View {
             SmallHead(text: model.t("about.privacy_h"))
             Lede(text: model.t("about.privacy"))
             Lede(text: model.t("about.keep"))
-            SmallHead(text: model.t("about.open_h"))
-            Lede(text: model.t("about.open"))
-            ButtonPair(a: model.t("about.source"), onA: { model.openUrl("https://github.com/SiteQ8/Nokhatha") }, b: "nokhatha.3li.info", onB: { model.openUrl("https://nokhatha.3li.info") }, aIcon: "code", bIcon: "globe")
+            WideButton(title: "nokhatha.3li.info", primary: false, icon: "globe") { model.openUrl("https://nokhatha.3li.info") }.padding(.top, 16)
             Fine(text: model.t("about.copyright"))
         }
     }

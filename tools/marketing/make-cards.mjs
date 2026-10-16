@@ -11,7 +11,7 @@ const shot = (lang, page) => 'data:image/png;base64,' + readFileSync(`/tmp/mkt/s
 
 const T = {
   ar: {
-    site: 'nokhatha.3li.info', free: 'مجاني', open: 'مفتوح المصدر', local: 'بياناتك على جهازك', platforms: 'ويب · آيفون · أندرويد',
+    site: 'nokhatha.3li.info', free: 'مجاني', open: 'بلا حساب', local: 'بياناتك على جهازك', platforms: 'ويب · آيفون · أندرويد',
     cards: [
       { id: 'hero', page: 'today', kicker: 'نُوخذة', title: 'بيتك وسيارتك واشتراكاتك على مواسم الخليج', sub: 'تذكيرات تعرف الصيف والبوارح والوسم، وتقول لك شنو تسوي قبل كل موسم.',
         points: ['دائرة السنة على 14 موسم من سهيل إلى الكليبين', 'مهام البيت والسيارة بالترتيب الصحيح لدولتك', 'بلا حساب وبلا إنترنت، كل شي على جهازك'] },
@@ -26,13 +26,13 @@ const T = {
       { id: 'ramadan', page: 'ramadan', kicker: 'رمضان والعيد', title: 'يعرف رمضان قبل ما يجي', sub: 'التاريخ الهجري في يومك، وعدّاد لرمضان والعيدين، وقائمة تجهيز البيت قبل رمضان بأسبوعين.',
         points: ['باقي كم يوم على رمضان وعيد الفطر وعيد الأضحى', 'تسع مهام للبيت قبل رمضان: التنظيف والمكيفات والحشرات والمؤن', 'القائمة تنمسح لحالها كل سنة هجرية'] },
       { id: 'privacy', page: 'settings', kicker: 'أكتوبر · شهر التوعية بالأمن السيبراني', title: 'بياناتك ما تطلع من جهازك', sub: 'نُوخذة مبني على مبدأ واحد: التطبيق يخدمك بدون ما يجمع عنك شي.',
-        points: ['بلا حساب وبلا سيرفر، ولا تتبّع', 'نسخة احتياطية مشفّرة AES-256 بكلمة سرك', 'مفتوح المصدر، أي أحد يقدر يراجع الكود'], awareness: true },
+        points: ['بلا حساب وبلا سيرفر، ولا تتبّع', 'نسخة احتياطية مشفّرة AES-256 بكلمة سرك', 'التطبيق مقفول على نفسه، ما يتصل بأي موقع'], awareness: true },
     ],
     banner: { title: 'بيتك وسيارتك واشتراكاتك على مواسم الخليج', sub: 'تذكيرات تعرف الصيف والبوارح والوسم، بلا حساب وبلا سيرفر.' },
     awarenessLine: 'أكتوبر شهر التوعية بالأمن السيبراني: اختر تطبيقات تحترم بياناتك.',
   },
   en: {
-    site: 'nokhatha.3li.info', free: 'Free', open: 'Open source', local: 'Data stays on your device', platforms: 'Web · iPhone · Android',
+    site: 'nokhatha.3li.info', free: 'Free', open: 'No account', local: 'Data stays on your device', platforms: 'Web · iPhone · Android',
     cards: [
       { id: 'hero', page: 'today', kicker: 'Nokhatha', title: 'Your home, car and subscriptions on the Gulf seasons', sub: 'Reminders that know the heat, the Bawarih and Al-Wasm, and tell you what to do before each season.',
         points: ['A year dial of 14 seasons, Suhail to Kulaibain', 'Home and car tasks in the right order for your country', 'No account, no internet, everything on your device'] },
@@ -47,7 +47,7 @@ const T = {
       { id: 'ramadan', page: 'ramadan', kicker: 'Ramadan and Eid', title: 'It knows Ramadan before it comes', sub: 'The Hijri date on your day, a countdown to Ramadan and both Eids, and a checklist to ready the house two weeks before.',
         points: ['Days left to Ramadan, Eid al-Fitr and Eid al-Adha', 'Nine household tasks before Ramadan: cleaning, AC, pests, the pantry', 'The list clears itself every Hijri year'] },
       { id: 'privacy', page: 'settings', kicker: 'October · Cybersecurity Awareness Month', title: 'Your data never leaves your device', sub: 'Nokhatha is built on one principle: an app that serves you without collecting anything about you.',
-        points: ['No account, no server, no tracking', 'AES-256 encrypted backup with your own password', 'Open source, anyone can read the code'], awareness: true },
+        points: ['No account, no server, no tracking', 'AES-256 encrypted backup with your own password', 'Closed on itself: it talks to no site'], awareness: true },
     ],
     banner: { title: 'Your home, car and subscriptions on the Gulf seasons', sub: 'Reminders that know the heat, the Bawarih and Al-Wasm. No account, no server.' },
     awarenessLine: 'October is Cybersecurity Awareness Month: choose apps that respect your data.',

@@ -814,10 +814,7 @@ function viewAbout() {
 <p class="lede">${t('about.privacy')}</p>
 <p class="lede">${t('about.remind')}</p>
 <p class="lede">${t('about.keep')}</p>
-<div class="sec sec-sm"><h3>${t('about.open_h')}</h3></div>
-<p class="lede">${t('about.open')}</p>
-<div class="actions two"><a class="btn" href="https://github.com/SiteQ8/Nokhatha" target="_blank" rel="noopener noreferrer">${icon('code')}<span>${t('about.source')}</span></a>
-<a class="btn" href="https://nokhatha.3li.info" target="_blank" rel="noopener noreferrer">${icon('globe')}<span>nokhatha.3li.info</span></a></div>
+<div class="actions"><a class="btn" href="https://nokhatha.3li.info" target="_blank" rel="noopener noreferrer">${icon('globe')}<span>nokhatha.3li.info</span></a></div>
 <p class="fine">${t('about.copyright')}</p>`;
 }
 

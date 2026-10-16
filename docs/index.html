@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
 <meta name="referrer" content="no-referrer">
 <title>نُوخذة | صيانة البيت والسيارة والاشتراكات على مواسم الخليج</title>
-<meta name="description" content="نُوخذة يذكرك بصيانة البيت والسيارة ويراقب اشتراكاتك، ومواعيده مضبوطة على سنة الخليج من سهيل إلى الكليبين، بلا حساب وكل شي يبقى على جهازك.">
+<meta name="description" content="نُوخذة يذكرك بصيانة البيت والسيارة ويراقب اشتراكاتك، ومواعيده مضبوطة على سنة الخليج من سهيل إلى الكليبين، وبياناتك ما تطلع من جهازك.">
 <link rel="canonical" href="https://nokhatha.3li.info/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://nokhatha.3li.info/">
@@ -30,13 +30,13 @@
 <a class="skip" href="#top" data-i18n="skip">انتقل للمحتوى</a>
 
 <header class="nav">
-  <a class="brand" href="#top" aria-label="نُوخذة">
-    <img class="mark" src="assets/mark.svg" alt="" width="34" height="34">
+  <a class="brand" href="#top" aria-label="نُوخذة" data-i18n-label="name">
+    <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><use href="assets/mark.svg#mark"/></svg>
     <span data-i18n="name">نُوخذة</span>
   </a>
   <nav class="nav-links" aria-label="الأقسام" data-i18n-label="nav_label">
     <a href="#year" data-i18n="nav_year">السنة</a>
-    <a href="#features" data-i18n="nav_features">المزايا</a>
+    <a href="#features" data-i18n="nav_features">شنو يتابع</a>
     <a href="#privacy" data-i18n="nav_privacy">الخصوصية</a>
     <a href="#platforms" data-i18n="nav_platforms">الأجهزة</a>
   </nav>
@@ -47,19 +47,19 @@
 </header>
 
 <main id="top">
+  <p class="dateline" id="dateline" aria-live="polite"></p>
+
   <section class="hero">
     <div class="hero-text">
-      <p class="eyebrow" data-i18n="eyebrow">مفتوح المصدر، بلا حساب ولا إعلانات</p>
       <h1 class="display" data-i18n="hero_title">خلك نوخذة بيتك.</h1>
-      <p class="lead" data-i18n="hero_lead">نُوخذة يذكرك بصيانة البيت والسيارة ويراقب اشتراكاتك الصامتة، وكل مواعيده مضبوطة على سنة الخليج من سهيل إلى الكليبين.</p>
+      <p class="lead" data-i18n="hero_lead">تذكيرات لصيانة البيت والسيارة ومراقبة الاشتراكات، كل موعد فيها مضبوط على سنة الخليج من سهيل إلى الكليبين، وكل شي محفوظ على جهازك.</p>
       <div class="cta">
         <a class="btn btn-primary" href="app/" data-i18n="open_app">افتح التطبيق</a>
         <a class="btn" href="app/?sample" data-i18n="try_sample">جرّب ببيانات تجريبية</a>
       </div>
-      <p class="fine-line"><a href="https://github.com/SiteQ8/Nokhatha" rel="noopener noreferrer" data-i18n="source">الكود على GitHub</a></p>
     </div>
     <figure class="hero-dial">
-      <div id="hero-dial" class="dial-host" aria-live="polite"></div>
+      <div id="hero-dial" class="dial-host"></div>
       <figcaption id="hero-caption"></figcaption>
     </figure>
   </section>
@@ -67,104 +67,94 @@
   <div class="band band-home" aria-hidden="true"></div>
 
   <section id="year" class="section">
-    <div class="section-head">
-      <h2 class="display" data-i18n="year_title">سنة الخليج في دائرة</h2>
-      <p class="lead" data-i18n="year_lead">أهل الخليج قسموا السنة من زمان إلى مواسم يعرفون منها الحر والبرد والمطر والرياح، ونُوخذة يبني مواعيدك عليها فتغسل المكيفات قبل الكنة وتفحص السطح قبل الوسم وتجهز السيارة قبل القيظ.</p>
-    </div>
-    <ol id="seasons" class="seasons"></ol>
-    <p class="note" data-i18n="year_note">أسماء المواسم وبداياتها على التقويم المتداول في الكويت والخليج الذي يبدأ السنة بطلوع سهيل في 24 أغسطس، وممكن تختلف البداية يوم أو يومين من منطقة لمنطقة.</p>
+    <h2 class="display" data-i18n="year_title">سنة الخليج، موسم موسم</h2>
+    <p class="lead" data-i18n="year_lead">أهل الخليج قسموا السنة من زمان إلى مواسم يعرفون منها الحر والبرد والمطر والرياح، ونُوخذة يبني مواعيده عليها، فالمكيفات قبل الكنة والسطح قبل الوسم والسيارة قبل القيظ.</p>
+    <div class="almanac-head" aria-hidden="true"><span data-i18n="col_season">الموسم</span><span data-i18n="col_dates">من وإلى</span><span data-i18n="col_length">المدة</span><span data-i18n="col_do">اللي يسوّيه البيت</span></div>
+    <ol id="seasons" class="almanac"></ol>
+    <p class="note" data-i18n="year_note">أسماء المواسم وبداياتها على التقويم المتداول في الكويت والخليج الذي يبدأ السنة بطلوع سهيل في 24 أغسطس، وقد تختلف البداية يوم أو يومين من منطقة لمنطقة.</p>
   </section>
 
   <div class="band band-car" aria-hidden="true"></div>
 
   <section id="features" class="section">
-    <div class="section-head">
-      <h2 class="display" data-i18n="features_title">شنو يتابع لك</h2>
-      <p class="lead" data-i18n="features_lead">كل مهمة تقول لك متى وليش بلهجتنا، وتقدر تخلّصها بضغطة أو تأجلها أو تغيّر مدتها.</p>
-    </div>
-    <div class="pillars">
-      <article class="pillar">
-        <span class="pillar-ic" data-icon="home"></span>
-        <h3 data-i18n="home_title">البيت</h3>
-        <p data-i18n="home_body">فلاتر المكيفات كل شهر وكل أسبوعين بالبوارح، وغسيل المكيفات قبل الصيف، والتانكي والفلتر والسخان والسطح والشفاط والحشرات وكاشف الدخان والطفاية، ولكل بيت أو شاليه أو مزرعة قائمته.</p>
-      </article>
-      <article class="pillar">
-        <span class="pillar-ic" data-icon="car"></span>
-        <h3 data-i18n="car_title">السيارة</h3>
-        <p data-i18n="car_body">الزيت والفلاتر على الكيلو أو الوقت أيهما أقرب، والعداد يتقدّر من قراءاتك، والتواير والبطارية ومكيف السيارة قبل القيظ، وتجديد الدفتر والتأمين والفحص قبل ما تخلص.</p>
-      </article>
-      <article class="pillar">
-        <span class="pillar-ic" data-icon="repeat"></span>
-        <h3 data-i18n="subs_title">الاشتراكات</h3>
-        <p data-i18n="subs_body">تشوف كم تدفع بالشهر وبالسنة، وقبل كل تجديد نسألك إذا للحين تستخدمه فتلغي اللي ما تحتاجه قبل ما ينسحب المبلغ، والفترة التجريبية نذكرك فيها قبل لا تخلص.</p>
-      </article>
-    </div>
-    <ul class="extras">
-      <li><span data-icon="dust"></span><span data-i18n="x_weather">تنبيهات الغبار والمطر والحر لمنطقتك، والغبار على المعتاد عندك</span></li>
-      <li><span data-icon="box"></span><span data-i18n="x_things">وأي شي ثاني تبي تتابعه مثل الطراد والمولد والمسبح والحديقة والمخيم، أو شي تسميه بنفسك وتحط له مهامك</span></li>
-      <li><span data-icon="seal"></span><span data-i18n="x_warranty">الضمانات مع صورة الفاتورة وتذكير قبل نهايتها بشهر</span></li>
-      <li><span data-icon="wrench"></span><span data-i18n="x_techs">دفتر الفنيين بالاتصال والواتساب جنب مهامهم</span></li>
-      <li><span data-icon="plane"></span><span data-i18n="x_travel">قائمة قبل سفرة الصيف</span></li>
-      <li><span data-icon="wallet"></span><span data-i18n="x_spend">مصاريف السنة للبيت والسيارة والاشتراكات</span></li>
-      <li><span data-icon="calendar"></span><span data-i18n="x_calendar">تصدير المواعيد لتقويم جهازك</span></li>
-      <li><span data-icon="lock"></span><span data-i18n="x_backup">نسخة احتياطية مشفّرة بكلمة سرك</span></li>
-    </ul>
-    <div class="shots">
-      <figure><img data-shot="today" src="assets/shots/ar-today.webp" alt="شاشة اليوم في نُوخذة" data-i18n-alt="shot_today" width="390" height="844" loading="lazy"><figcaption data-i18n="shot_today_cap">اليوم</figcaption></figure>
-      <figure><img data-shot="home" src="assets/shots/ar-home.webp" alt="شاشة البيت في نُوخذة" data-i18n-alt="shot_home" width="390" height="844" loading="lazy"><figcaption data-i18n="shot_home_cap">البيت</figcaption></figure>
-      <figure><img data-shot="subs" src="assets/shots/ar-subs.webp" alt="شاشة الاشتراكات في نُوخذة" data-i18n-alt="shot_subs" width="390" height="844" loading="lazy"><figcaption data-i18n="shot_subs_cap">الاشتراكات</figcaption></figure>
-    </div>
+    <h2 class="display" data-i18n="features_title">شنو يتابع لك</h2>
+    <p class="lead" data-i18n="features_lead">كل مهمة تقول لك متى وليش بلهجتنا، وتقدر تخلّصها بضغطة أو تأجلها أو تغيّر مدتها.</p>
+
+    <article class="watch">
+      <figure class="shot"><img src="assets/shots/ar-today.webp" data-shot="today" width="824" height="1180" alt="شاشة اليوم في نُوخذة" data-i18n-alt="shot_today" loading="lazy"></figure>
+      <div class="watch-text">
+        <h3 class="display" data-i18n="home_title">البيت</h3>
+        <p data-i18n="home_body">فلاتر المكيفات كل شهر وكل أسبوعين بالقيظ والبوارح، وغسيل المكيفات قبل الصيف، والتانكي والفلتر والسخان والسطح والشفاط والحشرات وكاشف الدخان والطفاية، وقائمة لكل بيت وشاليه ومزرعة، وقبل رمضان بأسبوعين قائمة تجهيز البيت.</p>
+      </div>
+    </article>
+
+    <article class="watch">
+      <figure class="shot"><img src="assets/shots/ar-car.webp" data-shot="car" width="824" height="1180" alt="شاشة السيارة في نُوخذة" data-i18n-alt="shot_car" loading="lazy"></figure>
+      <div class="watch-text">
+        <h3 class="display" data-i18n="car_title">السيارة</h3>
+        <p data-i18n="car_body">الزيت والفلاتر على الكيلو أو الوقت أيهما أقرب، والعداد يتقدّر من قراءاتك، والتواير والبطارية ومكيف السيارة قبل القيظ، ولما يقرب موعد الدفتر يطلع لك مسار التجديد بالترتيب الصحيح لدولتك بروابطه الرسمية، وضغطة وحدة في الآخر تضبط مواعيد الدفتر والتأمين والفحص.</p>
+      </div>
+    </article>
+
+    <article class="watch">
+      <figure class="shot"><img src="assets/shots/ar-subs.webp" data-shot="subs" width="824" height="1180" alt="شاشة الاشتراكات في نُوخذة" data-i18n-alt="shot_subs" loading="lazy"></figure>
+      <div class="watch-text">
+        <h3 class="display" data-i18n="subs_title">الاشتراكات</h3>
+        <p data-i18n="subs_body">تشوف كم تدفع بالشهر وبالسنة، وقبل كل تجديد نسألك إذا للحين تستخدمه فتلغي اللي ما تحتاجه قبل ما ينسحب المبلغ، والفترة التجريبية ما تنقلب مدفوعة بدون ما تدري.</p>
+      </div>
+    </article>
+
+    <article class="watch">
+      <figure class="shot"><img src="assets/shots/ar-docs.webp" data-shot="docs" width="824" height="1180" alt="شاشة الأوراق في نُوخذة" data-i18n-alt="shot_docs" loading="lazy"></figure>
+      <div class="watch-text">
+        <h3 class="display" data-i18n="docs_title">الأوراق</h3>
+        <p data-i18n="docs_body">البطاقة والجواز والرخصة والإقامة والضمان الصحي لك وللعائلة والعمالة، كل ورقة بمهلتها، والإقامة تذكّرك قبل شهرين والجواز قبل ستة، و"قبلها لازم" يذكّرك بالضمان الصحي قبل الإقامة، ونحفظ الاسم والتاريخ بس بدون أرقام.</p>
+      </div>
+    </article>
+
+    <p class="more-prose" data-i18n="features_more">وغيرها: تنبيهات الغبار والمطر والحر لمنطقتك مع درجة الحرارة، والغبار يتقاس على المعتاد عندك مو على رقم ثابت، والضمانات بصورة الفاتورة، ودفتر الفنيين بالاتصال والواتساب جنب مهامهم، وقائمة قبل سفرة الصيف، ومصاريف السنة، والتاريخ الهجري وعدّاد رمضان والعيدين، وأي مهمة تقدر ترسلها لمن يخصه برسالة جاهزة، وأي شي ثاني تبي تتابعه مثل الطراد والمولد والمسبح والمخيم.</p>
   </section>
 
   <div class="band band-subs" aria-hidden="true"></div>
 
-  <section id="privacy" class="section">
-    <div class="section-head">
-      <h2 class="display" data-i18n="privacy_title">بياناتك ما تطلع من جهازك</h2>
-      <p class="lead" data-i18n="privacy_lead">ما تحتاج حساب لأن بياناتك ما تطلع من جهازك، وما في إحصاء ولا إعلانات تراقب استخدامك، والتطبيق يشتغل بدون إنترنت بعد أول فتحة.</p>
+  <section id="privacy" class="section privacy">
+    <h2 class="display" data-i18n="privacy_title">بياناتك ما تطلع من جهازك.</h2>
+    <div class="privacy-cols">
+      <p data-i18n="p1_body">ما تحتاج حساب، لأن المهام والاشتراكات وصور الفواتير محفوظة في جهازك والمواعيد تنحسب عليه، فما يوصلنا منها شي، ولا في إحصاء ولا إعلانات تراقب استخدامك، والتطبيق يشتغل بدون إنترنت بعد أول فتح.</p>
+      <p data-i18n="p2_body">النسخة الاحتياطية تنشفّر بـ AES-256-GCM بمفتاح مشتق من كلمة سرك، فما يقدر يفتحها أحد غيرك، وتقدر تبعثها لأهل البيت أو لجهازك الثاني وتفتح عندهم بنفس الكلمة.</p>
+      <p data-i18n="p3_body">التطبيق مقفول على نفسه، فسياسة أمان المحتوى تمنعه من الاتصال بأي موقع إلا خدمة الطقس إذا فعّلتها بنفسك، وحتى وقتها ما يرسل إلا موقع تقريبي لمنطقتك.</p>
     </div>
-    <ul class="facts-list">
-      <li><span data-icon="home"></span><div><h3 data-i18n="p1_title">على جهازك بس</h3><p data-i18n="p1_body">المهام والاشتراكات وصور الفواتير محفوظة في متصفحك أو جهازك والمواعيد تنحسب على جهازك نفسه، وما يوصلنا منها شي لأنه ما عندنا سيرفر يستقبل بيانات أصلاً.</p></div></li>
-      <li><span data-icon="lock"></span><div><h3 data-i18n="p2_title">نسخة مشفّرة</h3><p data-i18n="p2_body">النسخة الاحتياطية تنشفّر بـ AES-256-GCM بمفتاح مشتق من كلمة سرك، فما يقدر يفتحها أحد غيرك.</p></div></li>
-      <li><span data-icon="shield"></span><div><h3 data-i18n="p3_title">مقفول على نفسه</h3><p data-i18n="p3_body">سياسة أمان المحتوى تمنع التطبيق من الاتصال بأي موقع ثاني إلا خدمة الطقس إذا فعّلتها بنفسك، والخطوط والصور كلها من نفس المصدر.</p></div></li>
-      <li><span data-icon="code"></span><div><h3 data-i18n="p4_title">مفتوح المصدر</h3><p data-i18n="p4_body">الكود كامل منشور بترخيص MIT، فتقدر تراجعه بنفسك وتبنيه وتطوّره.</p></div></li>
-    </ul>
-    <h3 class="faq-title display" data-i18n="faq_title">أسئلة متكررة</h3>
+
+    <h3 class="faq-title" data-i18n="faq_title">أسئلة متكررة</h3>
     <div class="faq">
       <details><summary data-i18n="q1">بدون حساب، وين تنحفظ بياناتي؟</summary><p data-i18n="a1">داخل جهازك في مساحة المتصفح أو التطبيق، وما تطلع منه لأي مكان فما نحتاج نعرف منو أنت.</p></details>
-      <details><summary data-i18n="q2">بدون سيرفر، شلون يتابع مواعيدي ويذكرني؟</summary><p data-i18n="a2">جهازك نفسه يحسب المواعيد من آخر مرة سجلت فيها كل مهمة ومن مواسم الخليج فتشوف المستحق أول ما تفتح التطبيق، وعلى أندرويد وكروم إذا ثبّت التطبيق تفعّل التنبيهات من الإعدادات فينبهك جهازك نفسه حتى والتطبيق مسكّر، وعلى آيفون تصدّر المواعيد لتقويم جهازك لين ينزل تطبيق آيفون بتنبيهاته.</p></details>
-      <details><summary data-i18n="q3">شنو يعني بلا تتبع؟</summary><p data-i18n="a3">يعني ما في أدوات إحصاء ولا إعلانات تراقب شنو تسوي فما نعرف منو يستخدم التطبيق ولا شنو يسجل فيه، والملفات تنزل من GitHub أول مرة مثل أي موقع بس بياناتك ما تطلع من جهازك، إلا موقع تقريبي لخدمة الطقس إذا فعّلتها.</p></details>
-      <details><summary data-i18n="q4">إذا غيرت تلفوني أو مسحت بيانات المتصفح؟</summary><p data-i18n="a4">بياناتك تروح لأن ما في نسخة منها عند أحد، فاحفظ نسخة احتياطية مشفّرة من الإعدادات وافتحها في الجهاز الجديد بكلمة سرك.</p></details>
-      <details><summary data-i18n="q5">أستخدمه على آيفون، شنو لازم أسوي؟</summary><p data-i18n="a5">ثبّته على الشاشة الرئيسية من زر المشاركة ثم "إضافة إلى الشاشة الرئيسية"، لأن سفاري يمسح بيانات المواقع اللي ما تنفتح فترة والتطبيق المثبّت ما ينطبق عليه هالمسح.</p></details>
-      <details><summary data-i18n="q6">تنبيهات الطقس شلون تعرف منطقتي؟</summary><p data-i18n="a6">تختار منطقتك من القائمة أو تسمح للتطبيق يعرف موقعك، ونقرّب الموقع لحوالي 10 كيلو قبل ما نرسله لخدمة Open-Meteo حتى تجيب توقعات الغبار والمطر والحر، والغبار ينقاس على المعتاد في منطقتك نفسها، وهالاتصال ما يصير إلا إذا فعّلت الطقس بنفسك.</p></details>
+      <details><summary data-i18n="q2">بدون سيرفر، شلون يتابع مواعيدي ويذكرني؟</summary><p data-i18n="a2">جهازك نفسه يحسب المواعيد من آخر مرة سجلت فيها كل مهمة ومن مواسم الخليج، فتشوف المستحق أول ما تفتح، والتنبيهات تطلع من الجهاز نفسه.</p></details>
+      <details><summary data-i18n="q3">شنو يعني بلا تتبع؟</summary><p data-i18n="a3">يعني ما في أدوات إحصاء ولا إعلانات تراقب شنو تسوي، فما نعرف منو يستخدم التطبيق ولا شنو يسجل فيه.</p></details>
+      <details><summary data-i18n="q4">إذا غيرت تلفوني أو مسحت بيانات المتصفح؟</summary><p data-i18n="a4">بياناتك تروح لأن ما في نسخة منها عند أحد، فاحفظ نسخة احتياطية مشفّرة من الإعدادات واسترجعها على الجهاز الجديد.</p></details>
+      <details><summary data-i18n="q5">تنبيهات الطقس شلون تعرف منطقتي؟</summary><p data-i18n="a5">تختار منطقتك من القائمة أو تسمح للتطبيق يعرف موقعك، ونقرّب الموقع لحوالي 10 كيلو قبل ما نرسله لخدمة الطقس.</p></details>
     </div>
   </section>
 
   <div class="band band-more" aria-hidden="true"></div>
 
   <section id="platforms" class="section">
-    <div class="section-head">
-      <h2 class="display" data-i18n="platforms_title">على أجهزتك</h2>
-      <p class="lead" data-i18n="platforms_lead">نفس المحرك ونفس المواعيد على كل جهاز، ونفس ملف النسخة الاحتياطية ينفتح في كل نسخة.</p>
-    </div>
-    <div class="platforms">
-      <div class="platform ready"><span data-icon="globe"></span><h3 data-i18n="web_title">تطبيق الويب</h3><p data-i18n="web_body">متاح الحين ويشتغل على أي جهاز، وتقدر تثبته على شاشتك الرئيسية.</p><a class="btn btn-primary" href="app/" data-i18n="open_app">افتح التطبيق</a></div>
-      <div class="platform"><span data-icon="phone"></span><h3 data-i18n="ios_title">آيفون</h3><p data-i18n="ios_body">مع تنبيهات الجهاز وودجت للشاشة الرئيسية.</p><span class="soon" data-i18n="soon">قريباً</span></div>
-      <div class="platform"><span data-icon="apps"></span><h3 data-i18n="android_title">أندرويد</h3><p data-i18n="android_body">مع تنبيهات الجهاز وودجت للشاشة الرئيسية.</p><span class="soon" data-i18n="soon">قريباً</span></div>
-    </div>
+    <h2 class="display" data-i18n="platforms_title">على أجهزتك</h2>
+    <p class="lead" data-i18n="platforms_lead">نفس المحرك ونفس المواعيد على كل جهاز، ونفس ملف النسخة الاحتياطية ينفتح في كل نسخة.</p>
+    <ul class="devices">
+      <li><span class="dev-name" data-i18n="web_title">تطبيق الويب</span><span class="dev-body" data-i18n="web_body">يشتغل على أي جهاز، وتقدر تثبته على شاشتك الرئيسية.</span><a class="btn btn-primary" href="app/" data-i18n="open_app">افتح التطبيق</a></li>
+      <li><span class="dev-name" data-i18n="ios_title">آيفون</span><span class="dev-body" data-i18n="ios_body">مع تنبيهات الجهاز والطقس والنسخة الاحتياطية المشفّرة.</span><span class="soon" data-i18n="ios_soon">قريباً على App Store</span></li>
+      <li><span class="dev-name" data-i18n="android_title">أندرويد</span><span class="dev-body" data-i18n="android_body">مع تنبيهات الجهاز وودجت للشاشة الرئيسية.</span><span class="soon" data-i18n="android_soon">قريباً على Google Play</span></li>
+    </ul>
   </section>
 </main>
 
 <footer class="foot">
-  <div class="foot-brand"><img class="mark" src="assets/mark.svg" alt="" width="28" height="28"><span data-i18n="name">نُوخذة</span></div>
-  <p class="foot-meaning" data-i18n="meaning">النوخذة ربان سفينة الغوص والمسؤول عن كل شي فيها، وهذا التطبيق يخليك نوخذة بيتك.</p>
+  <p class="meaning" data-i18n="meaning">النوخذة ربان سفينة الغوص والمسؤول عن كل شي فيها، وهذا التطبيق يخليك نوخذة بيتك.</p>
   <nav class="foot-links" aria-label="روابط" data-i18n-label="links_label">
-    <a href="https://github.com/SiteQ8/Nokhatha" rel="noopener noreferrer">GitHub</a>
     <a href="privacy/" data-i18n="privacy_link">سياسة الخصوصية</a>
-    <a href="https://github.com/SiteQ8/Nokhatha/blob/main/LICENSE" rel="noopener noreferrer" data-i18n="license">ترخيص MIT</a>
     <a href="https://3li.info" rel="noopener noreferrer">3li.info</a>
   </nav>
-  <p class="copy" data-i18n="copyright">© 2026 علي العنزي</p>
+  <p class="copyright" data-i18n="copyright">© 2026 علي العنزي</p>
 </footer>
 </body>
 </html>

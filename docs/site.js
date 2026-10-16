@@ -42,6 +42,10 @@ function pickLang() {
 const days = (n) => (lang === 'ar' ? E.countAr(n, 'day') : `${n} day${n === 1 ? '' : 's'}`);
 const byId = () => Object.fromEntries(SEA.seasons.map((s) => [s.id, s]));
 
+function applyShots() {
+  for (const img of $$('[data-shot]')) img.src = `assets/shots/${lang}-${img.dataset.shot}.webp`;
+}
+
 function applyText() {
   const html = document.documentElement;
   html.lang = lang;
@@ -80,30 +84,53 @@ function renderDial() {
     today, seasons: SEA.seasons, groups: SEA.groups, lang, dots, mode: 'labeled', id: 'hero',
     center: { title: nm(cur.id), line1: dates, line2: left, aria: `${nm(cur.id)}، ${left}` },
   });
-  const date = `${E.WEEKDAYS[lang][E.weekday(today)]} ${E.formatDate(today, lang, y)}`;
-  $('#hero-caption').innerHTML = `<span>${esc(fill(DYN[lang].caption, { date, season: nm(cur.id), n: days(cur.daysLeft), next: nm(cur.nextId) }))}</span><small>${esc(DYN[lang].dots)}</small>`;
+  $('#hero-caption').innerHTML = `<small>${esc(DYN[lang].dots)}</small>`;
 }
 
+const HIJRI_AR = ['المحرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة', 'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'];
+const HIJRI_EN = ['Muharram', 'Safar', 'Rabi al-Awwal', 'Rabi al-Thani', 'Jumada al-Ula', 'Jumada al-Akhira', 'Rajab', 'Shaban', 'Ramadan', 'Shawwal', 'Dhu al-Qadah', 'Dhu al-Hijjah'];
+
+function hijriText(iso) {
+  const h = E.toHijri(iso);
+  return lang === 'ar' ? `${h.d} ${HIJRI_AR[h.m - 1]} ${h.y} هـ` : `${h.d} ${HIJRI_EN[h.m - 1]} ${h.y} AH`;
+}
+
+/** The almanac's head: today in both calendars, the season, and the days to the next one. */
+function renderDateline() {
+  const today = todayISO();
+  const S = byId();
+  const y = E.parseISO(today).y;
+  const cur = E.seasonAt(today, SEA.seasons);
+  const date = `${E.WEEKDAYS[lang][E.weekday(today)]} ${E.formatDate(today, lang, y)}`;
+  $('#dateline').innerHTML = esc(fill(DYN[lang].dateline, { date, hijri: hijriText(today), season: S[cur.id][lang], n: days(cur.daysLeft), next: S[cur.nextId][lang] }));
+}
+
+/** The year as a table: each season a row, its length drawn to scale, the current one inked. */
 function renderSeasons() {
   const today = todayISO();
   const S = byId();
   const y = E.parseISO(today).y;
   const ring = E.seasonRing(today, SEA.seasons);
+  const longest = Math.max(...ring.segs.map((s) => s.length));
   $('#seasons').innerHTML = ring.segs.map((s, i) => {
     const se = S[s.id];
     const start = E.addDays(today, s.offset);
     const end = E.addDays(start, s.length - 1);
-    return `<li class="season g-${se.group}${i === 0 ? ' now' : ''}">
-<div class="season-top"><h3>${esc(se[lang])}</h3>${i === 0 ? `<span class="here">${esc(DYN[lang].here)}</span>` : `<span class="grp">${esc(SEA.groups[se.group][lang])}</span>`}</div>
-<p class="season-dates">${esc(E.formatDate(start, lang, y))} ${esc(DYN[lang].to)} ${esc(E.formatDate(end, lang, y))}<span class="len">${esc(days(s.length))}</span></p>
-<p class="season-note">${esc(se['note_' + lang])}</p>
-<p class="season-hint">${icon('spark')}<span>${esc(se['hint_' + lang])}</span></p>
+    const pct = Math.round((s.length / longest) * 100);
+    return `<li class="row g-${se.group}${i === 0 ? ' now' : ''}">
+<h3>${esc(se[lang])}${i === 0 ? `<span class="here">${esc(DYN[lang].here)}</span>` : ''}<span class="grp">${esc(SEA.groups[se.group][lang])}</span></h3>
+<p class="dates">${esc(E.formatDate(start, lang, y))} ${esc(DYN[lang].to)} ${esc(E.formatDate(end, lang, y))}</p>
+<p class="len"><span class="bar"><i data-pct="${pct}"></i></span><span class="n">${esc(days(s.length))}</span></p>
+<p class="do">${icon('spark')}<span>${esc(se['hint_' + lang])}</span></p>
 </li>`;
   }).join('');
+  for (const bar of $$('#seasons .len i')) bar.style.width = `${bar.dataset.pct}%`;
 }
 
 function apply() {
   applyText();
+  applyShots();
+  renderDateline();
   renderDial();
   renderSeasons();
 }

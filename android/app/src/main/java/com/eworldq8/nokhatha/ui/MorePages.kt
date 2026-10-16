@@ -242,9 +242,8 @@ fun AboutScreen(model: AppModel) {
         SmallHead(model.t("about.privacy_h"))
         Lede(model.t("about.privacy"))
         Lede(model.t("about.keep"))
-        SmallHead(model.t("about.open_h"))
-        Lede(model.t("about.open"))
-        ButtonPair(model.t("about.source"), { model.openUrl("https://github.com/SiteQ8/Nokhatha") }, "nokhatha.3li.info", { model.openUrl("https://nokhatha.3li.info") }, aIcon = "code", bIcon = "globe")
+        Spacer(Modifier.height(16.dp))
+        WideButton("nokhatha.3li.info", primary = false, icon = "globe") { model.openUrl("https://nokhatha.3li.info") }
         Fine(model.t("about.copyright"))
     }
 }
