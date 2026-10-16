@@ -59,8 +59,9 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m pip install --quiet --break-system-packages pyjwt cryptography requests
-          UUID=$(python3 tools/ios/asc.py)
-          echo "PROFILE_UUID=$UUID" >> "$GITHUB_ENV"
+          python3 tools/ios/asc.py > "$RUNNER_TEMP/profiles.txt"
+          echo "PROFILE_UUID=$(sed -n 1p "$RUNNER_TEMP/profiles.txt")" >> "$GITHUB_ENV"
+          echo "WIDGET_PROFILE_UUID=$(sed -n 2p "$RUNNER_TEMP/profiles.txt")" >> "$GITHUB_ENV"
 
       - name: Version from the tag
         run: |
@@ -81,7 +82,7 @@ jobs:
           xcodegen generate
           xcodebuild -project Nokhatha.xcodeproj -scheme Nokhatha -configuration Release \
             -archivePath "$RUNNER_TEMP/Nokhatha.xcarchive" -destination 'generic/platform=iOS' \
-            DEVELOPMENT_TEAM=FKZPXUFH45 NOKHATHA_PROFILE="$PROFILE_UUID" \
+            DEVELOPMENT_TEAM=FKZPXUFH45 NOKHATHA_PROFILE="$PROFILE_UUID" NOKHATHA_WIDGET_PROFILE="$WIDGET_PROFILE_UUID" \
             MARKETING_VERSION="$APP_VERSION" CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             clean archive
 

@@ -27,6 +27,9 @@ KEY = os.environ['ASC_KEY_P8']
 SERIAL = os.environ['CERT_SERIAL'].strip().upper().lstrip('0')
 BUNDLE = os.environ.get('BUNDLE_ID', 'com.eworldq8.nokhatha')
 PROFILE_NAME = os.environ.get('PROFILE_NAME', 'Nokhatha App Store')
+WIDGET_BUNDLE = BUNDLE + '.widget'
+WIDGET_PROFILE_NAME = PROFILE_NAME + ' Widget'
+GROUP = 'group.' + BUNDLE
 
 
 def token():
@@ -47,15 +50,39 @@ def log(*a):
     print(*a, file=sys.stderr)
 
 
-def bundle_id():
-    found = call('GET', '/bundleIds', params={'filter[identifier]': BUNDLE, 'limit': 5})['data']
-    exact = [b for b in found if b['attributes']['identifier'] == BUNDLE]
+def bundle_id(identifier=BUNDLE, name='Nokhatha'):
+    found = call('GET', '/bundleIds', params={'filter[identifier]': identifier, 'limit': 5})['data']
+    exact = [b for b in found if b['attributes']['identifier'] == identifier]
     if exact:
-        log('bundle id exists', BUNDLE)
+        log('bundle id exists', identifier)
         return exact[0]['id']
-    log('registering bundle id', BUNDLE)
+    log('registering bundle id', identifier)
     return call('POST', '/bundleIds', {'data': {'type': 'bundleIds', 'attributes': {
-        'identifier': BUNDLE, 'name': 'Nokhatha', 'platform': 'IOS'}}})['data']['id']
+        'identifier': identifier, 'name': name, 'platform': 'IOS'}}})['data']['id']
+
+
+def app_group():
+    """The App Group the app and its widget share, registered once."""
+    found = call('GET', '/appGroups', params={'filter[identifier]': GROUP, 'limit': 5}).get('data', [])
+    exact = [g for g in found if g['attributes']['identifier'] == GROUP]
+    if exact:
+        log('app group exists', GROUP)
+        return exact[0]['id']
+    log('registering app group', GROUP)
+    return call('POST', '/appGroups', {'data': {'type': 'appGroups', 'attributes': {'identifier': GROUP, 'name': 'Nokhatha'}}})['data']['id']
+
+
+def enable_group(bundle, group):
+    """The App Groups capability on a bundle id, pointed at our group; a no-op when already there."""
+    caps = call('GET', f'/bundleIds/{bundle}/bundleIdCapabilities', params={'limit': 50}).get('data', [])
+    for c in caps:
+        if c['attributes'].get('capabilityType') == 'APP_GROUPS':
+            log('app groups already on', bundle)
+            return
+    log('enabling app groups on', bundle)
+    call('POST', '/bundleIdCapabilities', {'data': {'type': 'bundleIdCapabilities', 'attributes': {'capabilityType': 'APP_GROUPS'},
+                                                   'relationships': {'bundleId': {'data': {'type': 'bundleIds', 'id': bundle}},
+                                                                     'appGroups': {'data': [{'type': 'appGroups', 'id': group}]}}}})
 
 
 def certificate():
@@ -69,8 +96,8 @@ def certificate():
     sys.exit('the imported certificate was not found in the team, serial ' + SERIAL)
 
 
-def profile(bundle, cert):
-    existing = call('GET', '/profiles', params={'filter[name]': PROFILE_NAME, 'filter[profileState]': 'ACTIVE',
+def profile(bundle, cert, name=PROFILE_NAME):
+    existing = call('GET', '/profiles', params={'filter[name]': name, 'filter[profileState]': 'ACTIVE',
                                                 'include': 'certificates,bundleId', 'limit': 20})
     for p in existing.get('data', []):
         rel = p.get('relationships', {})
@@ -81,8 +108,8 @@ def profile(bundle, cert):
             return p['attributes']['profileContent']
         log('removing stale profile', p['id'])
         call('DELETE', f"/profiles/{p['id']}")
-    log('creating profile', PROFILE_NAME)
-    return call('POST', '/profiles', {'data': {'type': 'profiles', 'attributes': {'name': PROFILE_NAME, 'profileType': 'IOS_APP_STORE'},
+    log('creating profile', name)
+    return call('POST', '/profiles', {'data': {'type': 'profiles', 'attributes': {'name': name, 'profileType': 'IOS_APP_STORE'},
                                                'relationships': {'bundleId': {'data': {'type': 'bundleIds', 'id': bundle}},
                                                                  'certificates': {'data': [{'type': 'certificates', 'id': cert}]}}}})['data']['attributes']['profileContent']
 
@@ -102,4 +129,19 @@ def install(content):
 
 
 if __name__ == '__main__':
-    print(install(profile(bundle_id(), certificate())))
+    # The App Group makes an existing profile stale (its entitlements change), so a profile made before
+    # the group was enabled is removed by profile() when its bundle or certificate no longer match; when
+    # only the entitlements changed, FORCE_NEW_PROFILES=1 recreates both.
+    cert = certificate()
+    app = bundle_id()
+    widget = bundle_id(WIDGET_BUNDLE, 'Nokhatha Widget')
+    group = app_group()
+    enable_group(app, group)
+    enable_group(widget, group)
+    if os.environ.get('FORCE_NEW_PROFILES'):
+        for name in (PROFILE_NAME, WIDGET_PROFILE_NAME):
+            for p in call('GET', '/profiles', params={'filter[name]': name, 'limit': 20}).get('data', []):
+                log('removing profile', name)
+                call('DELETE', f"/profiles/{p['id']}")
+    print(install(profile(app, cert)))
+    print(install(profile(widget, cert, WIDGET_PROFILE_NAME)))

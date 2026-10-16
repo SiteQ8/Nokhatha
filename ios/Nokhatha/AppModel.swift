@@ -4,6 +4,7 @@ import NokhathaKit
 import AVFoundation
 import SwiftUI
 import UIKit
+import WidgetKit
 import UserNotifications
 
 enum Onboarding: Equatable {
@@ -77,8 +78,15 @@ final class AppModel: ObservableObject {
 
     func save() {
         guard let state else { return }
-        if let d = try? JSONEncoder().encode(state) { try? d.write(to: file, options: .atomic) }
+        if let d = try? JSONEncoder().encode(state) {
+            try? d.write(to: file, options: .atomic)
+            // the widget reads the same file from the shared container
+            if let shared = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.eworldq8.nokhatha") {
+                try? d.write(to: shared.appendingPathComponent("nokhatha.json"), options: .atomic)
+            }
+        }
         Reminders.schedule(model: self)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     func update(_ toastKey: String? = nil, _ vars: [String: String] = [:], _ body: (inout Brain) -> Void) {

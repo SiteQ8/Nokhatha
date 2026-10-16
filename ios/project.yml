@@ -24,6 +24,10 @@ targets:
         buildPhase: resources
     dependencies:
       - package: NokhathaKit
+      - target: NokhathaWidget
+        embed: true
+    entitlements:
+      path: Nokhatha/Nokhatha.entitlements
     info:
       path: Nokhatha/Info.plist
       properties:
@@ -50,7 +54,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.eworldq8.nokhatha
         DEVELOPMENT_TEAM: FKZPXUFH45
-        MARKETING_VERSION: 1.1.0
+        MARKETING_VERSION: 1.2.0
         CURRENT_PROJECT_VERSION: 1
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_VERSION: "5.0"
@@ -64,3 +68,37 @@ targets:
           CODE_SIGN_STYLE: Manual
           CODE_SIGN_IDENTITY: Apple Distribution
           PROVISIONING_PROFILE_SPECIFIER: $(NOKHATHA_PROFILE)
+  NokhathaWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: NokhathaWidget
+      - path: ../docs/data
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - package: NokhathaKit
+    entitlements:
+      path: NokhathaWidget/NokhathaWidget.entitlements
+    info:
+      path: NokhathaWidget/Info.plist
+      properties:
+        CFBundleDisplayName: نُوخذة
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.eworldq8.nokhatha.widget
+        DEVELOPMENT_TEAM: FKZPXUFH45
+        MARKETING_VERSION: 1.2.0
+        CURRENT_PROJECT_VERSION: 1
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.0"
+        SKIP_INSTALL: YES
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: $(NOKHATHA_WIDGET_PROFILE)
