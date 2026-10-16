@@ -235,6 +235,7 @@ struct AssetsScreen: View {
                     .padding(16)
                     .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Theme.line, lineWidth: 1))
+                    TireLine(car: car)
                     RenewalCard(carId: current.0)
                 }
                 if tasks.isEmpty { EmptyNote(icon: icon, text: model.t("empty." + kind.rawValue)) } else { GroupedRows(tasks: tasks, areas: areas) }
@@ -602,6 +603,26 @@ struct WeatherCard: View {
 }
 
 /// Ramadan or an Eid within 60 days: the days left, and a way to the checklist before Ramadan.
+/// The web's .tires: the tires' age from the car's DOT code, worded by how close to five years they are; nothing without a code.
+struct TireLine: View {
+    @EnvironmentObject var model: AppModel
+    let car: Car
+    var body: some View {
+        if let a = tireAge(car.tiresDot, model.today) {
+            let p = a.made.ymd
+            let made = "\(monthNames[model.isArabic ? "ar" : "en"]![p.m - 1]) \(p.y)"
+            let tint: Color = a.status == "overdue" ? Theme.overdue : a.status == "soon" ? Theme.soonInk : Theme.ink3
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: Symbol.name(a.status == "ok" ? "tire" : "alert")).font(.system(size: 15)).foregroundStyle(tint).padding(.top, 3)
+                Text(model.t("car.tires_" + a.status, ["made": made, "age": ageText(a.months, model.lang)]))
+                    .font(Theme.body(13.5)).foregroundStyle(a.status == "overdue" ? Theme.ink : Theme.ink2).lineSpacing(4)
+                Spacer(minLength: 0)
+            }
+            .padding(.top, 10).padding(.horizontal, 4)
+        }
+    }
+}
+
 struct EventCard: View {
     @EnvironmentObject var model: AppModel
     var body: some View {

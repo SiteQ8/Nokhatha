@@ -351,6 +351,7 @@ public struct Brain: Sendable {
         let car = b.addCar(name: T("سيارتي", "My car"), km: nil)
         if let ci = b.state.cars.firstIndex(where: { $0.id == car.id }) {
             b.state.cars[ci].readings = [Reading(date: today.adding(-130).iso, km: 61200), Reading(date: today.adding(-10).iso, km: 66050)]
+            b.state.cars[ci].tiresDot = "4022"
         }
         func ago(_ n: Int) -> String { today.adding(-n).iso }
         func cost(_ n: Int, _ amount: Int, km: Int? = nil) -> LogEntry { LogEntry(date: ago(n), cost: amount, cur: "KWD", km: km) }

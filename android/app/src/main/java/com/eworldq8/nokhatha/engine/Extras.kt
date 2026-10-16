@@ -325,6 +325,35 @@ fun Brain.weekText(w: Words): String {
     return lines.joinToString("\n")
 }
 
+// ---------------------------------------------------------------- tires
+
+/** Tire age from the last four DOT digits: the week they were made, full months since, and ok / soon (four years) / overdue (five). */
+data class TireAge(val made: Day, val months: Int, val status: String)
+
+private val DOT = Regex("""(?:^|\D)(\d{2})(\d{2})$""")
+
+fun tireAge(dot: String?, today: Day): TireAge? {
+    val m = DOT.find((dot ?: "").trim()) ?: return null
+    val week = m.groupValues[1].toInt()
+    if (week < 1 || week > 53) return null
+    val made = Day.of(2000 + m.groupValues[2].toInt(), 1, 1).plus((week - 1) * 7)
+    if (made > today) return null
+    val (ay, am, ad) = made.ymd
+    val (by, bm, bd) = today.ymd
+    val months = (by - ay) * 12 + (bm - am) - (if (bd < ad) 1 else 0)
+    return TireAge(made, months, if (months >= 60) "overdue" else if (months >= 48) "soon" else "ok")
+}
+
+/** An age in full months as words: years and months in the Kuwaiti count, "under a month" below one. */
+fun ageText(months: Int, lang: String): String {
+    val y = months / 12
+    val m = months % 12
+    fun unit(n: Int, u: String) = if (lang == "ar") countAr(n, u) else "$n $u${if (n == 1) "" else "s"}"
+    if (y == 0 && m == 0) return if (lang == "ar") "أقل من شهر" else "under a month"
+    if (y > 0 && m > 0) return if (lang == "ar") "${unit(y, "year")} و${unit(m, "month")}" else "${unit(y, "year")} and ${unit(m, "month")}"
+    return if (y > 0) unit(y, "year") else unit(m, "month")
+}
+
 // ---------------------------------------------------------------- bills
 
 /** The logged cost of a template's task per month of a year: twelve sums in minor units, null where nothing was logged. */

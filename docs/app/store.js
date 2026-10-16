@@ -204,6 +204,7 @@ export function sample(lang, today, templates) {
   const chalet = addHome(s, { type: 'chalet', name: T('الشاليه', 'Chalet'), features: { tank: true } }, templates);
   const car = addCar(s, { name: T('سيارتي', 'My car'), km: 66050, date: addDays(today, -10), dailyKm: 40 }, templates);
   car.readings.unshift({ date: addDays(today, -130), km: 61200 });
+  car.tiresDot = '4022';
 
   const set = (asset, tpl, patch) => {
     const it = s.items.find((i) => i.asset === asset && i.tpl === tpl);

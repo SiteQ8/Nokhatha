@@ -144,7 +144,7 @@ data class Home(val id: String, val type: String, val name: String, val features
 /** Where a car is in its registration renewal: the steps ticked and the term chosen. */
 data class Renewal(val done: List<String> = emptyList(), val years: Int? = null)
 
-data class Car(val id: String, val name: String, val dailyKm: Int? = 40, val readings: List<Reading> = emptyList(), val renewal: Renewal? = null) {
+data class Car(val id: String, val name: String, val dailyKm: Int? = 40, val readings: List<Reading> = emptyList(), val renewal: Renewal? = null, val tiresDot: String? = null) {
     val odometer: Odometer get() = Odometer(dailyKm ?: Engine.DEFAULT_DAILY_KM, readings)
 }
 
@@ -190,7 +190,7 @@ data class AppState(
             .put("cars", JSONArray(cars.map { c ->
                 JSONObject().put("id", c.id).put("kind", "car").put("name", c.name).opt("dailyKm", c.dailyKm)
                     .put("readings", JSONArray(c.readings.map { JSONObject().put("date", it.date).put("km", it.km) }))
-                    .opt("renewal", c.renewal?.let { r -> JSONObject().put("done", JSONArray(r.done)).opt("years", r.years) })
+                    .opt("renewal", c.renewal?.let { r -> JSONObject().put("done", JSONArray(r.done)).opt("years", r.years) }).opt("tiresDot", c.tiresDot)
             }))
             .put("things", JSONArray(things.map { JSONObject().put("id", it.id).put("kind", "thing").put("type", it.type).put("name", it.name) }))
             .put("items", JSONArray(items.map { i ->
@@ -229,7 +229,7 @@ data class AppState(
                 cars = o.arr("cars").map { c ->
                     val r = c.optJSONObject("renewal")
                     Car(c.getString("id"), c.getString("name"), c.int("dailyKm"), c.arr("readings").map { Reading(it.getString("date"), it.getInt("km")) },
-                        r?.let { Renewal(it.arr("done").let { a -> (0 until a.length()).map { i -> a.getString(i) } }, it.int("years")) })
+                        r?.let { Renewal(it.arr("done").let { a -> (0 until a.length()).map { i -> a.getString(i) } }, it.int("years")) }, c.str("tiresDot"))
                 },
                 things = o.arr("things").map { Thing(it.getString("id"), it.getString("type"), it.getString("name")) },
                 items = o.arr("items").map { i ->

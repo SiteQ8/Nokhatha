@@ -2632,6 +2632,162 @@
     "year": 1448,
     "days": 155
    }
+  },
+  {
+   "fn": "tireAge",
+   "args": [
+    "2523",
+    "2026-10-16"
+   ],
+   "out": {
+    "made": "2023-06-18",
+    "months": 39,
+    "status": "ok"
+   }
+  },
+  {
+   "fn": "tireAge",
+   "args": [
+    "4022",
+    "2026-10-16"
+   ],
+   "out": {
+    "made": "2022-10-01",
+    "months": 48,
+    "status": "soon"
+   }
+  },
+  {
+   "fn": "tireAge",
+   "args": [
+    "0121",
+    "2026-10-16"
+   ],
+   "out": {
+    "made": "2021-01-01",
+    "months": 69,
+    "status": "overdue"
+   }
+  },
+  {
+   "fn": "tireAge",
+   "args": [
+    "5323",
+    "2026-10-16"
+   ],
+   "out": {
+    "made": "2023-12-31",
+    "months": 33,
+    "status": "ok"
+   }
+  },
+  {
+   "fn": "tireAge",
+   "args": [
+    "DOT U2LL LMLR 5107",
+    "2026-10-16"
+   ],
+   "out": {
+    "made": "2007-12-17",
+    "months": 225,
+    "status": "overdue"
+   }
+  },
+  {
+   "fn": "tireAge",
+   "args": [
+    "9923",
+    "2026-10-16"
+   ],
+   "out": null
+  },
+  {
+   "fn": "tireAge",
+   "args": [
+    "0127",
+    "2026-10-16"
+   ],
+   "out": null
+  },
+  {
+   "fn": "tireAge",
+   "args": [
+    "12523",
+    "2026-10-16"
+   ],
+   "out": null
+  },
+  {
+   "fn": "tireAge",
+   "args": [
+    "",
+    "2026-10-16"
+   ],
+   "out": null
+  },
+  {
+   "fn": "ageText",
+   "args": [
+    39,
+    "ar"
+   ],
+   "out": "3 سنوات و3 شهور"
+  },
+  {
+   "fn": "ageText",
+   "args": [
+    48,
+    "en"
+   ],
+   "out": "4 years"
+  },
+  {
+   "fn": "ageText",
+   "args": [
+    0,
+    "ar"
+   ],
+   "out": "أقل من شهر"
+  },
+  {
+   "fn": "ageText",
+   "args": [
+    13,
+    "en"
+   ],
+   "out": "1 year and 1 month"
+  },
+  {
+   "fn": "ageText",
+   "args": [
+    2,
+    "ar"
+   ],
+   "out": "شهرين"
+  },
+  {
+   "fn": "ageText",
+   "args": [
+    24,
+    "en"
+   ],
+   "out": "2 years"
+  },
+  {
+   "fn": "ageText",
+   "args": [
+    1,
+    "en"
+   ],
+   "out": "1 month"
+  },
+  {
+   "fn": "ageText",
+   "args": [
+    11,
+    "ar"
+   ],
+   "out": "11 شهر"
   }
  ]
 }

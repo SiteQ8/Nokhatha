@@ -300,6 +300,7 @@ struct AssetSheet: View {
     @State private var features: [String: Bool] = ["central_ac": false, "tank": true, "filter": false]
     @State private var km = ""
     @State private var daily = "40"
+    @State private var dot = ""
     @State private var confirm = false
 
     var body: some View {
@@ -333,14 +334,19 @@ struct AssetSheet: View {
                     VStack(alignment: .leading, spacing: 0) { FieldLabel(text: model.t("car.daily")); Input(text: $daily, placeholder: "40", numbers: true) }
                 }
                 Fine(text: model.t("car.daily_note"))
+                FieldLabel(text: model.t("car.dot"))
+                Input(text: $dot, placeholder: model.t("car.dot_ph"))
+                Fine(text: model.t("car.dot_note"))
             }
             if kind == .thing && isNew { Fine(text: model.t("thing.hint")) }
             WideButton(title: model.t("act.save")) {
                 let n = name.trimmingCharacters(in: .whitespaces).isEmpty ? placeholder : name.trimmingCharacters(in: .whitespaces)
+                let dotTrim = normalizeDigits(dot).trimmingCharacters(in: .whitespaces)
+                let dotCode: String? = dotTrim.isEmpty ? nil : dotTrim
                 if let id = existingId {
                     model.update("toast.saved") { b in
                         if let i = b.state.homes.firstIndex(where: { $0.id == id }) { b.state.homes[i].name = n; b.state.homes[i].type = type; b.state.homes[i].features = features }
-                        if let i = b.state.cars.firstIndex(where: { $0.id == id }) { b.state.cars[i].name = n; b.state.cars[i].dailyKm = wholeNumber(daily) ?? 40 }
+                        if let i = b.state.cars.firstIndex(where: { $0.id == id }) { b.state.cars[i].name = n; b.state.cars[i].dailyKm = wholeNumber(daily) ?? 40; b.state.cars[i].tiresDot = dotCode }
                         if let i = b.state.things.firstIndex(where: { $0.id == id }) { b.state.things[i].name = n }
                         if kind == .home {
                             for t in b.catalog.templates where t.kind == "home" && t.needs != nil {
@@ -356,7 +362,9 @@ struct AssetSheet: View {
                         let id: String
                         switch kind {
                         case .home: id = b.addHome(type: type, name: n, features: features).id
-                        case .car: id = b.addCar(name: n, km: wholeNumber(km), dailyKm: wholeNumber(daily) ?? 40).id
+                        case .car:
+                            id = b.addCar(name: n, km: wholeNumber(km), dailyKm: wholeNumber(daily) ?? 40).id
+                            if let i = b.state.cars.firstIndex(where: { $0.id == id }) { b.state.cars[i].tiresDot = dotCode }
                         case .thing: id = b.addThing(type: type, name: n).id
                         }
                         b.spreadNew([id])
@@ -372,7 +380,7 @@ struct AssetSheet: View {
         .onAppear {
             let s = model.state ?? AppState()
             if let h = s.homes.first(where: { $0.id == existingId }) { name = h.name; type = h.type; features.merge(h.features ?? [:]) { $1 } }
-            else if let c = s.cars.first(where: { $0.id == existingId }) { name = c.name; daily = String(c.dailyKm ?? 40) }
+            else if let c = s.cars.first(where: { $0.id == existingId }) { name = c.name; daily = String(c.dailyKm ?? 40); dot = c.tiresDot ?? "" }
             else if let t = s.things.first(where: { $0.id == existingId }) { name = t.name; type = t.type }
             else if kind == .thing { type = "boat" }
         }

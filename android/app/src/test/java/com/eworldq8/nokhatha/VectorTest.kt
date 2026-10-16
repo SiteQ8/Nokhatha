@@ -82,6 +82,8 @@ class VectorTest {
             "toHijri" -> toHijri(day(g(0))!!).let { JSONObject().put("y", it.y).put("m", it.m).put("d", it.d) }
             "fromHijri" -> fromHijri(int(g(0)), int(g(1)), int(g(2))).iso
             "nextHijriEvent" -> nextHijriEvent(day(g(0))!!).let { JSONObject().put("id", it.id).put("now", it.now).put("days", it.days).put("year", it.year).put("date", it.date.iso) }
+            "ageText" -> ageText(int(g(0)), g(1) as String)
+            "tireAge" -> tireAge(g(0) as String?, day(g(1))!!)?.let { JSONObject().put("made", it.made.iso).put("months", it.months).put("status", it.status) } ?: JSONObject.NULL
             "nextHijriDate" -> nextHijriDate(day(g(0))!!, int(g(1)), int(g(2)))?.let { JSONObject().put("date", it.date.iso).put("year", it.year).put("days", it.days) } ?: JSONObject.NULL
             "relative" -> relative(int(g(0)), g(1) as String)
             "formatDate" -> formatDate(day(g(0))!!, g(1) as String, g(2)?.let { int(it) })

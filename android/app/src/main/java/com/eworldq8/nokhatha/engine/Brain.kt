@@ -268,7 +268,7 @@ class Brain(val catalog: Catalog, var state: AppState, val today: Day) {
             val chalet = b.addHome("chalet", t("الشاليه", "Chalet"), mapOf("tank" to true))
             val car = b.addCar(t("سيارتي", "My car"), null)
             b.state = b.state.copy(cars = b.state.cars.map {
-                if (it.id == car.id) it.copy(readings = listOf(Reading(today.plus(-130).iso, 61200), Reading(today.plus(-10).iso, 66050))) else it
+                if (it.id == car.id) it.copy(readings = listOf(Reading(today.plus(-130).iso, 61200), Reading(today.plus(-10).iso, 66050)), tiresDot = "4022") else it
             })
             fun ago(n: Int) = today.plus(-n).iso
             fun cost(n: Int, amount: Int, km: Int? = null) = LogEntry(ago(n), amount, "KWD", km)

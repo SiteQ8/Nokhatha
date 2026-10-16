@@ -153,6 +153,7 @@ public struct Car: Codable, Hashable, Sendable, Identifiable {
     public var dailyKm: Int?
     public var readings: [Reading]?
     public var renewal: Renewal?
+    public var tiresDot: String?
 
     public var odometer: CarOdometer { CarOdometer(dailyKm: dailyKm ?? Engine.defaultDailyKm, readings: readings ?? []) }
 }

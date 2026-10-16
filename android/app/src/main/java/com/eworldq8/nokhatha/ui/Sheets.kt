@@ -340,6 +340,7 @@ fun AssetSheet(model: AppModel, kind: AssetKind, existingId: String?, onClose: (
     val features = remember { mutableStateMapOf<String, Boolean>().apply { putAll(mapOf("central_ac" to false, "tank" to true, "filter" to false) + (home?.features ?: emptyMap())) } }
     var km by remember { mutableStateOf("") }
     var daily by remember { mutableStateOf((car?.dailyKm ?: 40).toString()) }
+    var dot by remember { mutableStateOf(car?.tiresDot ?: "") }
     var confirm by remember { mutableStateOf(false) }
     val isNew = existingId == null
     val placeholder = when (kind) {
@@ -373,6 +374,9 @@ fun AssetSheet(model: AppModel, kind: AssetKind, existingId: String?, onClose: (
                 Column(Modifier.weight(1f)) { FieldLabel(model.t("car.daily")); Input(daily, { daily = it }, "40", numbers = true) }
             }
             Fine(model.t("car.daily_note"))
+            FieldLabel(model.t("car.dot"))
+            Input(dot, { dot = it.take(24) }, model.t("car.dot_ph"))
+            Fine(model.t("car.dot_note"))
         }
         if (kind == AssetKind.THING && isNew) Fine(model.t("thing.hint"))
         Spacer(Modifier.height(12.dp))
@@ -383,7 +387,7 @@ fun AssetSheet(model: AppModel, kind: AssetKind, existingId: String?, onClose: (
                     val f = features.toMap()
                     b.state = b.state.copy(
                         homes = b.state.homes.map { if (it.id == existingId) it.copy(name = n, type = type, features = f) else it },
-                        cars = b.state.cars.map { if (it.id == existingId) it.copy(name = n, dailyKm = wholeNumber(daily) ?: 40) else it },
+                        cars = b.state.cars.map { if (it.id == existingId) it.copy(name = n, dailyKm = wholeNumber(daily) ?: 40, tiresDot = normalizeDigits(dot).trim().ifEmpty { null }) else it },
                         things = b.state.things.map { if (it.id == existingId) it.copy(name = n) else it },
                     )
                     if (kind == AssetKind.HOME) {
@@ -400,7 +404,10 @@ fun AssetSheet(model: AppModel, kind: AssetKind, existingId: String?, onClose: (
                 model.update("toast.added") { b ->
                     val id = when (kind) {
                         AssetKind.HOME -> b.addHome(type, n, features.toMap()).id
-                        AssetKind.CAR -> b.addCar(n, wholeNumber(km), wholeNumber(daily) ?: 40).id
+                        AssetKind.CAR -> b.addCar(n, wholeNumber(km), wholeNumber(daily) ?: 40).id.also { id ->
+                            val code = normalizeDigits(dot).trim().ifEmpty { null }
+                            if (code != null) b.state = b.state.copy(cars = b.state.cars.map { if (it.id == id) it.copy(tiresDot = code) else it })
+                        }
                         AssetKind.THING -> b.addThing(type, n).id
                     }
                     b.spreadNew(listOf(id))

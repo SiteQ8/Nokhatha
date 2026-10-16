@@ -212,6 +212,7 @@ fun AssetsScreen(model: AppModel, kind: AssetKind, onBack: (() -> Unit)? = null)
                         }
                         WideButton(model.t("act.update_odo"), primary = false, icon = "gauge", block = false) { sheet = "odo" }
                     }
+                    TireLine(model, car)
                 }
             }
             if (kind == AssetKind.CAR) RenewalCard(model, current.first)
@@ -499,6 +500,20 @@ fun RenewalCard(model: AppModel, carId: String) {
         }
         Spacer(Modifier.height(12.dp))
         WideButton(model.t("renew.done"), icon = "done") { model.update("renew.done_toast") { it.finishRenewal(carId) } }
+    }
+}
+
+/** The web's .tires: the tires' age from the car's DOT code, worded by how close to five years they are; nothing without a code. */
+@Composable
+fun TireLine(model: AppModel, car: Car) {
+    val a = tireAge(car.tiresDot, model.today) ?: return
+    val p = pal()
+    val (y, m, _) = a.made.ymd
+    val made = "${monthNames.getValue(if (model.isArabic) "ar" else "en")[m - 1]} $y"
+    val text = model.t("car.tires_${a.status}", mapOf("made" to made, "age" to ageText(a.months, model.lang)))
+    Row(Modifier.fillMaxWidth().padding(top = 10.dp, start = 4.dp, end = 4.dp), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Top) {
+        Ico(if (a.status == "ok") "tire" else "alert", when (a.status) { "overdue" -> p.overdue; "soon" -> p.soonInk; else -> p.ink3 }, 18.dp, Modifier.padding(top = 3.dp))
+        Text(text, style = body(13.5, lineHeight = 1.7), color = if (a.status == "overdue") p.ink else p.ink2)
     }
 }
 

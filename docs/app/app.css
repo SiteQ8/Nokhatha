@@ -221,6 +221,11 @@ body.locked { overflow: hidden; }
 .odo-l { font-size: 13px; color: var(--ink-3); font-weight: 600; }
 .odo-v { font-family: var(--font-display); font-weight: 600; font-size: 28px; line-height: 1.3; }
 .odo-s { font-size: 13px; color: var(--ink-2); }
+.tires { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0 0; padding: 0 4px; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
+.tires > .ic { flex: none; width: 18px; height: 18px; margin-top: 3px; color: var(--ink-3); }
+.tires.s-soon > .ic { color: var(--soon-ink); }
+.tires.s-overdue { color: var(--ink); }
+.tires.s-overdue > .ic { color: var(--overdue); }
 
 /* totals and spend */
 .total { display: flex; flex-direction: column; gap: 2px; padding: 18px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); }

@@ -340,6 +340,41 @@ public extension Brain {
     }
 }
 
+// MARK: - tires
+
+/// Tire age from the last four DOT digits: the week they were made, full months since, and ok / soon (four years) / overdue (five).
+public struct TireAge: Hashable, Sendable {
+    public let made: Day
+    public let months: Int
+    public let status: String
+}
+
+public func tireAge(_ dot: String?, _ today: Day) -> TireAge? {
+    let chars = Array((dot ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
+    guard chars.count >= 4 else { return nil }
+    let tail = chars.suffix(4)
+    guard tail.allSatisfy({ $0.isASCII && $0.isNumber }) else { return nil }
+    if chars.count > 4, let before = chars.dropLast(4).last, before.isASCII, before.isNumber { return nil }
+    let digits = tail.map { Int(String($0))! }
+    let week = digits[0] * 10 + digits[1]
+    guard week >= 1, week <= 53 else { return nil }
+    let made = Day(y: 2000 + digits[2] * 10 + digits[3], m: 1, d: 1).adding((week - 1) * 7)
+    if made > today { return nil }
+    let a = made.ymd, b = today.ymd
+    let months = (b.y - a.y) * 12 + (b.m - a.m) - (b.d < a.d ? 1 : 0)
+    return TireAge(made: made, months: months, status: months >= 60 ? "overdue" : months >= 48 ? "soon" : "ok")
+}
+
+/// An age in full months as words: years and months in the Kuwaiti count, "under a month" below one.
+public func ageText(_ months: Int, _ lang: String) -> String {
+    let y = months / 12
+    let m = months % 12
+    func unit(_ n: Int, _ u: String) -> String { lang == "ar" ? countAr(n, u) : "\(n) \(u)\(n == 1 ? "" : "s")" }
+    if y == 0 && m == 0 { return lang == "ar" ? "أقل من شهر" : "under a month" }
+    if y > 0 && m > 0 { return lang == "ar" ? "\(unit(y, "year")) و\(unit(m, "month"))" : "\(unit(y, "year")) and \(unit(m, "month"))" }
+    return y > 0 ? unit(y, "year") : unit(m, "month")
+}
+
 // MARK: - bills
 
 /// The logged cost of a template's task per month of a year: twelve sums in minor units, nil where nothing was logged.

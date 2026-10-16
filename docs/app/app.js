@@ -363,10 +363,19 @@ function viewCar(r) {
 <span class="odo-v">${km != null ? kmText(km) : t('car.odo_unknown')}</span>
 <span class="odo-s">${last ? t('car.odo_last', { km: kmText(last.km), date: dateText(last.date) }) : t('car.odo_none')}</span></div>
 <button class="btn" data-act="odo" data-id="${esc(cur.id)}">${icon('gauge')}<span>${t('act.update_odo')}</span></button></div>
-${carRenewal(cur)}
+${tireLine(cur)}${carRenewal(cur)}
 ${groupedRows(evs, D.areas.car)}
 <div class="actions"><button class="btn" data-act="add-task" data-id="${esc(cur.id)}">${icon('plus')}<span>${t('act.add_task')}</span></button>
 <button class="btn btn-quiet" data-act="edit-car" data-id="${esc(cur.id)}">${icon('edit')}<span>${t('act.edit_car')}</span></button></div>`;
+}
+
+/** The tires' age from the car's DOT code, worded by how close to five years they are; nothing when no code is kept. */
+function tireLine(car) {
+  const a = E.tireAge(car.tiresDot, TODAY);
+  if (!a) return '';
+  const p = E.parseISO(a.made);
+  const made = `${E.MONTHS[L() === 'ar' ? 'ar' : 'en'][p.m - 1]} ${p.y}`;
+  return `<p class="tires s-${a.status}">${icon(a.status === 'ok' ? 'tire' : 'alert')}<span>${esc(t('car.tires_' + a.status, { made, age: E.ageText(a.months, L()) }))}</span></p>`;
 }
 
 function viewThings(r) {
@@ -1292,6 +1301,8 @@ function carSheet(id) {
 ${c ? '' : `<label class="field"><span>${t('car.km_now')}</span><input class="input ltr" name="km" inputmode="numeric" placeholder="84000"></label>`}
 <label class="field"><span>${t('car.daily')}</span><input class="input ltr" name="daily" inputmode="numeric" value="${c ? c.dailyKm : 40}"></label>
 <p class="fine">${t('car.daily_note')}</p>
+<label class="field"><span>${t('car.dot')}</span><input class="input ltr" name="dot" inputmode="numeric" maxlength="24" value="${esc(c && c.tiresDot ? c.tiresDot : '')}" placeholder="${esc(t('car.dot_ph'))}" autocomplete="off"></label>
+<p class="fine">${t('car.dot_note')}</p>
 <button class="btn btn-primary btn-block" data-act="save-car" data-id="${esc(id || '')}">${t('act.save')}</button>
 ${c ? `<button class="btn btn-quiet btn-danger btn-block" data-act="delete-asset" data-id="${esc(id)}">${icon('trash')}<span>${t('act.delete_car')}</span></button>` : ''}`, t('act.add_car'));
 }
@@ -1674,13 +1685,15 @@ async function onClick(e) {
     case 'save-car': {
       const name = val('name') || t('car.default');
       const daily = num(val('daily')) || 40;
+      const tiresDot = E.normalizeDigits(val('dot') || '').trim() || null;
       let car;
       if (id) {
         car = state.cars.find((x) => x.id === id);
-        Object.assign(car, { name, dailyKm: daily });
+        Object.assign(car, { name, dailyKm: daily, tiresDot });
       } else {
         car = S.addCar(state, { name, km: num(val('km')), date: TODAY, dailyKm: daily }, D.templates);
         S.spreadNew(state, [car.id], TODAY, D.templates);
+        car.tiresDot = tiresDot;
       }
       closeSheet(true);
       location.hash = `#/car/${car.id}`;

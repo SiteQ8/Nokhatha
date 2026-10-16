@@ -606,6 +606,33 @@ export function nextHijriDate(iso, hm, hd) {
   return null;
 }
 
+/* ------------------------------------------------------------- tires */
+
+/** Tire age from the last four DOT digits (week, then two-digit year): the week they were made, their age in full months,
+ *  and ok, soon from four years, overdue from five, when Gulf heat has aged the rubber whatever the tread; null for a code that makes no sense. */
+export function tireAge(dot, iso) {
+  const m = /(?:^|\D)(\d{2})(\d{2})$/.exec(String(dot == null ? '' : dot).trim());
+  if (!m) return null;
+  const week = Number(m[1]);
+  if (week < 1 || week > 53) return null;
+  const made = addDays(`${2000 + Number(m[2])}-01-01`, (week - 1) * 7);
+  if (made > iso) return null;
+  const a = parseISO(made);
+  const b = parseISO(iso);
+  const months = (b.y - a.y) * 12 + (b.m - a.m) - (b.d < a.d ? 1 : 0);
+  return { made, months, status: months >= 60 ? 'overdue' : months >= 48 ? 'soon' : 'ok' };
+}
+
+/** An age in full months as words: years and months in the Kuwaiti count, "under a month" below one. */
+export function ageText(months, lang) {
+  const y = Math.floor(months / 12);
+  const m = months % 12;
+  const unit = (n, u) => (lang === 'ar' ? countAr(n, u) : `${n} ${u}${n === 1 ? '' : 's'}`);
+  if (!y && !m) return lang === 'ar' ? 'أقل من شهر' : 'under a month';
+  if (y && m) return lang === 'ar' ? `${unit(y, 'year')} و${unit(m, 'month')}` : `${unit(y, 'year')} and ${unit(m, 'month')}`;
+  return y ? unit(y, 'year') : unit(m, 'month');
+}
+
 /* ------------------------------------------------------------- bills */
 
 /** The logged cost of a template's task per month of a year: twelve sums in minor units, null where nothing was logged. */
