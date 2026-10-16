@@ -11,7 +11,7 @@ const shot = (lang, page) => 'data:image/png;base64,' + readFileSync(`/tmp/mkt/s
 
 const T = {
   ar: {
-    site: 'nokhatha.3li.info', free: 'مجاني', open: 'بلا حساب', local: 'بياناتك على جهازك', platforms: 'ويب · آيفون · أندرويد',
+    site: 'nokhatha.3li.info', free: 'مجاني', open: 'بلا حساب', local: 'بياناتك على جهازك', platforms: 'الويب وآيفون، وأندرويد قريباً',
     cards: [
       { id: 'hero', page: 'today', kicker: 'نُوخذة', title: 'بيتك وسيارتك واشتراكاتك على مواسم الخليج', sub: 'تذكيرات تعرف الصيف والبوارح والوسم، وتقول لك شنو تسوي قبل كل موسم.',
         points: ['دائرة السنة على 14 موسم من سهيل إلى الكليبين', 'مهام البيت والسيارة بالترتيب الصحيح لدولتك', 'بلا حساب وبلا إنترنت، كل شي على جهازك'] },
@@ -32,7 +32,7 @@ const T = {
     awarenessLine: 'أكتوبر شهر التوعية بالأمن السيبراني: اختر تطبيقات تحترم بياناتك.',
   },
   en: {
-    site: 'nokhatha.3li.info', free: 'Free', open: 'No account', local: 'Data stays on your device', platforms: 'Web · iPhone · Android',
+    site: 'nokhatha.3li.info', free: 'Free', open: 'No account', local: 'Data stays on your device', platforms: 'Web and iPhone, Android soon',
     cards: [
       { id: 'hero', page: 'today', kicker: 'Nokhatha', title: 'Your home, car and subscriptions on the Gulf seasons', sub: 'Reminders that know the heat, the Bawarih and Al-Wasm, and tell you what to do before each season.',
         points: ['A year dial of 14 seasons, Suhail to Kulaibain', 'Home and car tasks in the right order for your country', 'No account, no internet, everything on your device'] },

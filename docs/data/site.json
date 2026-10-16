@@ -54,14 +54,14 @@
     "web_body": "Works on any device, and you can pin it to your home screen.",
     "ios_title": "iPhone",
     "ios_body": "With device reminders, the weather and the encrypted backup.",
-    "ios_soon": "Coming to the App Store",
     "android_title": "Android",
     "android_body": "With device reminders and a home screen widget.",
     "android_soon": "Coming to Google Play",
     "meaning": "The nokhatha is the captain of a pearling dhow, responsible for everything aboard, and this app makes you the captain of your home.",
     "links_label": "Links",
     "privacy_link": "Privacy policy",
-    "copyright": "© 2026 Ali AlEnezi"
+    "copyright": "© 2026 Ali AlEnezi",
+    "ios_get": "On the App Store"
   },
   "dyn": {
     "ar": {
