@@ -97,9 +97,12 @@ def certificate():
 
 
 def profile(bundle, cert, name=PROFILE_NAME):
-    existing = call('GET', '/profiles', params={'filter[name]': name, 'filter[profileState]': 'ACTIVE',
-                                                'include': 'certificates,bundleId', 'limit': 20})
+    existing = call('GET', '/profiles', params={'filter[name]': name, 'include': 'certificates,bundleId', 'limit': 50})
     for p in existing.get('data', []):
+        if p['attributes'].get('profileState') != 'ACTIVE':
+            log('removing invalid profile', p['id'])
+            call('DELETE', f"/profiles/{p['id']}")
+            continue
         rel = p.get('relationships', {})
         certs = [c['id'] for c in rel.get('certificates', {}).get('data', [])]
         b = rel.get('bundleId', {}).get('data', {}).get('id')
