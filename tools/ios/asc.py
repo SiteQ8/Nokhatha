@@ -134,14 +134,18 @@ if __name__ == '__main__':
     # only the entitlements changed, FORCE_NEW_PROFILES=1 recreates both.
     cert = certificate()
     app = bundle_id()
-    widget = bundle_id(WIDGET_BUNDLE, 'Nokhatha Widget')
-    group = app_group()
-    enable_group(app, group)
-    enable_group(widget, group)
-    if os.environ.get('FORCE_NEW_PROFILES'):
-        for name in (PROFILE_NAME, WIDGET_PROFILE_NAME):
-            for p in call('GET', '/profiles', params={'filter[name]': name, 'limit': 20}).get('data', []):
-                log('removing profile', name)
-                call('DELETE', f"/profiles/{p['id']}")
     print(install(profile(app, cert)))
-    print(install(profile(widget, cert, WIDGET_PROFILE_NAME)))
+    # The widget needs an App Group, and App Groups have no App Store Connect API endpoint: the group
+    # group.com.eworldq8.nokhatha is created once by hand in the developer portal, after which
+    # NOKHATHA_WIDGET=1 adds the capability to both bundle ids and signs the widget too.
+    if os.environ.get('NOKHATHA_WIDGET') == '1':
+        widget = bundle_id(WIDGET_BUNDLE, 'Nokhatha Widget')
+        group = app_group()
+        enable_group(app, group)
+        enable_group(widget, group)
+        if os.environ.get('FORCE_NEW_PROFILES'):
+            for name in (PROFILE_NAME, WIDGET_PROFILE_NAME):
+                for p in call('GET', '/profiles', params={'filter[name]': name, 'limit': 20}).get('data', []):
+                    log('removing profile', name)
+                    call('DELETE', f"/profiles/{p['id']}")
+        print(install(profile(widget, cert, WIDGET_PROFILE_NAME)))

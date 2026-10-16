@@ -66,6 +66,7 @@ jobs:
           python3 tools/ios/asc.py > "$RUNNER_TEMP/profiles.txt"
           echo "PROFILE_UUID=$(sed -n 1p "$RUNNER_TEMP/profiles.txt")" >> "$GITHUB_ENV"
           echo "WIDGET_PROFILE_UUID=$(sed -n 2p "$RUNNER_TEMP/profiles.txt")" >> "$GITHUB_ENV"
+          # the widget joins the release once the App Group exists in the portal: set NOKHATHA_WIDGET=1 here and embed the target in ios/project.yml
 
       - name: Version from the tag
         run: |

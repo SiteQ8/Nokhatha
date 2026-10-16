@@ -24,10 +24,6 @@ targets:
         buildPhase: resources
     dependencies:
       - package: NokhathaKit
-      - target: NokhathaWidget
-        embed: true
-    entitlements:
-      path: Nokhatha/Nokhatha.entitlements
     info:
       path: Nokhatha/Info.plist
       properties:
