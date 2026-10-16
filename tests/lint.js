@@ -173,12 +173,12 @@ for (const page of ['docs/index.html', 'docs/app/index.html', 'docs/privacy/inde
   if (/<script(?![^>]*\bsrc=)[^>]*>/.test(h)) bad(`${page}: inline script`);
   if (/<style[\s>]/.test(h)) bad(`${page}: inline style block`);
   for (const m of h.matchAll(/\s(?:src|href)="(https?:[^"]+)"/g)) {
-    if (!/^https:\/\/(github\.com\/SiteQ8|3li\.info|nokhatha\.3li\.info)/.test(m[1])) bad(`${page}: external resource ${m[1]}`);
+    if (!/^https:\/\/(github\.com\/SiteQ8|3li\.info|nokhatha\.3li\.info|apps\.apple\.com\/app\/id6816176052|play\.google\.com\/store\/apps\/details\?id=com\.eworldq8\.nokhatha)/.test(m[1])) bad(`${page}: external resource ${m[1]}`);
     if (/\ssrc="https?:/.test(m[0])) bad(`${page}: loads ${m[1]} from outside`);
   }
 }
 // The app may reach exactly these hosts and nothing else. The two weather hosts are opt-in.
-const HOSTS = new Set(['wa.me', 'github.com', '3li.info', 'nokhatha.3li.info', 'open-meteo.com', 'api.open-meteo.com', 'air-quality-api.open-meteo.com', 'www.w3.org']);
+const HOSTS = new Set(['wa.me', 'github.com', '3li.info', 'nokhatha.3li.info', 'apps.apple.com', 'play.google.com', 'open-meteo.com', 'api.open-meteo.com', 'air-quality-api.open-meteo.com', 'www.w3.org']);
 for (const f of textFiles.filter((x) => /^docs\/.*\.(js|html)$/.test(rel(x)))) {
   for (const m of readFileSync(f, 'utf8').matchAll(/https?:\/\/([a-z0-9.-]+)/gi)) {
     if (!HOSTS.has(m[1].toLowerCase())) bad(`${rel(f)}: refers to ${m[1]}, which is not on the allowed list`);
