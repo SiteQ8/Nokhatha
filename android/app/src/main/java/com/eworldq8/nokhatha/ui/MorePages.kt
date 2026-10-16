@@ -657,6 +657,7 @@ fun SpendScreen(model: AppModel) {
             }
         }
         Box(Modifier.padding(top = 14.dp)) { Lede(model.t("spend.note"), small = true) }
+        BillStrip(model, year)
         if (r.logs.isNotEmpty()) {
             SmallHead(model.t("spend.logged"), top = 8.dp)
             ListCard {
@@ -688,4 +689,34 @@ fun YearButton(text: String, forward: Boolean, onClick: () -> Unit) {
         Text(text, style = body(15, FontWeight.SemiBold, 1.2), color = p.ink)
         if (forward) Ico("next", p.ink2, 18.dp)
     }
+}
+
+/** Twelve columns of the year's electricity and water bills, the summer visible at a glance. */
+@Composable
+fun BillStrip(model: AppModel, year: Int) {
+    val p = pal()
+    val cur = model.state?.settings?.currency ?: "KWD"
+    val months = monthlyCosts(model.state?.items ?: emptyList(), "power_bill", year, cur)
+    val max = maxOf(months.maxOfOrNull { it ?: 0 } ?: 0, 1)
+    val any = months.any { it != null }
+    val names = monthNames.getValue(if (model.isArabic) "ar" else "en")
+    val (ty, tm, _) = model.today.ymd
+    val digits = currencies[cur]?.digits ?: 3
+    var unit = 1; repeat(digits) { unit *= 10 }
+    SmallHead(model.t("spend.bills"))
+    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(p.surface).border(1.dp, p.line, RoundedCornerShape(18.dp)).padding(start = 12.dp, end = 12.dp, top = 14.dp, bottom = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.Bottom) {
+        months.forEachIndexed { i, m ->
+            val now = year == ty && i + 1 == tm
+            Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(if (m != null) Math.round(m.toDouble() / unit).toString() else "", style = body(9.5, FontWeight.SemiBold, 1.0), color = p.ink2, maxLines = 1, modifier = Modifier.height(10.dp))
+                Box(Modifier.width(18.dp).height(72.dp).clip(RoundedCornerShape(4.dp)).background(p.ink.copy(alpha = if (any) 0.06f else 0.04f))
+                    .then(if (now) Modifier.border(1.5.dp, p.ink, RoundedCornerShape(4.dp)) else Modifier), contentAlignment = Alignment.BottomCenter) {
+                    if (m != null) Box(Modifier.fillMaxWidth().height(maxOf(3.dp, 72.dp * m / max)).clip(RoundedCornerShape(4.dp)).background(p.rutab))
+                }
+                Text(names[i].take(3), style = body(10, lineHeight = 1.0), color = p.ink3, maxLines = 1)
+            }
+        }
+    }
+    Fine(model.t(if (any) "spend.bills_note" else "spend.bills_empty"))
 }

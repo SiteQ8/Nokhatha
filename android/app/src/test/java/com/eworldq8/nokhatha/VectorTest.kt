@@ -73,6 +73,12 @@ class VectorTest {
             "normalizeDigits" -> normalizeDigits(g(0) as String)
             "parseMoney" -> parseMoney(g(0) as String, g(1) as String) ?: JSONObject.NULL
             "countAr" -> countAr(int(g(0)), g(1) as String)
+            "monthlyCosts" -> {
+                val items = (g(0) as JSONArray).let { a -> (0 until a.length()).map { i -> a.getJSONObject(i) } }.map { o ->
+                    Item(o.getString("id"), o.getString("asset"), o.str("tpl"), log = o.optJSONArray("log")?.let { la -> (0 until la.length()).map { j -> la.getJSONObject(j) }.map { l -> LogEntry(l.getString("date"), l.int("cost"), l.str("cur"), null) } } ?: emptyList())
+                }
+                JSONArray(monthlyCosts(items, g(1) as String, int(g(2)), g(3) as String).map { it ?: JSONObject.NULL })
+            }
             "toHijri" -> toHijri(day(g(0))!!).let { JSONObject().put("y", it.y).put("m", it.m).put("d", it.d) }
             "fromHijri" -> fromHijri(int(g(0)), int(g(1)), int(g(2))).iso
             "nextHijriEvent" -> nextHijriEvent(day(g(0))!!).let { JSONObject().put("id", it.id).put("now", it.now).put("days", it.days).put("year", it.year).put("date", it.date.iso) }

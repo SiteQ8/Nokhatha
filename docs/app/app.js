@@ -659,9 +659,24 @@ ${year === E.parseISO(TODAY).y ? `<span class="total-s">${t('spend.projected', {
 ${year < E.parseISO(TODAY).y ? `<a class="btn btn-quiet" href="#/spend/${year + 1}"><span>${year + 1}</span>${icon('next', 'flip')}</a>` : '<span></span>'}</div>
 ${blocks || `<div class="empty">${icon('wallet', 'ic-xl')}<p>${t('empty.spend')}</p></div>`}
 <p class="lede small">${t('spend.note')}</p>
+${billStrip(year)}
 ${logs.length ? `<div class="sec sec-sm"><h3>${t('spend.logged')}</h3></div><ul class="list">${logs.map(({ l, ev, asset }) => `<li class="row plain"><span class="row-main">
 <span class="row-title">${esc(ev.tpl ? nm(ev.tpl) : ev.it.title)}</span><span class="row-meta"><span class="date">${dateText(l.date)}</span>${asset ? `<span class="asset">${esc(asset.name)}</span>` : ''}</span></span>
 <span class="row-amt"><b>${esc(money(l.cost, l.cur || state.settings.currency))}</b></span></li>`).join('')}</ul>` : ''}`;
+}
+
+/** Twelve columns of the year's electricity and water bills, the summer visible at a glance. */
+function billStrip(year) {
+  const cur = state.settings.currency;
+  const months = E.monthlyCosts(state.items, 'power_bill', year, cur);
+  const max = Math.max(...months.map((m) => m || 0), 1);
+  const any = months.some((m) => m != null);
+  const names = E.MONTHS[L() === 'ar' ? 'ar' : 'en'];
+  const thisMonth = E.parseISO(TODAY);
+  return `<div class="sec sec-sm"><h3>${t('spend.bills')}</h3></div>
+<div class="bills${any ? '' : ' muted'}">${months.map((m, i) => `<div class="bill${m != null ? ' has' : ''}${year === thisMonth.y && i + 1 === thisMonth.m ? ' now' : ''}" title="${esc(m != null ? money(m, cur) : '')}">
+<span class="bill-v">${m != null ? esc(String(Math.round(m / 10 ** ((E.CURRENCIES[cur] || { d: 3 }).d)))) : ''}</span><span class="bill-t"><i data-p="${((m || 0) / max).toFixed(3)}"></i></span><span class="bill-m">${esc(names[i].slice(0, 3))}</span></div>`).join('')}</div>
+<p class="fine">${t(any ? 'spend.bills_note' : 'spend.bills_empty')}</p>`;
 }
 
 function seg(name, value, options) {

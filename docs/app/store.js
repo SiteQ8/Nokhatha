@@ -223,6 +223,7 @@ export function sample(lang, today, templates) {
   set(home.id, 'gas_hose', { lastDone: ago(176) });
   set(home.id, 'hood', { lastDone: ago(45) });
   set(home.id, 'pests', { lastDone: ago(96), log: [cost(96, 12000)] });
+  set(home.id, 'power_bill', { lastDone: ago(12), log: [{ date: addMonths(today, -4), cost: 28000, cur: 'KWD' }, { date: addMonths(today, -3), cost: 41000, cur: 'KWD' }, { date: addMonths(today, -2), cost: 63000, cur: 'KWD' }, { date: addMonths(today, -1), cost: 58000, cur: 'KWD' }, { date: ago(12), cost: 39000, cur: 'KWD' }] });
 
   for (const i of s.items) if (i.asset === chalet.id && !['ac_filters', 'water_tank', 'pests', 'roof_drains', 'smoke'].includes(i.tpl)) i.enabled = false;
   set(chalet.id, 'ac_filters', { lastDone: ago(20) });

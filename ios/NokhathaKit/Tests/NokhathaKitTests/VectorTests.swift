@@ -96,6 +96,13 @@ final class VectorTests: XCTestCase {
         case "normalizeDigits": return normalizeDigits(str(a[0]))
         case "parseMoney": return parseMoney(str(a[0]), str(a[1])) as Any? ?? NSNull()
         case "countAr": return countAr(int(a[0]), str(a[1]))
+        case "monthlyCosts":
+            let items = (a[0] as! [[String: Any]]).map { o -> Item in
+                var it = Item(id: str(o["id"]), asset: str(o["asset"]), tpl: o["tpl"] as? String)
+                it.log = (o["log"] as? [[String: Any]])?.map { LogEntry(date: str($0["date"]), cost: $0["cost"] as? Int, cur: $0["cur"] as? String) }
+                return it
+            }
+            return monthlyCosts(items, tpl: str(a[1]), year: int(a[2]), currency: str(a[3])).map { $0 as Any? ?? NSNull() }
         case "toHijri": let h = toHijri(day(a[0])!); return ["y": h.y, "m": h.m, "d": h.d]
         case "fromHijri": return fromHijri(int(a[0]), int(a[1]), int(a[2])).iso
         case "nextHijriEvent": let e = nextHijriEvent(day(a[0])!); return ["id": e.id, "now": e.now, "days": e.days, "year": e.year, "date": e.date.iso]

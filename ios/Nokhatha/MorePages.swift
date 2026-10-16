@@ -764,6 +764,7 @@ struct SpendScreen: View {
                 .padding(.top, i > 0 ? 12 : 0)
             }
             Lede(text: model.t("spend.note"), small: true).padding(.top, 14)
+            BillStrip(year: year)
             if !r.logs.isEmpty {
                 SmallHead(text: model.t("spend.logged"), top: 8)
                 ListCard {
@@ -803,5 +804,42 @@ struct YearButton: View {
             .foregroundStyle(Theme.ink).padding(.horizontal, 10).frame(height: 40)
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// Twelve columns of the year's electricity and water bills, the summer visible at a glance.
+struct BillStrip: View {
+    @EnvironmentObject var model: AppModel
+    let year: Int
+    var body: some View {
+        let cur = model.state?.settings.currency ?? "KWD"
+        let months = monthlyCosts(model.state?.items ?? [], tpl: "power_bill", year: year, currency: cur)
+        let mx = max(months.compactMap { $0 }.max() ?? 0, 1)
+        let any = months.contains { $0 != nil }
+        let names = monthNames[model.isArabic ? "ar" : "en"]!
+        let t = model.today.ymd
+        let unit = Int(pow(10.0, Double(currencies[cur]?.digits ?? 3)))
+        SmallHead(text: model.t("spend.bills"))
+        HStack(alignment: .bottom, spacing: 4) {
+            ForEach(0..<12, id: \.self) { i in
+                let m = months[i]
+                let now = year == t.y && i + 1 == t.m
+                VStack(spacing: 4) {
+                    Text(m.map { String(Int((Double($0) / Double(unit)).rounded())) } ?? " ").font(Theme.body(9.5, "SemiBold")).foregroundStyle(Theme.ink2).lineLimit(1).frame(height: 10)
+                    ZStack(alignment: .bottom) {
+                        RoundedRectangle(cornerRadius: 4).fill(Theme.ink.opacity(any ? 0.06 : 0.04))
+                        if let m { RoundedRectangle(cornerRadius: 4).fill(Theme.rutab).frame(height: max(3, 72 * CGFloat(m) / CGFloat(mx))) }
+                    }
+                    .frame(width: 18, height: 72)
+                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(Theme.ink, lineWidth: now ? 1.5 : 0))
+                    Text(String(names[i].prefix(3))).font(Theme.body(10)).foregroundStyle(Theme.ink3).lineLimit(1)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .padding(.horizontal, 12).padding(.top, 14).padding(.bottom, 10)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.line, lineWidth: 1))
+        Fine(text: model.t(any ? "spend.bills_note" : "spend.bills_empty"))
     }
 }

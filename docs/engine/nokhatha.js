@@ -594,3 +594,20 @@ export function nextHijriEvent(iso) {
   const next = list.filter((e) => e.date > iso).sort((a, b) => a.date.localeCompare(b.date))[0];
   return { ...next, now: false, days: dayNumber(next.date) - dayNumber(iso) };
 }
+
+/* ------------------------------------------------------------- bills */
+
+/** The logged cost of a template's task per month of a year: twelve sums in minor units, null where nothing was logged. */
+export function monthlyCosts(items, tplId, year, currency) {
+  const out = new Array(12).fill(null);
+  for (const it of items) {
+    if (it.tpl !== tplId) continue;
+    for (const l of it.log || []) {
+      if (l.cost == null || (l.cur && l.cur !== currency)) continue;
+      const p = parseISO(l.date);
+      if (p.y !== year) continue;
+      out[p.m - 1] = (out[p.m - 1] || 0) + l.cost;
+    }
+  }
+  return out;
+}

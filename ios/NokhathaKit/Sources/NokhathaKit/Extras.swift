@@ -324,3 +324,19 @@ public extension Brain {
         return lines.joined(separator: "\n")
     }
 }
+
+// MARK: - bills
+
+/// The logged cost of a template's task per month of a year: twelve sums in minor units, nil where nothing was logged.
+public func monthlyCosts(_ items: [Item], tpl: String, year: Int, currency: String) -> [Int?] {
+    var out = [Int?](repeating: nil, count: 12)
+    for it in items where it.tpl == tpl {
+        for l in it.log ?? [] {
+            guard let cost = l.cost, l.cur == nil || l.cur == currency, let d = Day(iso: l.date) else { continue }
+            let p = d.ymd
+            if p.y != year { continue }
+            out[p.m - 1] = (out[p.m - 1] ?? 0) + cost
+        }
+    }
+    return out
+}

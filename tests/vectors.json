@@ -2366,6 +2366,207 @@
     "year": 1447,
     "date": "2026-05-27"
    }
+  },
+  {
+   "fn": "monthlyCosts",
+   "args": [
+    [
+     {
+      "id": "a",
+      "asset": "h",
+      "tpl": "power_bill",
+      "log": [
+       {
+        "date": "2026-06-02",
+        "cost": 38000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2026-07-03",
+        "cost": 61000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2026-07-20",
+        "cost": 5000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2025-12-01",
+        "cost": 20000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2026-08-01",
+        "cost": 9000,
+        "cur": "SAR"
+       }
+      ]
+     },
+     {
+      "id": "b",
+      "asset": "h",
+      "tpl": "oil",
+      "log": [
+       {
+        "date": "2026-06-10",
+        "cost": 12000
+       }
+      ]
+     }
+    ],
+    "power_bill",
+    2026,
+    "KWD"
+   ],
+   "out": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    38000,
+    66000,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "fn": "monthlyCosts",
+   "args": [
+    [
+     {
+      "id": "a",
+      "asset": "h",
+      "tpl": "power_bill",
+      "log": [
+       {
+        "date": "2026-06-02",
+        "cost": 38000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2026-07-03",
+        "cost": 61000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2026-07-20",
+        "cost": 5000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2025-12-01",
+        "cost": 20000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2026-08-01",
+        "cost": 9000,
+        "cur": "SAR"
+       }
+      ]
+     },
+     {
+      "id": "b",
+      "asset": "h",
+      "tpl": "oil",
+      "log": [
+       {
+        "date": "2026-06-10",
+        "cost": 12000
+       }
+      ]
+     }
+    ],
+    "power_bill",
+    2025,
+    "KWD"
+   ],
+   "out": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    20000
+   ]
+  },
+  {
+   "fn": "monthlyCosts",
+   "args": [
+    [
+     {
+      "id": "a",
+      "asset": "h",
+      "tpl": "power_bill",
+      "log": [
+       {
+        "date": "2026-06-02",
+        "cost": 38000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2026-07-03",
+        "cost": 61000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2026-07-20",
+        "cost": 5000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2025-12-01",
+        "cost": 20000,
+        "cur": "KWD"
+       },
+       {
+        "date": "2026-08-01",
+        "cost": 9000,
+        "cur": "SAR"
+       }
+      ]
+     },
+     {
+      "id": "b",
+      "asset": "h",
+      "tpl": "oil",
+      "log": [
+       {
+        "date": "2026-06-10",
+        "cost": 12000
+       }
+      ]
+     }
+    ],
+    "power_bill",
+    2026,
+    "SAR"
+   ],
+   "out": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    9000,
+    null,
+    null,
+    null,
+    null
+   ]
   }
  ]
 }

@@ -968,7 +968,7 @@
       "kind": "home",
       "area": "bills",
       "icon": "bolt",
-      "default": false,
+      "default": true,
       "every": {
         "months": 1
       },

@@ -440,7 +440,10 @@
     "week.subs": "اشتراكات تتجدد",
     "week.docs": "أوراق تقرب تخلص",
     "week.none": "ما في شي مستحق هذا الأسبوع، البيت مرتاح.",
-    "week.foot": "من تطبيق نُوخذة، nokhatha.3li.info"
+    "week.foot": "من تطبيق نُوخذة، nokhatha.3li.info",
+    "spend.bills": "فاتورة الكهرباء والماي بالشهر",
+    "spend.bills_note": "كل شهر تسجّل فيه الفاتورة لما تخلّص مهمتها يطلع هنا، فتشوف قفزة الصيف بعينك.",
+    "spend.bills_empty": "سجّل الفاتورة أول ما تدفعها، من مهمة \"سدّد فاتورة الكهرباء والماي\" في البيت."
   },
   "en": {
     "app.name": "Nokhatha",
@@ -883,6 +886,9 @@
     "week.subs": "Subscriptions renewing",
     "week.docs": "Documents expiring soon",
     "week.none": "Nothing due this week. The house is at ease.",
-    "week.foot": "From the Nokhatha app, nokhatha.3li.info"
+    "week.foot": "From the Nokhatha app, nokhatha.3li.info",
+    "spend.bills": "Electricity and water by month",
+    "spend.bills_note": "Every month you log the bill when you finish its task shows here, so you see the summer jump for yourself.",
+    "spend.bills_empty": "Log the bill when you pay it, from the \"Pay the electricity and water bill\" task under Home."
   }
 }

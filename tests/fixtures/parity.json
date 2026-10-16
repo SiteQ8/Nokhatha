@@ -23,7 +23,7 @@
     }
    },
    {
-    "id": "626f7c8996a3",
+    "id": "697683909daa",
     "kind": "home",
     "type": "chalet",
     "name": "الشاليه",
@@ -36,7 +36,7 @@
   ],
   "cars": [
    {
-    "id": "bdcad7e4f1fe",
+    "id": "cbd8e5f2ff0c",
     "kind": "car",
     "name": "سيارتي",
     "dailyKm": 40,
@@ -54,7 +54,7 @@
   ],
   "things": [
    {
-    "id": "6c798693a0ad",
+    "id": "7a8794a1aebb",
     "kind": "thing",
     "type": "boat",
     "name": "الطراد"
@@ -223,8 +223,45 @@
     ]
    },
    {
-    "id": "697683909daa",
-    "asset": "626f7c8996a3",
+    "id": "626f7c8996a3",
+    "asset": "000d1a273441",
+    "tpl": "power_bill",
+    "enabled": true,
+    "lastDone": "2026-09-13",
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": [
+     {
+      "date": "2026-05-25",
+      "cost": 28000,
+      "cur": "KWD"
+     },
+     {
+      "date": "2026-06-25",
+      "cost": 41000,
+      "cur": "KWD"
+     },
+     {
+      "date": "2026-07-25",
+      "cost": 63000,
+      "cur": "KWD"
+     },
+     {
+      "date": "2026-08-25",
+      "cost": 58000,
+      "cur": "KWD"
+     },
+     {
+      "date": "2026-09-13",
+      "cost": 39000,
+      "cur": "KWD"
+     }
+    ]
+   },
+   {
+    "id": "707d8a97a4b1",
+    "asset": "697683909daa",
     "tpl": "ac_filters",
     "enabled": true,
     "lastDone": "2026-09-05",
@@ -234,8 +271,8 @@
     "log": []
    },
    {
-    "id": "707d8a97a4b1",
-    "asset": "626f7c8996a3",
+    "id": "7784919eabb8",
+    "asset": "697683909daa",
     "tpl": "ac_service",
     "enabled": false,
     "lastDone": null,
@@ -245,8 +282,8 @@
     "log": []
    },
    {
-    "id": "7784919eabb8",
-    "asset": "626f7c8996a3",
+    "id": "7e8b98a5b2bf",
+    "asset": "697683909daa",
     "tpl": "water_tank",
     "enabled": true,
     "lastDone": "2026-07-27",
@@ -256,8 +293,8 @@
     "log": []
    },
    {
-    "id": "7e8b98a5b2bf",
-    "asset": "626f7c8996a3",
+    "id": "85929facb9c6",
+    "asset": "697683909daa",
     "tpl": "water_heater",
     "enabled": false,
     "lastDone": null,
@@ -267,8 +304,8 @@
     "log": []
    },
    {
-    "id": "85929facb9c6",
-    "asset": "626f7c8996a3",
+    "id": "8c99a6b3c0cd",
+    "asset": "697683909daa",
     "tpl": "leaks",
     "enabled": false,
     "lastDone": null,
@@ -278,8 +315,8 @@
     "log": []
    },
    {
-    "id": "8c99a6b3c0cd",
-    "asset": "626f7c8996a3",
+    "id": "93a0adbac7d4",
+    "asset": "697683909daa",
     "tpl": "roof_drains",
     "enabled": true,
     "lastDone": null,
@@ -289,8 +326,8 @@
     "log": []
    },
    {
-    "id": "93a0adbac7d4",
-    "asset": "626f7c8996a3",
+    "id": "9aa7b4c1cedb",
+    "asset": "697683909daa",
     "tpl": "seals",
     "enabled": false,
     "lastDone": null,
@@ -300,8 +337,8 @@
     "log": []
    },
    {
-    "id": "9aa7b4c1cedb",
-    "asset": "626f7c8996a3",
+    "id": "a1aebbc8d5e2",
+    "asset": "697683909daa",
     "tpl": "smoke",
     "enabled": true,
     "lastDone": "2026-06-27",
@@ -311,8 +348,8 @@
     "log": []
    },
    {
-    "id": "a1aebbc8d5e2",
-    "asset": "626f7c8996a3",
+    "id": "a8b5c2cfdce9",
+    "asset": "697683909daa",
     "tpl": "extinguisher",
     "enabled": false,
     "lastDone": null,
@@ -322,8 +359,8 @@
     "log": []
    },
    {
-    "id": "a8b5c2cfdce9",
-    "asset": "626f7c8996a3",
+    "id": "afbcc9d6e3f0",
+    "asset": "697683909daa",
     "tpl": "gas_hose",
     "enabled": false,
     "lastDone": null,
@@ -333,8 +370,8 @@
     "log": []
    },
    {
-    "id": "afbcc9d6e3f0",
-    "asset": "626f7c8996a3",
+    "id": "b6c3d0ddeaf7",
+    "asset": "697683909daa",
     "tpl": "hood",
     "enabled": false,
     "lastDone": null,
@@ -344,8 +381,8 @@
     "log": []
    },
    {
-    "id": "b6c3d0ddeaf7",
-    "asset": "626f7c8996a3",
+    "id": "bdcad7e4f1fe",
+    "asset": "697683909daa",
     "tpl": "pests",
     "enabled": true,
     "lastDone": "2026-08-16",
@@ -362,7 +399,18 @@
    },
    {
     "id": "c4d1deebf805",
-    "asset": "bdcad7e4f1fe",
+    "asset": "697683909daa",
+    "tpl": "power_bill",
+    "enabled": false,
+    "lastDone": null,
+    "lastKm": null,
+    "due": null,
+    "snoozeUntil": null,
+    "log": []
+   },
+   {
+    "id": "d2dfecf90613",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "oil",
     "enabled": true,
     "lastDone": "2026-06-17",
@@ -379,8 +427,8 @@
     ]
    },
    {
-    "id": "cbd8e5f2ff0c",
-    "asset": "bdcad7e4f1fe",
+    "id": "d9e6f3000d1a",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "air_filter",
     "enabled": true,
     "lastDone": "2026-03-09",
@@ -390,8 +438,8 @@
     "log": []
    },
    {
-    "id": "d2dfecf90613",
-    "asset": "bdcad7e4f1fe",
+    "id": "e0edfa071421",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "cabin_filter",
     "enabled": true,
     "lastDone": "2026-03-19",
@@ -401,8 +449,8 @@
     "log": []
    },
    {
-    "id": "d9e6f3000d1a",
-    "asset": "bdcad7e4f1fe",
+    "id": "e7f4010e1b28",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "car_ac",
     "enabled": true,
     "lastDone": "2026-04-06",
@@ -412,8 +460,8 @@
     "log": []
    },
    {
-    "id": "e0edfa071421",
-    "asset": "bdcad7e4f1fe",
+    "id": "eefb0815222f",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "coolant",
     "enabled": true,
     "lastDone": "2026-04-13",
@@ -423,8 +471,8 @@
     "log": []
    },
    {
-    "id": "e7f4010e1b28",
-    "asset": "bdcad7e4f1fe",
+    "id": "f5020f1c2936",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "tires",
     "enabled": true,
     "lastDone": "2026-04-18",
@@ -440,8 +488,8 @@
     ]
    },
    {
-    "id": "eefb0815222f",
-    "asset": "bdcad7e4f1fe",
+    "id": "fc091623303d",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "tire_pressure",
     "enabled": true,
     "lastDone": "2026-08-29",
@@ -451,8 +499,8 @@
     "log": []
    },
    {
-    "id": "f5020f1c2936",
-    "asset": "bdcad7e4f1fe",
+    "id": "03101d2a3744",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "brake_fluid",
     "enabled": true,
     "lastDone": "2025-08-21",
@@ -462,8 +510,8 @@
     "log": []
    },
    {
-    "id": "fc091623303d",
-    "asset": "bdcad7e4f1fe",
+    "id": "0a1724313e4b",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "battery",
     "enabled": true,
     "lastDone": "2026-04-20",
@@ -473,8 +521,8 @@
     "log": []
    },
    {
-    "id": "03101d2a3744",
-    "asset": "bdcad7e4f1fe",
+    "id": "111e2b384552",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "wipers",
     "enabled": true,
     "lastDone": null,
@@ -484,8 +532,8 @@
     "log": []
    },
    {
-    "id": "0a1724313e4b",
-    "asset": "bdcad7e4f1fe",
+    "id": "1825323f4c59",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "registration",
     "enabled": true,
     "lastDone": null,
@@ -495,8 +543,8 @@
     "log": []
    },
    {
-    "id": "111e2b384552",
-    "asset": "bdcad7e4f1fe",
+    "id": "1f2c39465360",
+    "asset": "cbd8e5f2ff0c",
     "tpl": "insurance",
     "enabled": true,
     "lastDone": null,
@@ -506,8 +554,8 @@
     "log": []
    },
    {
-    "id": "73808d9aa7b4",
-    "asset": "6c798693a0ad",
+    "id": "818e9ba8b5c2",
+    "asset": "7a8794a1aebb",
     "tpl": "boat_engine",
     "enabled": true,
     "lastDone": "2026-04-28",
@@ -523,8 +571,8 @@
     ]
    },
    {
-    "id": "7a8794a1aebb",
-    "asset": "6c798693a0ad",
+    "id": "8895a2afbcc9",
+    "asset": "7a8794a1aebb",
     "tpl": "boat_hull",
     "enabled": true,
     "lastDone": "2026-07-17",
@@ -534,8 +582,8 @@
     "log": []
    },
    {
-    "id": "818e9ba8b5c2",
-    "asset": "6c798693a0ad",
+    "id": "8f9ca9b6c3d0",
+    "asset": "7a8794a1aebb",
     "tpl": "boat_safety",
     "enabled": true,
     "lastDone": null,
@@ -545,8 +593,8 @@
     "log": []
    },
    {
-    "id": "8895a2afbcc9",
-    "asset": "6c798693a0ad",
+    "id": "96a3b0bdcad7",
+    "asset": "7a8794a1aebb",
     "tpl": "boat_license",
     "enabled": true,
     "lastDone": null,
@@ -558,7 +606,7 @@
   ],
   "subs": [
    {
-    "id": "1825323f4c59",
+    "id": "2633404d5a67",
     "name": "منصة الأفلام",
     "amount": 3500,
     "currency": "KWD",
@@ -568,7 +616,7 @@
     "usage": {}
    },
    {
-    "id": "1f2c39465360",
+    "id": "2d3a4754616e",
     "name": "الموسيقى",
     "amount": 1990,
     "currency": "KWD",
@@ -578,7 +626,7 @@
     "usage": {}
    },
    {
-    "id": "2633404d5a67",
+    "id": "34414e5b6875",
     "name": "التخزين السحابي",
     "amount": 990,
     "currency": "KWD",
@@ -589,7 +637,7 @@
     "trial": true
    },
    {
-    "id": "2d3a4754616e",
+    "id": "3b4855626f7c",
     "name": "النادي الرياضي",
     "amount": 45000,
     "currency": "KWD",
@@ -599,7 +647,7 @@
     "usage": {}
    },
    {
-    "id": "34414e5b6875",
+    "id": "424f5c697683",
     "name": "إنترنت البيت",
     "amount": 15000,
     "currency": "KWD",
@@ -609,7 +657,7 @@
     "usage": {}
    },
    {
-    "id": "3b4855626f7c",
+    "id": "495663707d8a",
     "name": "برنامج التصميم",
     "amount": 35000,
     "currency": "KWD",
@@ -621,14 +669,14 @@
   ],
   "warranties": [
    {
-    "id": "424f5c697683",
+    "id": "505d6a778491",
     "name": "الثلاجة",
     "store": "معرض الأجهزة",
     "bought": "2025-11-29",
     "months": 24
    },
    {
-    "id": "495663707d8a",
+    "id": "5764717e8b98",
     "name": "مكيف الصالة",
     "store": "وكيل المكيفات",
     "bought": "2024-10-21",
@@ -637,19 +685,19 @@
   ],
   "techs": [
    {
-    "id": "8f9ca9b6c3d0",
+    "id": "9daab7c4d1de",
     "name": "أبو محمد",
     "trade": "ac",
     "phone": "12345678"
    },
    {
-    "id": "96a3b0bdcad7",
+    "id": "a4b1becbd8e5",
     "name": "أبو علي",
     "trade": "plumber",
     "phone": "12345679"
    },
    {
-    "id": "9daab7c4d1de",
+    "id": "abb8c5d2dfec",
     "name": "كراج الشويخ",
     "trade": "mechanic",
     "phone": "12345680"
@@ -657,25 +705,25 @@
   ],
   "docs": [
    {
-    "id": "505d6a778491",
+    "id": "5e6b7885929f",
     "type": "civil_id",
     "who": "أنا",
     "expiry": "2026-11-04"
    },
    {
-    "id": "5764717e8b98",
+    "id": "65727f8c99a6",
     "type": "passport",
     "who": "أم محمد",
     "expiry": "2027-01-23"
    },
    {
-    "id": "5e6b7885929f",
+    "id": "6c798693a0ad",
     "type": "residency",
     "who": "السائق",
     "expiry": "2026-11-16"
    },
    {
-    "id": "65727f8c99a6",
+    "id": "73808d9aa7b4",
     "type": "health",
     "who": "السائق",
     "expiry": "2026-11-09"
@@ -699,14 +747,14 @@
    "days": -19
   },
   {
-   "id": "697683909daa",
+   "id": "707d8a97a4b1",
    "due": "2026-09-19",
    "by": "time",
    "status": "overdue",
    "days": -6
   },
   {
-   "id": "d2dfecf90613",
+   "id": "e0edfa071421",
    "due": "2026-09-19",
    "by": "time",
    "status": "overdue",
@@ -727,21 +775,21 @@
    "days": -1
   },
   {
-   "id": "8c99a6b3c0cd",
+   "id": "93a0adbac7d4",
    "due": "2026-09-24",
    "by": "season",
    "status": "overdue",
    "days": -1
   },
   {
-   "id": "eefb0815222f",
+   "id": "fc091623303d",
    "due": "2026-09-28",
    "by": "time",
    "status": "soon",
    "days": 3
   },
   {
-   "id": "03101d2a3744",
+   "id": "111e2b384552",
    "due": "2026-10-01",
    "by": "season",
    "status": "soon",
@@ -755,14 +803,14 @@
    "days": 7
   },
   {
-   "id": "0a1724313e4b",
+   "id": "1825323f4c59",
    "due": "2026-10-16",
    "by": "fixed",
    "status": "soon",
    "days": 21
   },
   {
-   "id": "111e2b384552",
+   "id": "1f2c39465360",
    "due": "2026-10-16",
    "by": "fixed",
    "status": "soon",
@@ -776,7 +824,7 @@
    "days": 8
   },
   {
-   "id": "c4d1deebf805",
+   "id": "d2dfecf90613",
    "due": "2026-10-07",
    "by": "km",
    "status": "ok",
@@ -797,14 +845,21 @@
    "days": 16
   },
   {
-   "id": "7a8794a1aebb",
+   "id": "626f7c8996a3",
+   "due": "2026-10-13",
+   "by": "time",
+   "status": "ok",
+   "days": 18
+  },
+  {
+   "id": "8895a2afbcc9",
    "due": "2026-10-17",
    "by": "time",
    "status": "ok",
    "days": 22
   },
   {
-   "id": "cbd8e5f2ff0c",
+   "id": "d9e6f3000d1a",
    "due": "2026-10-21",
    "by": "km",
    "status": "ok",
@@ -818,21 +873,21 @@
    "days": 33
   },
   {
-   "id": "73808d9aa7b4",
+   "id": "818e9ba8b5c2",
    "due": "2026-10-28",
    "by": "time",
    "status": "ok",
    "days": 33
   },
   {
-   "id": "8895a2afbcc9",
+   "id": "96a3b0bdcad7",
    "due": "2026-11-09",
    "by": "fixed",
    "status": "ok",
    "days": 45
   },
   {
-   "id": "b6c3d0ddeaf7",
+   "id": "bdcad7e4f1fe",
    "due": "2026-11-16",
    "by": "time",
    "status": "ok",
@@ -853,14 +908,14 @@
    "days": 83
   },
   {
-   "id": "9aa7b4c1cedb",
+   "id": "a1aebbc8d5e2",
    "due": "2026-12-27",
    "by": "time",
    "status": "ok",
    "days": 93
   },
   {
-   "id": "7784919eabb8",
+   "id": "7e8b98a5b2bf",
    "due": "2027-01-27",
    "by": "time",
    "status": "ok",
@@ -881,35 +936,35 @@
    "days": 188
   },
   {
-   "id": "d9e6f3000d1a",
+   "id": "e7f4010e1b28",
    "due": "2027-04-08",
    "by": "season",
    "status": "ok",
    "days": 195
   },
   {
-   "id": "e0edfa071421",
+   "id": "eefb0815222f",
    "due": "2027-04-15",
    "by": "season",
    "status": "ok",
    "days": 202
   },
   {
-   "id": "818e9ba8b5c2",
+   "id": "8f9ca9b6c3d0",
    "due": "2027-04-15",
    "by": "season",
    "status": "ok",
    "days": 202
   },
   {
-   "id": "e7f4010e1b28",
+   "id": "f5020f1c2936",
    "due": "2027-04-19",
    "by": "season",
    "status": "ok",
    "days": 206
   },
   {
-   "id": "fc091623303d",
+   "id": "0a1724313e4b",
    "due": "2027-04-22",
    "by": "season",
    "status": "ok",
@@ -923,7 +978,7 @@
    "days": 241
   },
   {
-   "id": "f5020f1c2936",
+   "id": "03101d2a3744",
    "due": "2027-08-21",
    "by": "time",
    "status": "ok",
@@ -932,32 +987,32 @@
  ],
  "subs": [
   {
-   "id": "1825323f4c59",
+   "id": "2633404d5a67",
    "next": "2026-09-26",
    "days": 1
   },
   {
-   "id": "1f2c39465360",
+   "id": "2d3a4754616e",
    "next": "2026-10-07",
    "days": 12
   },
   {
-   "id": "2633404d5a67",
+   "id": "34414e5b6875",
    "next": "2026-09-28",
    "days": 3
   },
   {
-   "id": "2d3a4754616e",
+   "id": "3b4855626f7c",
    "next": "2026-11-04",
    "days": 40
   },
   {
-   "id": "34414e5b6875",
+   "id": "424f5c697683",
    "next": "2026-10-01",
    "days": 6
   },
   {
-   "id": "3b4855626f7c",
+   "id": "495663707d8a",
    "next": "2026-11-28",
    "days": 64
   }

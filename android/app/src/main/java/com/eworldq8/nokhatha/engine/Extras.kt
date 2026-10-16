@@ -318,3 +318,22 @@ fun Brain.weekText(w: Words): String {
     lines += w.t("week.foot")
     return lines.joinToString("\n")
 }
+
+// ---------------------------------------------------------------- bills
+
+/** The logged cost of a template's task per month of a year: twelve sums in minor units, null where nothing was logged. */
+fun monthlyCosts(items: List<Item>, tplId: String, year: Int, currency: String): List<Int?> {
+    val out = arrayOfNulls<Int>(12)
+    for (it in items) {
+        if (it.tpl != tplId) continue
+        for (l in it.log) {
+            val cost = l.cost ?: continue
+            if (l.cur != null && l.cur != currency) continue
+            val d = Day.parse(l.date) ?: continue
+            val (y, m, _) = d.ymd
+            if (y != year) continue
+            out[m - 1] = (out[m - 1] ?: 0) + cost
+        }
+    }
+    return out.toList()
+}
