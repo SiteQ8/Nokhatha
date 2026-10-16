@@ -54,8 +54,18 @@ const T = {
   },
 };
 
+import { readdirSync } from 'node:fs';
+function fontFaces() {
+  const dir = new URL('../../docs/assets/fonts/', import.meta.url);
+  const face = (file, family, weight) => `@font-face { font-family: '${family}'; font-weight: ${weight}; font-display: block; src: url(data:font/woff2;base64,${readFileSync(new URL(file, dir)).toString('base64')}) format('woff2'); }`;
+  let out = '';
+  for (const w of ['400', '500', '600', '700']) for (const sub of ['arabic', 'latin']) out += face(`plex-arabic-${w}-${sub}.woff2`, 'IBM Plex Sans Arabic', w);
+  for (const sub of ['arabic', 'latin']) out += face(`reem-kufi-400-700-${sub}.woff2`, 'Reem Kufi', '400 700');
+  return out;
+}
+
 const css = `
-@import url('http://localhost:8765/assets/fonts/fonts.css');
+${fontFaces()}
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root { --night: #1C2340; --night2: #3A4263; --mist: #5F6886; --sadu: #A4262C; --gold: #C98A1B; --sand: #E4D8C4; --pearl: #EEF1F4; --paper: #F6F1E7; }
 html, body { width: 100%; height: 100%; }
