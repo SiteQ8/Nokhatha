@@ -1,5 +1,6 @@
 • The nokhatha's voice: a short word for every season, one tap away
-• The week: a ready message with the week's dates for the household
+• The week: a ready message with the week's dates, and on a Friday with nothing due it arrives as a reminder
+• Travel mode: set the day you are back and reminders stay quiet until then
 • The electricity and water bill: twelve months on the spend page, the summer jump in plain sight
 • Zakat anniversary: set its Hijri day and be reminded a week before and on the day
 • Tire age from the DOT code, with a warning before five years in the heat
