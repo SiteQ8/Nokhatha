@@ -162,7 +162,7 @@ data class Tech(val id: String, val name: String, val trade: String, val phone: 
 data class Settings(
     val lang: String = "ar", val country: String = "KW", val theme: String = "auto", val currency: String = "KWD",
     val lead: Int = 7, val onboarded: Boolean = false, val notify: Boolean? = null, val lastBackup: String? = null,
-    val weather: WeatherSetting? = null, val hawl: HijriDay? = null, val extra: JSONObject? = null,
+    val weather: WeatherSetting? = null, val hawl: HijriDay? = null, val awayUntil: String? = null, val extra: JSONObject? = null,
 )
 
 /** A day of the Hijri year, such as the day a zakat year completes. */
@@ -183,6 +183,8 @@ data class AppState(
             .opt("notify", settings.notify).opt("lastBackup", settings.lastBackup).opt("weather", settings.weather?.toJson())
         s.remove("hawl")
         s.opt("hawl", settings.hawl?.let { JSONObject().put("m", it.m).put("d", it.d) })
+        s.remove("awayUntil")
+        s.opt("awayUntil", settings.awayUntil)
         return JSONObject().put("v", v).put("settings", s)
             .put("homes", JSONArray(homes.map { h ->
                 JSONObject().put("id", h.id).put("kind", "home").put("type", h.type).put("name", h.name).put("features", JSONObject(h.features as Map<*, *>))
@@ -221,7 +223,7 @@ data class AppState(
                 v = o.int("v") ?: 1,
                 settings = Settings(s.str("lang") ?: "ar", s.str("country") ?: "KW", s.str("theme") ?: "auto", s.str("currency") ?: "KWD",
                     s.int("lead") ?: 7, s.bool("onboarded") ?: false, s.bool("notify"), s.str("lastBackup"), WeatherSetting.fromJson(s.optJSONObject("weather")),
-                    s.optJSONObject("hawl")?.let { h -> if (h.has("m") && h.has("d")) HijriDay(h.getInt("m"), h.getInt("d")) else null }, s),
+                    s.optJSONObject("hawl")?.let { h -> if (h.has("m") && h.has("d")) HijriDay(h.getInt("m"), h.getInt("d")) else null }, s.str("awayUntil"), s),
                 homes = o.arr("homes").map { h ->
                     val f = if (h.has("features") && !h.isNull("features")) h.getJSONObject("features") else JSONObject()
                     Home(h.getString("id"), h.str("type") ?: "house", h.getString("name"), f.keys().asSequence().associateWith { f.getBoolean(it) })

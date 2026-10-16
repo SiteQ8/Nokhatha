@@ -41,6 +41,20 @@ public extension Brain {
         return nextHijriDate(today, h.m, h.d)
     }
 
+    /// The return day of a trip that has not passed: reminders stay quiet until it.
+    func awayUntil() -> Day? {
+        guard let s = state.settings.awayUntil, let d = Day(iso: s), d >= today else { return nil }
+        return d
+    }
+
+    /// Whether Today should nudge for a backup: there is something worth keeping, and no backup was made in two months.
+    func backupStale() -> Bool {
+        let worth = state.items.contains { !($0.log ?? []).isEmpty } || !state.subs.isEmpty || !state.docs.isEmpty || !state.warranties.isEmpty || !state.techs.isEmpty
+        if !worth { return false }
+        guard let s = state.settings.lastBackup, let d = Day(iso: s) else { return true }
+        return today.n - d.n > 60
+    }
+
     /// Every upcoming date as a calendar event, the same set the web app exports.
     func calendarEvents(_ w: Words) -> [CalendarEvent] {
         var out: [CalendarEvent] = []

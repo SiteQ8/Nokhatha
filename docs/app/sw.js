@@ -91,6 +91,7 @@ async function remind() {
   const save = (x) => cache.put('seen.json', new Response(JSON.stringify(x), { headers: { 'Content-Type': 'application/json' } }));
   const quiet = now.getHours() < 7 || now.getHours() >= 22;
   if (!d.notify || seen.notified === today || quiet) return save({ ...seen, ran: now.toISOString() });
+  if (d.awayUntil && today <= d.awayUntil) return; // away on a trip, quiet until the return day
   const due = d.items.filter((x) => x.date <= today && (!x.until || today <= x.until));
   const sky = await weatherLine(d, today);
   if (!due.length && !sky) return save({ ...seen, ran: now.toISOString() });

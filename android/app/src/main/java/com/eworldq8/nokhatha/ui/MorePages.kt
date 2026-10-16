@@ -648,6 +648,26 @@ fun TravelScreen(model: AppModel) {
             }
         }
         Box(Modifier.padding(top = 16.dp)) { WideButton(model.t("travel.reset"), quiet = true, icon = "repeat") { model.update { b -> b.state = b.state.copy(travelDone = emptyList()) } } }
+        AwaySection(model)
+    }
+}
+
+/** Pausing reminders for a trip: the return day, or the pause that is running and a way to end it. */
+@Composable
+fun AwaySection(model: AppModel) {
+    val p = pal()
+    val w = model.words
+    val away = model.brain().awayUntil()
+    var until by remember { mutableStateOf(model.today.plus(14)) }
+    fun set(v: String?) = model.update { b -> b.state = b.state.copy(settings = b.state.settings.copy(awayUntil = v)) }
+    SmallHead(model.t("travel.away_head"))
+    Lede(model.t("travel.away_lede"))
+    if (away != null) {
+        Text(model.t("travel.away_on", mapOf("date" to w.date(away, model.today))), style = body(14, FontWeight.Bold, 1.7), color = p.ink2)
+        Box(Modifier.padding(top = 16.dp)) { WideButton(model.t("travel.back"), primary = false, icon = "home") { set(null) } }
+    } else {
+        DayPicker(model.t("travel.return"), until) { until = it }
+        Box(Modifier.padding(top = 16.dp)) { WideButton(model.t("travel.away_go"), primary = false, icon = "plane") { if (until >= model.today) set(until.iso) } }
     }
 }
 

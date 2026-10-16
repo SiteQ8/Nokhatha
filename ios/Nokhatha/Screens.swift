@@ -138,6 +138,7 @@ struct TodayScreen: View {
                 .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.line, lineWidth: 1))
                 .padding(.top, 6)
             }
+            AwayBanner()
             WeatherCard()
             EventCard()
             SectionTitle(text: model.t("today.now"), count: now.count)
@@ -177,8 +178,52 @@ struct TodayScreen: View {
                 TaskList(rows: later, showAsset: true)
             }
             WideButton(title: model.t("act.share_week"), quiet: true, icon: "chat") { share = ShareItem(text: b.weekText(w)) }.padding(.top, 16)
+            BackupNudge()
         }
         .sheet(item: $share) { item in ShareSheet(url: item.url, text: item.text) }
+    }
+}
+
+/// The web's .away: the trip banner on Today with the return day, and a way to end the trip early.
+struct AwayBanner: View {
+    @EnvironmentObject var model: AppModel
+    var body: some View {
+        if let away = model.brain.awayUntil() {
+            HStack(spacing: 12) {
+                Image(systemName: Symbol.name("plane")).font(.system(size: 17)).foregroundStyle(Theme.ok)
+                Text(model.t("today.away", ["date": model.words.date(away, today: model.today)])).font(Theme.body(14.5, "SemiBold")).foregroundStyle(Theme.ink).lineSpacing(4)
+                Spacer(minLength: 0)
+                WideButton(title: model.t("travel.back"), quiet: true, height: 36, block: false) { model.update { $0.state.settings.awayUntil = nil } }
+            }
+            .padding(.horizontal, 16).padding(.vertical, 12).frame(maxWidth: .infinity, alignment: .leading)
+            .background(Theme.ok.opacity(0.10), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.ok.opacity(0.35), lineWidth: 1))
+            .padding(.top, 4).padding(.bottom, 14)
+        }
+    }
+}
+
+/// The web's .nudge: a quiet dashed row at the foot of Today when the data was never backed up, or not for two months.
+struct BackupNudge: View {
+    @EnvironmentObject var model: AppModel
+    var body: some View {
+        if model.brain.backupStale() {
+            let last = model.state?.settings.lastBackup.flatMap { Day(iso: $0) }
+            let text = last.map { model.t("today.backup_old", ["rel": model.words.rel($0.n - model.today.n)]) } ?? model.t("today.backup_never")
+            Button { model.tab = "more"; model.page = "settings" } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: Symbol.name("lock")).font(.system(size: 15)).foregroundStyle(Theme.ink3)
+                    Text(text).font(Theme.body(13.5)).foregroundStyle(Theme.ink2).lineSpacing(4).multilineTextAlignment(.leading)
+                    Spacer(minLength: 0)
+                    Chevron()
+                }
+                .padding(.horizontal, 16).padding(.vertical, 12)
+                .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(style: StrokeStyle(lineWidth: 1, dash: [6, 5])).foregroundStyle(Theme.line))
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 22)
+        }
     }
 }
 

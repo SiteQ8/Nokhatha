@@ -45,6 +45,12 @@ enum Reminders {
             if week >= today { byDay[week, default: []].append((words.t("event.hawl_week"), false)) }
             byDay[h.date, default: []].append((words.t("event.hawl_now"), false))
         }
+        // away on a trip: nothing until the return day, and what fell due meanwhile waits for the morning after it
+        if let away = brain.awayUntil() {
+            var folded: [Day: [(String, Bool)]] = [:]
+            for (day, lines) in byDay { folded[day <= away ? away.adding(1) : day, default: []] += lines }
+            byDay = folded
+        }
         let now = Date()
         let hour = Calendar.current.component(.hour, from: now)
         for (day, lines) in byDay.sorted(by: { $0.key < $1.key }).prefix(60) {

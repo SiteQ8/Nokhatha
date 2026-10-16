@@ -133,6 +133,7 @@ fun TodayScreen(model: AppModel) {
             }
         }
         LaunchedEffect(model.state?.settings?.weather) { model.refreshWeather() }
+        AwayBanner(model)
         WeatherCard(model)
         EventCard(model)
         SectionTitle(model.t("today.now"), now.size)
@@ -165,6 +166,38 @@ fun TodayScreen(model: AppModel) {
             TaskList(model, later, true)
         }
         Box(Modifier.padding(top = 16.dp)) { WideButton(model.t("act.share_week"), quiet = true, icon = "chat") { model.shareWeek() } }
+        BackupNudge(model)
+    }
+}
+
+/** The web's .away: the trip banner on Today with the return day, and a way to end the trip early. */
+@Composable
+fun AwayBanner(model: AppModel) {
+    val away = model.brain().awayUntil() ?: return
+    val p = pal()
+    val shape = RoundedCornerShape(18.dp)
+    Row(Modifier.padding(top = 4.dp, bottom = 14.dp).fillMaxWidth().clip(shape).background(p.ok.copy(alpha = 0.10f)).border(1.dp, p.ok.copy(alpha = 0.35f), shape).padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Ico("plane", p.ok, 20.dp)
+        Text(model.t("today.away", mapOf("date" to model.words.date(away, model.today))), style = body(14.5, FontWeight.SemiBold, 1.6), color = p.ink, modifier = Modifier.weight(1f))
+        WideButton(model.t("travel.back"), quiet = true, height = 36.dp, block = false) { model.update { b -> b.state = b.state.copy(settings = b.state.settings.copy(awayUntil = null)) } }
+    }
+}
+
+/** The web's .nudge: a quiet dashed row at the foot of Today when the data was never backed up, or not for two months. */
+@Composable
+fun BackupNudge(model: AppModel) {
+    val b = model.brain()
+    if (!b.backupStale()) return
+    val p = pal()
+    val last = model.state?.settings?.lastBackup?.let { Day.parse(it) }
+    val text = if (last != null) model.t("today.backup_old", mapOf("rel" to model.words.rel(last.n - model.today.n))) else model.t("today.backup_never")
+    val shape = RoundedCornerShape(18.dp)
+    Row(Modifier.padding(top = 22.dp).fillMaxWidth().clip(shape).dashedBorder(p.line, shape).clickable(role = Role.Button) { model.tab = "more"; model.page = "settings" }
+        .padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Ico("lock", p.ink3, 18.dp)
+        Text(text, style = body(13.5, lineHeight = 1.6), color = p.ink2, modifier = Modifier.weight(1f))
+        Chevron(p.ink3, 16.dp)
     }
 }
 

@@ -291,6 +291,7 @@ function viewToday() {
 </section>
 <section class="today-list">
 ${installTip()}
+${awayBanner()}
 ${weatherCard()}
 ${eventCard()}
 <div class="sec"><h2>${t('today.now')}</h2>${now.length ? `<span class="count">${now.length}</span>` : ''}</div>
@@ -302,6 +303,7 @@ ${warr.length ? `<div class="sec"><h2>${t('today.warranties')}</h2></div><ul cla
 ${docsSoon.length ? `<div class="sec"><h2>${t('today.docs')}</h2></div><ul class="list">${docsSoon.map(docRow).join('')}</ul>` : ''}
 ${later.length ? `<div class="sec"><h2>${t('today.later')}</h2></div><ul class="list">${later.map((e) => row(e, true)).join('')}</ul>` : ''}
 <div class="actions"><a class="btn btn-quiet" href="https://wa.me/?text=${encodeURIComponent(weekText())}" target="_blank" rel="noopener noreferrer">${icon('chat')}<span>${t('act.share_week')}</span></a></div>
+${backupNudge()}
 </section></div>`;
 }
 
@@ -324,6 +326,27 @@ const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.p
 const isInstalled = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
 
 // Safari on iPhone clears storage of sites left unopened for a while; installed web apps are exempt.
+/** Whether reminders are paused for a trip: a return day that has not passed. */
+function isAway() {
+  const u = state.settings.awayUntil;
+  return !!u && u >= TODAY;
+}
+
+/** The trip banner on Today: the return day, and a way to end the trip early. */
+function awayBanner() {
+  if (!isAway()) return '';
+  return `<div class="away">${icon('plane')}<span>${esc(t('today.away', { date: dateText(state.settings.awayUntil) }))}</span><button class="btn btn-quiet" data-act="away-back">${t('travel.back')}</button></div>`;
+}
+
+/** A quiet nudge at the foot of Today when the data has never been backed up, or not for two months. */
+function backupNudge() {
+  const last = state.settings.lastBackup;
+  const worth = state.items.some((i) => i.log && i.log.length) || state.subs.length || state.docs.length || state.warranties.length || state.techs.length;
+  if (!worth || (last && E.diffDays(last, TODAY) <= 60)) return '';
+  const text = last ? t('today.backup_old', { rel: rel(-E.diffDays(last, TODAY)) }) : t('today.backup_never');
+  return `<a class="nudge" href="#/settings">${icon('lock')}<span>${esc(text)}</span>${icon('next', 'flip chev')}</a>`;
+}
+
 function installTip() {
   if (!isIOS() || isInstalled() || state.settings.installTipOff) return '';
   return `<div class="install">${icon('upload')}<div><p class="install-t">${t('tip.install_title')}</p><p class="install-b">${t('tip.install_body')}</p>
@@ -585,7 +608,19 @@ function viewTravel() {
 <p class="progress-l">${t('travel.progress', { n: done.size, of: D.travel.length })}</p>
 <ul class="list checks">${D.travel.map((x) => `<li><label class="check-row"><input type="checkbox" data-act="travel" value="${esc(x.id)}"${done.has(x.id) ? ' checked' : ''}>
 <span class="box">${icon('done')}</span><span>${esc(nm(x))}</span></label></li>`).join('')}</ul>
-<div class="actions"><button class="btn btn-quiet" data-act="travel-reset">${icon('repeat')}<span>${t('travel.reset')}</span></button></div>`;
+<div class="actions"><button class="btn btn-quiet" data-act="travel-reset">${icon('repeat')}<span>${t('travel.reset')}</span></button></div>
+${awaySection()}`;
+}
+
+/** Pausing reminders for a trip: the return day, or the pause that is running and a way to end it. */
+function awaySection() {
+  const head = `<div class="sec sec-sm"><h3>${t('travel.away_head')}</h3></div><p class="lede">${t('travel.away_lede')}</p>`;
+  if (isAway()) {
+    return `${head}<p class="hawl-next">${esc(t('travel.away_on', { date: dateText(state.settings.awayUntil) }))}</p>
+<div class="actions"><button class="btn" data-act="away-back">${icon('home')}<span>${t('travel.back')}</span></button></div>`;
+  }
+  return `${head}<label class="field"><span>${t('travel.return')}</span><input class="input" type="date" name="away-until" min="${esc(TODAY)}" value="${esc(E.addDays(TODAY, 14))}"></label>
+<div class="actions"><button class="btn" data-act="away-go">${icon('plane')}<span>${t('travel.away_go')}</span></button></div>`;
 }
 
 /** The Ramadan the checklist is for: the one running, or the next one. */
@@ -1013,7 +1048,7 @@ async function writeDigest() {
     }
     list.sort((a, b) => a.date.localeCompare(b.date));
     const payload = {
-      v: 1, lang: L(), dir: L() === 'ar' ? 'rtl' : 'ltr', notify: !!state.settings.notify, items: list,
+      v: 1, lang: L(), dir: L() === 'ar' ? 'rtl' : 'ltr', notify: !!state.settings.notify, items: list, awayUntil: isAway() ? state.settings.awayUntil : null,
       titleNow: t('notify.title_now'), titleToday: t('notify.title_today'), more: t('notify.more'), sep: '\n',
       weather: null,
     };
@@ -1700,6 +1735,17 @@ async function onClick(e) {
       commit();
       break;
     }
+    case 'away-go': {
+      const u = ($('[name="away-until"]') || {}).value;
+      if (!u || u < TODAY) return;
+      state.settings.awayUntil = u;
+      commit();
+      break;
+    }
+    case 'away-back':
+      state.settings.awayUntil = null;
+      commit();
+      break;
     case 'delete-asset':
       if (!el.dataset.confirmed) return confirmSheet(t('confirm.asset'), 'delete-asset', id, t('act.delete'));
       S.removeAsset(state, id);

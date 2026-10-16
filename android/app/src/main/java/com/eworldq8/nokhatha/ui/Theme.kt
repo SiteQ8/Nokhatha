@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
@@ -45,6 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eworldq8.nokhatha.FitText
 import com.eworldq8.nokhatha.R
+
+/** The web's dashed border: a one-pixel dashed line along a shape, drawn behind the content. */
+fun Modifier.dashedBorder(color: Color, shape: RoundedCornerShape, width: Dp = 1.dp): Modifier = drawBehind {
+    val outline = shape.createOutline(size, layoutDirection, this)
+    drawOutline(outline, color, style = Stroke(width = width.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 5f), 0f)))
+}
 
 data class Pal(
     val bg: Color, val surface: Color, val ink: Color, val ink2: Color, val ink3: Color, val line: Color,

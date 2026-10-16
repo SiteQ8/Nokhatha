@@ -467,6 +467,7 @@ object Reminders {
         if (prefs.getString("notified", null) == today.iso) return
         val catalog = Catalog.load { name -> ctx.assets.open(name).bufferedReader().use { it.readText() } }
         val brain = Brain(catalog, state, today)
+        if (brain.awayUntil() != null) return // away on a trip, quiet until the return day
         val words = Words(catalog.strings, state.settings.lang)
         val lines = ArrayList<String>()
         var late = false

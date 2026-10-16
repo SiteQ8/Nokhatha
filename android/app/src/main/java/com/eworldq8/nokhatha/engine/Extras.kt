@@ -42,6 +42,17 @@ fun Brain.techFor(trade: String?): Tech? = trade?.let { t -> state.techs.firstOr
 /** The zakat anniversary's next occurrence, or null when none is set. */
 fun Brain.hawlNext(): HijriNext? = state.settings.hawl?.let { nextHijriDate(today, it.m, it.d) }
 
+/** The return day of a trip that has not passed: reminders stay quiet until it. */
+fun Brain.awayUntil(): Day? = state.settings.awayUntil?.let { Day.parse(it) }?.takeIf { it >= today }
+
+/** Whether Today should nudge for a backup: there is something worth keeping, and no backup was made in two months. */
+fun Brain.backupStale(): Boolean {
+    val worth = state.items.any { it.log.isNotEmpty() } || state.subs.isNotEmpty() || state.docs.isNotEmpty() || state.warranties.isNotEmpty() || state.techs.isNotEmpty()
+    if (!worth) return false
+    val last = state.settings.lastBackup?.let { Day.parse(it) } ?: return true
+    return today.n - last.n > 60
+}
+
 // ---------------------------------------------------------------- calendar
 
 /** Every upcoming date as a calendar event, the same set the web app exports. */

@@ -294,6 +294,7 @@ public struct Settings: Codable, Hashable, Sendable {
     public var weather: WeatherSetting?
     public var installTipOff: Bool?
     public var hawl: HijriDay?
+    public var awayUntil: String?
 
     public init() {}
 
@@ -310,6 +311,7 @@ public struct Settings: Codable, Hashable, Sendable {
         weather = try c.decodeIfPresent(WeatherSetting.self, forKey: .weather)
         installTipOff = try c.decodeIfPresent(Bool.self, forKey: .installTipOff)
         hawl = try? c.decodeIfPresent(HijriDay.self, forKey: .hawl)
+        awayUntil = try c.decodeIfPresent(String.self, forKey: .awayUntil)
     }
 }
 

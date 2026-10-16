@@ -751,6 +751,27 @@ struct TravelScreen: View {
                 }
             }
             WideButton(title: model.t("travel.reset"), quiet: true, icon: "repeat") { model.update { $0.state.travel.done = [] } }.padding(.top, 16)
+            AwaySection()
+        }
+    }
+}
+
+/// Pausing reminders for a trip: the return day, or the pause that is running and a way to end it.
+struct AwaySection: View {
+    @EnvironmentObject var model: AppModel
+    @State private var until = Day.today().adding(14)
+    var body: some View {
+        let away = model.brain.awayUntil()
+        SmallHead(text: model.t("travel.away_head"))
+        Lede(text: model.t("travel.away_lede"))
+        if let away {
+            Text(model.t("travel.away_on", ["date": model.words.date(away, today: model.today)])).font(Theme.body(14, "Bold")).foregroundStyle(Theme.ink2).lineSpacing(4).frame(maxWidth: .infinity, alignment: .leading)
+            WideButton(title: model.t("travel.back"), primary: false, icon: "home") { model.update { $0.state.settings.awayUntil = nil } }.padding(.top, 16)
+        } else {
+            DayField(label: model.t("travel.return"), day: $until)
+            WideButton(title: model.t("travel.away_go"), primary: false, icon: "plane") {
+                if until >= model.today { model.update { $0.state.settings.awayUntil = until.iso } }
+            }.padding(.top, 16)
         }
     }
 }
