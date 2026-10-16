@@ -18,6 +18,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -589,7 +590,39 @@ fun RamadanScreen(model: AppModel) {
             }
         }
         Box(Modifier.padding(top = 16.dp)) { WideButton(model.t("ramadan.reset"), quiet = true, icon = "repeat") { model.update { it.resetRamadan() } } }
+        HawlSection(model)
     }
+}
+
+/** The web's zakat anniversary: the Hijri month and day the zakat year completes, and the date it lands on next. */
+@Composable
+fun HawlSection(model: AppModel) {
+    val p = pal()
+    val w = model.words
+    val h = model.state?.settings?.hawl
+    val nx = h?.let { nextHijriDate(model.today, it.m, it.d) }
+    fun set(v: HijriDay?) = model.update { b -> b.state = b.state.copy(settings = b.state.settings.copy(hawl = v)) }
+    SmallHead(model.t("hawl.head"))
+    Lede(model.t("hawl.lede"))
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.weight(1f)) {
+            FieldLabel(model.t("hawl.month"))
+            Select((h?.m ?: 0).toString(), listOf("0" to model.t("hawl.off")) + (1..12).map { it.toString() to model.t("hijri.$it") }) { v ->
+                val m = v.toInt()
+                set(if (m == 0) null else HijriDay(m, h?.d ?: 1))
+            }
+        }
+        Column(Modifier.weight(1f).alpha(if (h == null) 0.5f else 1f)) {
+            FieldLabel(model.t("hawl.day"))
+            Select((h?.d ?: 1).toString(), (1..30).map { it.toString() to it.toString() }) { v -> if (h != null) set(HijriDay(h.m, v.toInt())) }
+        }
+    }
+    if (nx != null) {
+        val line = if (nx.days == 0) model.t("hawl.today", mapOf("hijri" to w.hijri(nx.date)))
+        else model.t("hawl.next", mapOf("hijri" to w.hijri(nx.date), "date" to w.date(nx.date, model.today), "n" to w.dayCount(nx.days)))
+        Text(line, style = body(14, FontWeight.Bold, 1.7), color = p.ink2, modifier = Modifier.padding(top = 14.dp))
+    }
+    Fine(model.t("hawl.note"))
 }
 
 @Composable

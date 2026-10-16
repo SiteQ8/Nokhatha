@@ -197,6 +197,7 @@ export async function allReceipts() {
 export function sample(lang, today, templates) {
   const s = blank(lang);
   s.settings.onboarded = true;
+  s.settings.hawl = { m: 9, d: 1 };
   s.sample = true;
   const T = (ar, en) => (lang === 'ar' ? ar : en);
   const home = addHome(s, { type: 'house', name: T('البيت', 'Home'), features: { tank: true, filter: true } }, templates);

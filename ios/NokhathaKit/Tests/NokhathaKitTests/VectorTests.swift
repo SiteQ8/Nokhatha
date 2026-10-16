@@ -106,6 +106,7 @@ final class VectorTests: XCTestCase {
         case "toHijri": let h = toHijri(day(a[0])!); return ["y": h.y, "m": h.m, "d": h.d]
         case "fromHijri": return fromHijri(int(a[0]), int(a[1]), int(a[2])).iso
         case "nextHijriEvent": let e = nextHijriEvent(day(a[0])!); return ["id": e.id, "now": e.now, "days": e.days, "year": e.year, "date": e.date.iso]
+        case "nextHijriDate": return nextHijriDate(day(a[0])!, int(a[1]), int(a[2])).map { ["date": $0.date.iso, "year": $0.year, "days": $0.days] as Any } ?? NSNull()
         case "relative": return relative(int(a[0]), str(a[1]))
         case "formatDate": return formatDate(day(a[0])!, str(a[1]), refYear: a.count > 2 ? int(a[2]) : nil)
         case "toICS":

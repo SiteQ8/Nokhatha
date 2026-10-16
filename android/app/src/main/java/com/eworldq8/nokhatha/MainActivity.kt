@@ -481,6 +481,9 @@ object Reminders {
             if (x.days < 0) late = true
             lines += words.t("ics.doc", mapOf("name" to brain.docTitle(x.d, state.settings.lang)))
         }
+        val hawl = brain.hawlNext()
+        if (hawl != null && hawl.days == 7) lines += words.t("event.hawl_week")
+        if (hawl != null && hawl.days == 0) lines += words.t("event.hawl_now")
         state.settings.weather?.let { w ->
             val c = WxCache.load(ctx.getSharedPreferences("weather", Context.MODE_PRIVATE))
             if (w.on && c != null && c.lat == w.lat && c.lon == w.lon && System.currentTimeMillis() - c.at < 20 * 3600_000L) {

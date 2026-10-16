@@ -343,6 +343,7 @@ public struct Brain: Sendable {
     public static func sample(catalog: Catalog, lang: String, today: Day) -> AppState {
         var b = Brain(catalog: catalog, state: AppState(lang: lang), today: today)
         b.state.settings.onboarded = true
+        b.state.settings.hawl = HijriDay(m: 9, d: 1)
         b.state.sample = true
         let T = { (ar: String, en: String) in lang == "ar" ? ar : en }
         let home = b.addHome(type: "house", name: T("البيت", "Home"), features: ["tank": true, "filter": true])

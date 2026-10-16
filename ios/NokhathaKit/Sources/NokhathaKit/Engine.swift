@@ -798,3 +798,21 @@ public func nextHijriEvent(_ day: Day) -> HijriEvent {
     let next = list.filter { $0.date > day }.min { $0.date.n < $1.date.n }!
     return HijriEvent(id: next.id, now: false, days: next.date.n - day.n, year: next.year, date: next.date)
 }
+
+/// A Hijri month and day's next occurrence on or after a day.
+public struct HijriNext: Hashable, Sendable {
+    public let date: Day
+    public let year: Int
+    public let days: Int
+}
+
+/// The next day on or after `day` that falls on a Hijri month and day: this year's or next year's; a 30th in a 29-day month lands on its last day.
+public func nextHijriDate(_ day: Day, _ hm: Int, _ hd: Int) -> HijriNext? {
+    let h = toHijri(day)
+    for y in [h.y, h.y + 1] {
+        var date = fromHijri(y, hm, min(max(hd, 1), 30))
+        if toHijri(date).m != hm { date = date.adding(-1) }
+        if date >= day { return HijriNext(date: date, year: y, days: date.n - day.n) }
+    }
+    return nil
+}

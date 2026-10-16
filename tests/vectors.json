@@ -1,5 +1,5 @@
 {
- "engine": "0.6.0",
+ "engine": "0.7.0",
  "about": "Shared contract for the web, iOS and Android engines. \"$seasons\" means the seasons array of docs/data/seasons.json and \"$bawarih\" its bawarih window. Expected values were worked out by hand from the calendar, not produced by the engine. \"$heat\" means its heat window.",
  "cases": [
   {
@@ -2567,6 +2567,71 @@
     null,
     null
    ]
+  },
+  {
+   "fn": "nextHijriDate",
+   "args": [
+    "2026-10-16",
+    9,
+    1
+   ],
+   "out": {
+    "date": "2027-02-08",
+    "year": 1448,
+    "days": 115
+   }
+  },
+  {
+   "fn": "nextHijriDate",
+   "args": [
+    "2026-10-16",
+    5,
+    4
+   ],
+   "out": {
+    "date": "2026-10-16",
+    "year": 1448,
+    "days": 0
+   }
+  },
+  {
+   "fn": "nextHijriDate",
+   "args": [
+    "2026-10-16",
+    3,
+    10
+   ],
+   "out": {
+    "date": "2027-08-13",
+    "year": 1449,
+    "days": 301
+   }
+  },
+  {
+   "fn": "nextHijriDate",
+   "args": [
+    "2026-10-16",
+    10,
+    30
+   ],
+   "out": {
+    "date": "2027-04-07",
+    "year": 1448,
+    "days": 173
+   }
+  },
+  {
+   "fn": "nextHijriDate",
+   "args": [
+    "2027-01-01",
+    12,
+    30
+   ],
+   "out": {
+    "date": "2027-06-05",
+    "year": 1448,
+    "days": 155
+   }
   }
  ]
 }

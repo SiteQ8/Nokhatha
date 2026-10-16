@@ -40,6 +40,11 @@ enum Reminders {
             let day = x.days < 0 ? today : max(end.adding(-min(x.days, x.type.lead)), today)
             byDay[day, default: []].append((words.t("ics.doc", ["name": brain.docTitle(x.d, lang: model.lang)]), x.days < 0))
         }
+        if let h = brain.hawlNext(), h.days <= 60 {
+            let week = h.date.adding(-7)
+            if week >= today { byDay[week, default: []].append((words.t("event.hawl_week"), false)) }
+            byDay[h.date, default: []].append((words.t("event.hawl_now"), false))
+        }
         let now = Date()
         let hour = Calendar.current.component(.hour, from: now)
         for (day, lines) in byDay.sorted(by: { $0.key < $1.key }).prefix(60) {

@@ -8,7 +8,11 @@
    "theme": "auto",
    "currency": "KWD",
    "lead": 7,
-   "onboarded": true
+   "onboarded": true,
+   "hawl": {
+    "m": 9,
+    "d": 1
+   }
   },
   "homes": [
    {

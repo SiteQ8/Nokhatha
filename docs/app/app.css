@@ -490,6 +490,9 @@ select.input { appearance: none; background-image: none; cursor: pointer; }
 .event > .ic { flex: none; color: var(--rutab); }
 .event > span { flex: 1; }
 .event .btn { height: 36px; padding: 0 10px; font-size: 13.5px; }
+.event-link { color: inherit; text-decoration: none; }
+.event-link > .chev { flex: none; color: var(--ink-3); }
+.hawl-next { margin: 14px 0 0; font-weight: 700; font-size: 14px; color: var(--ink-2); line-height: 1.7; }
 
 /* the year's bills, twelve columns */
 .bills { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; align-items: end; padding: 14px 12px 10px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }

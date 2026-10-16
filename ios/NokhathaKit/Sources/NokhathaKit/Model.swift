@@ -292,6 +292,7 @@ public struct Settings: Codable, Hashable, Sendable {
     public var lastBackup: String?
     public var weather: WeatherSetting?
     public var installTipOff: Bool?
+    public var hawl: HijriDay?
 
     public init() {}
 
@@ -307,7 +308,15 @@ public struct Settings: Codable, Hashable, Sendable {
         lastBackup = try c.decodeIfPresent(String.self, forKey: .lastBackup)
         weather = try c.decodeIfPresent(WeatherSetting.self, forKey: .weather)
         installTipOff = try c.decodeIfPresent(Bool.self, forKey: .installTipOff)
+        hawl = try? c.decodeIfPresent(HijriDay.self, forKey: .hawl)
     }
+}
+
+/// A day of the Hijri year, such as the day a zakat year completes.
+public struct HijriDay: Codable, Hashable, Sendable {
+    public var m: Int
+    public var d: Int
+    public init(m: Int, d: Int) { self.m = m; self.d = d }
 }
 
 public struct Travel: Codable, Hashable, Sendable {

@@ -9,7 +9,7 @@
 //   * Every function here is pure. "today" is always passed in.
 // tests/vectors.json is the contract every port must satisfy.
 
-export const VERSION = '0.6.0';
+export const VERSION = '0.7.0';
 
 // A seasonal task done within this many days of its anchor is not due again
 // until the anchor of the following year.
@@ -593,6 +593,17 @@ export function nextHijriEvent(iso) {
   for (const y of [h.y, h.y + 1]) list.push({ id: 'ramadan', date: fromHijri(y, 9, 1), year: y }, { id: 'fitr', date: fromHijri(y, 10, 1), year: y }, { id: 'adha', date: fromHijri(y, 12, 10), year: y });
   const next = list.filter((e) => e.date > iso).sort((a, b) => a.date.localeCompare(b.date))[0];
   return { ...next, now: false, days: dayNumber(next.date) - dayNumber(iso) };
+}
+
+/** The next day on or after `iso` that falls on a Hijri month and day: the year's or the next year's; a 30th in a 29-day month lands on its last day. */
+export function nextHijriDate(iso, hm, hd) {
+  const h = toHijri(iso);
+  for (const y of [h.y, h.y + 1]) {
+    let date = fromHijri(y, hm, Math.min(Math.max(hd, 1), 30));
+    if (toHijri(date).m !== hm) date = addDays(date, -1);
+    if (date >= iso) return { date, year: y, days: dayNumber(date) - dayNumber(iso) };
+  }
+  return null;
 }
 
 /* ------------------------------------------------------------- bills */

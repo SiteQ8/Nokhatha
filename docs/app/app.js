@@ -592,6 +592,26 @@ function ramadanDone() {
   return state.ramadan.year === ramadanYear() ? state.ramadan.done : [];
 }
 
+/** The zakat anniversary's next occurrence, or null when none is set. */
+function hawlNext() {
+  const h = state.settings.hawl;
+  return h ? E.nextHijriDate(TODAY, h.m, h.d) : null;
+}
+
+/** The Hijri day the zakat year completes: a month and a day, and the date it lands on next. */
+function hawlSection() {
+  const h = state.settings.hawl;
+  const nx = hawlNext();
+  const months = [`<option value="0"${h ? '' : ' selected'}>${t('hawl.off')}</option>`, ...Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}"${h && h.m === i + 1 ? ' selected' : ''}>${t('hijri.' + (i + 1))}</option>`)];
+  const days = Array.from({ length: 30 }, (_, i) => `<option value="${i + 1}"${(h ? h.d : 1) === i + 1 ? ' selected' : ''}>${i + 1}</option>`);
+  const line = nx ? (nx.days === 0 ? t('hawl.today', { hijri: hijriText(nx.date) }) : t('hawl.next', { hijri: hijriText(nx.date), date: dateText(nx.date), n: dayCount(nx.days) })) : '';
+  return `<div class="sec sec-sm"><h3>${t('hawl.head')}</h3></div>
+<p class="lede">${t('hawl.lede')}</p>
+<div class="grid2"><label class="field"><span>${t('hawl.month')}</span><select class="input" data-act="hawl-m">${months.join('')}</select></label>
+<label class="field"><span>${t('hawl.day')}</span><select class="input" data-act="hawl-d"${h ? '' : ' disabled'}>${days.join('')}</select></label></div>
+${line ? `<p class="hawl-next">${esc(line)}</p>` : ''}<p class="fine">${t('hawl.note')}</p>`;
+}
+
 function viewRamadan() {
   const done = new Set(ramadanDone());
   return `${pageHead(t('more.ramadan'), 'more', '', true)}
@@ -599,7 +619,8 @@ function viewRamadan() {
 <p class="progress-l">${t('ramadan.progress', { n: done.size, of: D.ramadan.length, y: ramadanYear() })}</p>
 <ul class="list checks">${D.ramadan.map((x) => `<li><label class="check-row"><input type="checkbox" data-act="ramadan" value="${esc(x.id)}"${done.has(x.id) ? ' checked' : ''}>
 <span class="box">${icon('done')}</span><span>${esc(nm(x))}</span></label></li>`).join('')}</ul>
-<div class="actions"><button class="btn btn-quiet" data-act="ramadan-reset">${icon('repeat')}<span>${t('ramadan.reset')}</span></button></div>`;
+<div class="actions"><button class="btn btn-quiet" data-act="ramadan-reset">${icon('repeat')}<span>${t('ramadan.reset')}</span></button></div>
+${hawlSection()}`;
 }
 
 /** The Hijri date in words. */
@@ -611,11 +632,16 @@ function hijriText(iso) {
 /** Ramadan or an Eid within 60 days: a line with the days left and a way to the checklist. */
 function eventCard() {
   const ev = E.nextHijriEvent(TODAY);
-  if (!ev.now && ev.days > 60) return '';
-  const n = dayCount(ev.days);
-  const text = ev.now ? t('event.ramadan_now', { n }) : t(`event.${ev.id}_in`, { n });
-  const link = ev.id === 'ramadan' && !ev.now ? `<a class="btn btn-quiet" href="#/ramadan">${icon('moon')}<span>${t('event.prep')}</span></a>` : '';
-  return `<div class="event">${icon('moon')}<span>${esc(text)}</span>${link}</div>`;
+  let out = '';
+  if (ev.now || ev.days <= 60) {
+    const n = dayCount(ev.days);
+    const text = ev.now ? t('event.ramadan_now', { n }) : t(`event.${ev.id}_in`, { n });
+    const link = ev.id === 'ramadan' && !ev.now ? `<a class="btn btn-quiet" href="#/ramadan">${icon('moon')}<span>${t('event.prep')}</span></a>` : '';
+    out += `<div class="event">${icon('moon')}<span>${esc(text)}</span>${link}</div>`;
+  }
+  const nx = hawlNext();
+  if (nx && nx.days <= 30) out += `<a class="event event-link" href="#/ramadan">${icon('wallet')}<span>${esc(nx.days === 0 ? t('event.hawl_now') : t('event.hawl_in', { n: dayCount(nx.days) }))}</span>${icon('next', 'flip chev')}</a>`;
+  return out;
 }
 
 function viewSpend(r) {
@@ -969,6 +995,12 @@ async function writeDigest() {
     }
     for (const x of state.docs.map((d) => evalDoc(d))) {
       if (x.days != null && x.days <= 60) list.push({ date: x.days < 0 ? TODAY : E.addDays(x.d.expiry, -Math.min(x.days, x.ty.lead || 30)), title: t('ics.doc', { name: docTitle(x.d, x.ty) }) });
+    }
+    const nx = hawlNext();
+    if (nx) {
+      const week = E.addDays(nx.date, -7);
+      if (week >= TODAY) list.push({ date: week, until: week, title: t('event.hawl_week') });
+      list.push({ date: nx.date, until: nx.date, title: t('event.hawl_now') });
     }
     list.sort((a, b) => a.date.localeCompare(b.date));
     const payload = {
@@ -1388,6 +1420,8 @@ function exportICS() {
   for (const x of state.docs.map((d) => evalDoc(d))) {
     if (x.d.expiry >= TODAY) events.push({ uid: `d-${x.d.id}`, date: x.d.expiry, title: t('ics.doc', { name: docTitle(x.d, x.ty) }), lead: Math.min(x.ty.lead || 30, Math.max(0, x.days)) });
   }
+  const nx = hawlNext();
+  if (nx) events.push({ uid: `hawl-${nx.date}`, date: nx.date, title: t('hawl.head'), lead: nx.days > 7 ? 7 : 0 });
   const d = new Date();
   const stamp = `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
   download(E.toICS(events, { stamp, calName: t('app.name') }), 'nokhatha.ics', 'text/calendar');
@@ -1415,7 +1449,10 @@ function weekText() {
   if (subs.length) lines.push(t('week.subs') + ':', ...subs.map((x) => `• ${x.s.name}${sep}${E.formatMoney(x.s.amount, x.s.currency, L())}${sep}${dateText(x.next)}`), '');
   const docs = state.docs.map((d) => evalDoc(d)).filter((x) => x.status !== 'ok');
   if (docs.length) lines.push(t('week.docs') + ':', ...docs.map((x) => `• ${docTitle(x.d, x.ty)}${x.d.who ? ` (${x.d.who})` : ''}${sep}${dateText(x.d.expiry)}`), '');
-  if (!overdue.length && !soon.length && !subs.length && !docs.length) lines.push(t('week.none'), '');
+  const nx = hawlNext();
+  const hawl = nx && nx.date <= end;
+  if (hawl) lines.push(`• ${t('week.hawl')}${sep}${dateText(nx.date)}`, '');
+  if (!overdue.length && !soon.length && !subs.length && !docs.length && !hawl) lines.push(t('week.none'), '');
   lines.push(t('week.foot'));
   return lines.join('\n');
 }
@@ -2034,6 +2071,13 @@ function onChange(e) {
   }
   if (el.matches('[data-act="currency"]')) {
     state.settings.currency = el.value;
+    commit();
+    return;
+  }
+  if (el.matches('[data-act="hawl-m"], [data-act="hawl-d"]')) {
+    const m = Number($('[data-act="hawl-m"]').value);
+    const d = Number($('[data-act="hawl-d"]').value) || 1;
+    state.settings.hawl = m ? { m, d } : null;
     commit();
     return;
   }

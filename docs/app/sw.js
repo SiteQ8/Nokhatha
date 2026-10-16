@@ -1,6 +1,6 @@
 // Offline support, and reminders from the device itself.
 // One cache per version, the app shell answers every navigation.
-const VERSION = '0.6.0';
+const VERSION = '0.7.0';
 const CACHE = `nokhatha-${VERSION}`;
 // Written by the page: what is due in the coming weeks, already worded in the person's language.
 const DIGEST = 'nokhatha-digest';
@@ -91,7 +91,7 @@ async function remind() {
   const save = (x) => cache.put('seen.json', new Response(JSON.stringify(x), { headers: { 'Content-Type': 'application/json' } }));
   const quiet = now.getHours() < 7 || now.getHours() >= 22;
   if (!d.notify || seen.notified === today || quiet) return save({ ...seen, ran: now.toISOString() });
-  const due = d.items.filter((x) => x.date <= today);
+  const due = d.items.filter((x) => x.date <= today && (!x.until || today <= x.until));
   const sky = await weatherLine(d, today);
   if (!due.length && !sky) return save({ ...seen, ran: now.toISOString() });
   const late = due.some((x) => x.date < today);

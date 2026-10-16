@@ -39,6 +39,9 @@ fun phoneDigits(phone: String, country: String): String {
 
 fun Brain.techFor(trade: String?): Tech? = trade?.let { t -> state.techs.firstOrNull { it.trade == t } }
 
+/** The zakat anniversary's next occurrence, or null when none is set. */
+fun Brain.hawlNext(): HijriNext? = state.settings.hawl?.let { nextHijriDate(today, it.m, it.d) }
+
 // ---------------------------------------------------------------- calendar
 
 /** Every upcoming date as a calendar event, the same set the web app exports. */
@@ -65,6 +68,7 @@ fun Brain.calendarEvents(w: Words): List<CalendarEvent> {
         if (end < today) continue
         out += CalendarEvent("d-${x.d.id}", end, w.t("ics.doc", mapOf("name" to docTitle(x.d, w.lang))), null, minOf(x.type.lead, maxOf(0, x.days)))
     }
+    hawlNext()?.let { out += CalendarEvent("hawl-${it.date.iso}", it.date, w.t("hawl.head"), null, if (it.days > 7) 7 else 0) }
     return out
 }
 
@@ -314,7 +318,9 @@ fun Brain.weekText(w: Words): String {
     if (subs.isNotEmpty()) { lines += w.t("week.subs") + ":"; subs.forEach { lines += "• ${it.sub.name}$sep${w.money(it.sub.amount, it.sub.currency)}$sep${w.date(it.next, today)}" }; lines += "" }
     val docs = docs().filter { it.status != "ok" }
     if (docs.isNotEmpty()) { lines += w.t("week.docs") + ":"; docs.forEach { x -> lines += "• ${docTitle(x.d, w.lang)}${x.d.who?.let { " ($it)" } ?: ""}$sep${Day.parse(x.d.expiry)?.let { w.date(it, today) } ?: x.d.expiry}" }; lines += "" }
-    if (overdue.isEmpty() && soon.isEmpty() && subs.isEmpty() && docs.isEmpty()) { lines += w.t("week.none"); lines += "" }
+    val hawl = hawlNext()?.takeIf { it.date <= end }
+    if (hawl != null) { lines += "• ${w.t("week.hawl")}$sep${w.date(hawl.date, today)}"; lines += "" }
+    if (overdue.isEmpty() && soon.isEmpty() && subs.isEmpty() && docs.isEmpty() && hawl == null) { lines += w.t("week.none"); lines += "" }
     lines += w.t("week.foot")
     return lines.joinToString("\n")
 }

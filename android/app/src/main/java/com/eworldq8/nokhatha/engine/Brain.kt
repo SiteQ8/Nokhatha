@@ -262,7 +262,7 @@ class Brain(val catalog: Catalog, var state: AppState, val today: Day) {
 
         /** The web app's sample household. */
         fun sample(catalog: Catalog, lang: String, today: Day): AppState {
-            val b = Brain(catalog, AppState(settings = Settings(lang = lang, onboarded = true), sample = true), today)
+            val b = Brain(catalog, AppState(settings = Settings(lang = lang, onboarded = true, hawl = HijriDay(9, 1)), sample = true), today)
             val t = { ar: String, en: String -> if (lang == "ar") ar else en }
             val home = b.addHome("house", t("البيت", "Home"), mapOf("tank" to true, "filter" to true))
             val chalet = b.addHome("chalet", t("الشاليه", "Chalet"), mapOf("tank" to true))

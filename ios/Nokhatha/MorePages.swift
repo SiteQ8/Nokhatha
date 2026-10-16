@@ -678,7 +678,43 @@ struct RamadanScreen: View {
                 }
             }
             WideButton(title: model.t("ramadan.reset"), quiet: true, icon: "repeat") { model.update { $0.resetRamadan() } }.padding(.top, 16)
+            HawlSection()
         }
+    }
+}
+
+/// The web's zakat anniversary: the Hijri month and day the zakat year completes, and the date it lands on next.
+struct HawlSection: View {
+    @EnvironmentObject var model: AppModel
+    var body: some View {
+        let w = model.words
+        let h = model.state?.settings.hawl
+        let nx = model.brain.hawlNext()
+        let months = [("0", model.t("hawl.off"))] + (1...12).map { (String($0), model.t("hijri.\($0)")) }
+        SmallHead(text: model.t("hawl.head"))
+        Lede(text: model.t("hawl.lede"))
+        HStack(alignment: .top, spacing: 12) {
+            VStack(spacing: 0) {
+                FieldLabel(text: model.t("hawl.month"))
+                Select(value: String(h?.m ?? 0), options: months) { v in
+                    let m = Int(v) ?? 0
+                    model.update { $0.state.settings.hawl = m == 0 ? nil : HijriDay(m: m, d: h?.d ?? 1) }
+                }
+            }
+            VStack(spacing: 0) {
+                FieldLabel(text: model.t("hawl.day"))
+                Select(value: String(h?.d ?? 1), options: (1...30).map { (String($0), String($0)) }) { v in
+                    if let h, let d = Int(v) { model.update { $0.state.settings.hawl = HijriDay(m: h.m, d: d) } }
+                }
+            }
+            .opacity(h == nil ? 0.5 : 1)
+        }
+        if let nx {
+            let line = nx.days == 0 ? model.t("hawl.today", ["hijri": w.hijri(nx.date)])
+                : model.t("hawl.next", ["hijri": w.hijri(nx.date), "date": w.date(nx.date, today: model.today), "n": w.dayCount(nx.days)])
+            Text(line).font(Theme.body(14, "Bold")).foregroundStyle(Theme.ink2).lineSpacing(4).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 14)
+        }
+        Fine(text: model.t("hawl.note"))
     }
 }
 

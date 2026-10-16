@@ -35,6 +35,12 @@ public extension Brain {
         return state.techs.first { $0.trade == trade }
     }
 
+    /// The zakat anniversary's next occurrence, or nil when none is set.
+    func hawlNext() -> HijriNext? {
+        guard let h = state.settings.hawl else { return nil }
+        return nextHijriDate(today, h.m, h.d)
+    }
+
     /// Every upcoming date as a calendar event, the same set the web app exports.
     func calendarEvents(_ w: Words) -> [CalendarEvent] {
         var out: [CalendarEvent] = []
@@ -50,6 +56,13 @@ public extension Brain {
         }
         for x in warranties() where x.end >= today {
             out.append(CalendarEvent(uid: "w-\(x.w.id)", date: x.end, title: w.t("ics.warranty", ["name": x.w.name]), lead: x.days > 14 ? 14 : 0))
+        }
+        for x in docs() {
+            guard let end = Day(iso: x.d.expiry), end >= today else { continue }
+            out.append(CalendarEvent(uid: "d-\(x.d.id)", date: end, title: w.t("ics.doc", ["name": docTitle(x.d, lang: w.lang)]), lead: min(x.type.lead, max(0, x.days))))
+        }
+        if let h = hawlNext() {
+            out.append(CalendarEvent(uid: "hawl-\(h.date.iso)", date: h.date, title: w.t("hawl.head"), lead: h.days > 7 ? 7 : 0))
         }
         return out
     }
@@ -319,7 +332,9 @@ public extension Brain {
         if !subs.isEmpty { lines.append(w.t("week.subs") + ":"); lines += subs.map { "• \($0.sub.name)\(sep)\(w.money($0.sub.amount, $0.sub.currency))\(sep)\(w.date($0.next, today: today))" }; lines.append("") }
         let docs = docs().filter { $0.status != "ok" }
         if !docs.isEmpty { lines.append(w.t("week.docs") + ":"); lines += docs.map { x in "• \(docTitle(x.d, lang: w.lang))\(x.d.who.map { " (\($0))" } ?? "")\(sep)\(Day(iso: x.d.expiry).map { w.date($0, today: today) } ?? x.d.expiry)" }; lines.append("") }
-        if overdue.isEmpty && soon.isEmpty && subs.isEmpty && docs.isEmpty { lines.append(w.t("week.none")); lines.append("") }
+        let hawl = hawlNext().flatMap { $0.date <= end ? $0 : nil }
+        if let hawl { lines.append("• \(w.t("week.hawl"))\(sep)\(w.date(hawl.date, today: today))"); lines.append("") }
+        if overdue.isEmpty && soon.isEmpty && subs.isEmpty && docs.isEmpty && hawl == nil { lines.append(w.t("week.none")); lines.append("") }
         lines.append(w.t("week.foot"))
         return lines.joined(separator: "\n")
     }

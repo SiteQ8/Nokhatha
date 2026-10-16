@@ -617,11 +617,34 @@ struct EventCard: View {
                     WideButton(title: model.t("event.prep"), quiet: true, icon: "moon", height: 36, block: false) { model.tab = "more"; model.page = "ramadan" }
                 }
             }
+            .modifier(EventFrame())
+        }
+        // the zakat anniversary within a month, a row that opens its page
+        if let nx = model.brain.hawlNext(), nx.days <= 30 {
+            Button { model.tab = "more"; model.page = "ramadan" } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: Symbol.name("wallet")).font(.system(size: 17)).foregroundStyle(Theme.rutab)
+                    Text(nx.days == 0 ? model.t("event.hawl_now") : model.t("event.hawl_in", ["n": model.words.dayCount(nx.days)]))
+                        .font(Theme.body(14.5, "SemiBold")).foregroundStyle(Theme.ink).lineSpacing(4).multilineTextAlignment(.leading)
+                    Spacer(minLength: 0)
+                    Chevron()
+                }
+                .modifier(EventFrame())
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
+    }
+}
+
+/// The rutab-tinted frame of the Today page's event rows.
+struct EventFrame: ViewModifier {
+    func body(content: Content) -> some View {
+        content
             .padding(.horizontal, 16).padding(.vertical, 12).frame(maxWidth: .infinity, alignment: .leading)
             .background(Theme.rutab.opacity(0.12), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.rutab.opacity(0.3), lineWidth: 1))
             .padding(.bottom, 14)
-        }
     }
 }
 

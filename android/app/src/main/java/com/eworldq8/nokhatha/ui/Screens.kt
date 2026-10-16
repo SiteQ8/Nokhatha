@@ -506,16 +506,28 @@ fun RenewalCard(model: AppModel, carId: String) {
 @Composable
 fun EventCard(model: AppModel) {
     val ev = nextHijriEvent(model.today)
-    if (!ev.now && ev.days > 60) return
     val p = pal()
-    val n = model.words.dayCount(ev.days)
-    val text = if (ev.now) model.t("event.ramadan_now", mapOf("n" to n)) else model.t("event.${ev.id}_in", mapOf("n" to n))
     val shape = RoundedCornerShape(18.dp)
-    Row(Modifier.padding(bottom = 14.dp).fillMaxWidth().clip(shape).background(p.rutab.copy(alpha = 0.12f)).border(1.dp, p.rutab.copy(alpha = 0.3f), shape).padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        Ico("moon", p.rutab, 20.dp)
-        Text(text, style = body(14.5, FontWeight.SemiBold, 1.6), color = p.ink, modifier = Modifier.weight(1f))
-        if (ev.id == "ramadan" && !ev.now) WideButton(model.t("event.prep"), quiet = true, height = 36.dp, block = false, icon = "moon") { model.tab = "more"; model.page = "ramadan" }
+    val card = Modifier.padding(bottom = 14.dp).fillMaxWidth().clip(shape).background(p.rutab.copy(alpha = 0.12f)).border(1.dp, p.rutab.copy(alpha = 0.3f), shape)
+    if (ev.now || ev.days <= 60) {
+        val n = model.words.dayCount(ev.days)
+        val text = if (ev.now) model.t("event.ramadan_now", mapOf("n" to n)) else model.t("event.${ev.id}_in", mapOf("n" to n))
+        Row(card.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Ico("moon", p.rutab, 20.dp)
+            Text(text, style = body(14.5, FontWeight.SemiBold, 1.6), color = p.ink, modifier = Modifier.weight(1f))
+            if (ev.id == "ramadan" && !ev.now) WideButton(model.t("event.prep"), quiet = true, height = 36.dp, block = false, icon = "moon") { model.tab = "more"; model.page = "ramadan" }
+        }
+    }
+    // the zakat anniversary within a month, a row that opens its page
+    val nx = model.brain().hawlNext()
+    if (nx != null && nx.days <= 30) {
+        val text = if (nx.days == 0) model.t("event.hawl_now") else model.t("event.hawl_in", mapOf("n" to model.words.dayCount(nx.days)))
+        Row(card.clickable(role = Role.Button) { model.tab = "more"; model.page = "ramadan" }.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Ico("wallet", p.rutab, 20.dp)
+            Text(text, style = body(14.5, FontWeight.SemiBold, 1.6), color = p.ink, modifier = Modifier.weight(1f))
+            Chevron(p.ink3)
+        }
     }
 }
 

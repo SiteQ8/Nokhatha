@@ -646,3 +646,17 @@ fun nextHijriEvent(day: Day): HijriEvent {
     val next = list.filter { it.date > day }.minByOrNull { it.date.n }!!
     return next.copy(days = next.date.n - day.n)
 }
+
+/** A Hijri month and day's next occurrence on or after a day. */
+data class HijriNext(val date: Day, val year: Int, val days: Int)
+
+/** The next day on or after `day` that falls on a Hijri month and day: this year's or next year's; a 30th in a 29-day month lands on its last day. */
+fun nextHijriDate(day: Day, hm: Int, hd: Int): HijriNext? {
+    val h = toHijri(day)
+    for (y in listOf(h.y, h.y + 1)) {
+        var date = fromHijri(y, hm, hd.coerceIn(1, 30))
+        if (toHijri(date).m != hm) date = date.plus(-1)
+        if (date >= day) return HijriNext(date, y, date.n - day.n)
+    }
+    return null
+}
