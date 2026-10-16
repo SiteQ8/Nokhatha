@@ -1,6 +1,7 @@
 // The app's state on the device, saved as the same JSON the web app keeps.
 import Foundation
 import NokhathaKit
+import AVFoundation
 import SwiftUI
 import UIKit
 import UserNotifications
@@ -319,6 +320,39 @@ final class AppModel: ObservableObject {
         if let d = try? JSONEncoder().encode(cache) { try? d.write(to: weatherFile, options: .atomic) }
     }
 
+    // MARK: the nokhatha's voice
+
+    @Published var voicePlaying: String?
+    private var voice: AVAudioPlayer?
+    private var voiceDelegate: VoiceDelegate?
+
+    /// The season's briefing from the bundled clips; a second press stops it.
+    func listen(_ seasonId: String) {
+        if voicePlaying == seasonId { stopVoice(); return }
+        stopVoice()
+        guard let audio = Bundle.main.url(forResource: "audio", withExtension: nil) else { say("voice.failed"); return }
+        let url = audio.appendingPathComponent("seasons/\(seasonId)-\(lang).mp3")
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
+            try AVAudioSession.sharedInstance().setActive(true)
+            let p = try AVAudioPlayer(contentsOf: url)
+            let d = VoiceDelegate { [weak self] in self?.stopVoice() }
+            p.delegate = d
+            voiceDelegate = d
+            voice = p
+            voicePlaying = seasonId
+            p.play()
+        } catch { stopVoice(); say("voice.failed") }
+    }
+
+    func stopVoice() {
+        voice?.stop()
+        voice = nil
+        voiceDelegate = nil
+        voicePlaying = nil
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
     // MARK: links
 
     func openUrl(_ s: String) { if let u = URL(string: s) { UIApplication.shared.open(u) } }
@@ -331,4 +365,11 @@ final class AppModel: ObservableObject {
     var colorScheme: ColorScheme? {
         switch state?.settings.theme { case "light": return .light; case "dark": return .dark; default: return nil }
     }
+}
+
+/// Ends the voice when the clip finishes.
+final class VoiceDelegate: NSObject, AVAudioPlayerDelegate {
+    let onEnd: () -> Void
+    init(onEnd: @escaping () -> Void) { self.onEnd = onEnd }
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) { onEnd() }
 }

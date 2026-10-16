@@ -19,6 +19,9 @@ targets:
       - path: ../docs/data
         type: folder
         buildPhase: resources
+      - path: ../docs/audio
+        type: folder
+        buildPhase: resources
     dependencies:
       - package: NokhathaKit
     info:

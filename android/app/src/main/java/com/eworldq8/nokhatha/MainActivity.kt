@@ -299,6 +299,36 @@ class AppModel(private val ctx: Context, intent: Intent?) {
 
     fun openUrl(url: String) = open(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 
+    // ---- the nokhatha's voice: the season's briefing from the bundled clips
+    var voicePlaying by mutableStateOf<String?>(null)
+    private var voice: android.media.MediaPlayer? = null
+
+    fun listen(seasonId: String) {
+        if (voicePlaying == seasonId) { stopVoice(); return }
+        stopVoice()
+        try {
+            val fd = ctx.assets.openFd("seasons/$seasonId-$lang.mp3")
+            val mp = android.media.MediaPlayer()
+            mp.setAudioAttributes(android.media.AudioAttributes.Builder().setUsage(android.media.AudioAttributes.USAGE_MEDIA).setContentType(android.media.AudioAttributes.CONTENT_TYPE_SPEECH).build())
+            mp.setDataSource(fd.fileDescriptor, fd.startOffset, fd.length)
+            fd.close()
+            mp.setOnCompletionListener { stopVoice() }
+            mp.setOnErrorListener { _, _, _ -> stopVoice(); say("voice.failed"); true }
+            mp.prepare()
+            mp.start()
+            voice = mp
+            voicePlaying = seasonId
+        } catch (e: Exception) {
+            stopVoice(); say("voice.failed")
+        }
+    }
+
+    fun stopVoice() {
+        voice?.let { runCatching { it.stop() }; it.release() }
+        voice = null
+        voicePlaying = null
+    }
+
     /** A task as a message for whoever is doing it: the phone's own share sheet, WhatsApp among its choices. */
     fun shareTask(e: Evaluated) {
         val vars = mapOf("title" to e.title(lang), "asset" to e.asset.name, "date" to (e.due?.let { words.date(it, today) } ?: ""))

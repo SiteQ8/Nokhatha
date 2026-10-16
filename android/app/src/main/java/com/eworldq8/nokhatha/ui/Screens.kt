@@ -125,10 +125,11 @@ fun TodayScreen(model: AppModel) {
         }
         Box(Modifier.padding(top = 4.dp, bottom = 10.dp)) { Dial(model.today, model.catalog, dots, w.seasonCenter(season, model.catalog, model.today)) }
         model.catalog.season(season.id)?.hint(model.lang)?.let { hint ->
-            Row(Modifier.padding(top = 6.dp).fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(p.surface).border(1.dp, p.line, RoundedCornerShape(18.dp)).padding(horizontal = 16.dp, vertical = 14.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Ico("spark", p.sadu, 18.dp, Modifier.padding(top = 3.dp))
-                Text(hint, style = body(14.5, lineHeight = 1.7), color = p.ink2)
+            Row(Modifier.padding(top = 6.dp).fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(p.surface).border(1.dp, p.line, RoundedCornerShape(18.dp)).padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Ico("spark", p.sadu, 18.dp)
+                Text(hint, style = body(14.5, lineHeight = 1.7), color = p.ink2, modifier = Modifier.weight(1f))
+                ListenButton(model, season.id)
             }
         }
         LaunchedEffect(model.state?.settings?.weather) { model.refreshWeather() }
@@ -514,5 +515,18 @@ fun EventCard(model: AppModel) {
         Ico("moon", p.rutab, 20.dp)
         Text(text, style = body(14.5, FontWeight.SemiBold, 1.6), color = p.ink, modifier = Modifier.weight(1f))
         if (ev.id == "ramadan" && !ev.now) WideButton(model.t("event.prep"), quiet = true, height = 36.dp, block = false, icon = "moon") { model.tab = "more"; model.page = "ramadan" }
+    }
+}
+
+/** The web's .listen: a small pill that plays the season's briefing in the nokhatha's voice, inked while it speaks. */
+@Composable
+fun ListenButton(model: AppModel, seasonId: String) {
+    val p = pal()
+    val on = model.voicePlaying == seasonId
+    Row(Modifier.height(34.dp).clip(CircleShape).background(if (on) p.ink else p.bg).border(1.dp, if (on) p.ink else p.line, CircleShape)
+        .clickable(role = Role.Button) { model.listen(seasonId) }.padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Ico(if (on) "stop" else "sound", if (on) p.onInk else p.ink2, 16.dp)
+        Text(model.t(if (on) "act.listening" else "act.listen"), style = body(13, FontWeight.SemiBold, 1.2), color = if (on) p.onInk else p.ink)
     }
 }

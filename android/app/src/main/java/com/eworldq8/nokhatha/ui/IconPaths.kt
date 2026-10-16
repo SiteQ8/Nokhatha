@@ -89,5 +89,7 @@ internal val ICON_PATHS: Map<String, List<IconPart>> = mapOf(
     "briefcase" to listOf(IconPart("M5.5 7.5h13a2.5 2.5 0 0 1 2.5 2.5v7a2.5 2.5 0 0 1 -2.5 2.5h-13a2.5 2.5 0 0 1 -2.5 -2.5v-7a2.5 2.5 0 0 1 2.5 -2.5Z", false), IconPart("M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3 12.5h18", false)),
     "alert" to listOf(IconPart("M12 4 3 19.5h18z", false), IconPart("M12 10v4.5", false), IconPart("M11.1 17a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0Z", true)),
     "link" to listOf(IconPart("M14 5h5v5M19 5l-8 8", false), IconPart("M17 13v5.5a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 4 18.5v-10A1.5 1.5 0 0 1 5.5 7H11", false)),
+    "sound" to listOf(IconPart("M4 9.5v5h3.5L12 18.5v-13L7.5 9.5Z", false), IconPart("M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11", false)),
+    "stop" to listOf(IconPart("M8.5 6.5h7a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-7a2 2 0 0 1 2 -2Z", false)),
     "rain" to listOf(IconPart("M7 15a4 4 0 0 1-.5-8 5.5 5.5 0 0 1 10.6-1.3A4 4 0 0 1 17.5 15Z", false), IconPart("m8.5 18-1 2.5M12.5 18l-1 2.5M16.5 18l-1 2.5", false)),
 )

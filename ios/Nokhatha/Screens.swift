@@ -127,11 +127,12 @@ struct TodayScreen: View {
             DialView(today: model.today, catalog: model.catalog, dots: dots, center: w.seasonCenter(season, catalog: model.catalog, today: model.today))
                 .frame(maxWidth: .infinity).padding(.top, 4).padding(.bottom, 10)
             if let hint = model.catalog.season(season.id)?.hint(model.lang) {
-                HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "sparkle").font(.system(size: 14)).foregroundStyle(Theme.sadu).padding(.top, 4)
-                    Text(hint).font(Theme.body(14.5)).foregroundStyle(Theme.ink2).lineSpacing(4)
+                HStack(alignment: .center, spacing: 10) {
+                    Image(systemName: "sparkle").font(.system(size: 14)).foregroundStyle(Theme.sadu)
+                    Text(hint).font(Theme.body(14.5)).foregroundStyle(Theme.ink2).lineSpacing(4).frame(maxWidth: .infinity, alignment: .leading)
+                    ListenButton(seasonId: season.id)
                 }
-                .padding(.horizontal, 16).padding(.vertical, 14).frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 16).padding(.trailing, 12).padding(.vertical, 12).frame(maxWidth: .infinity, alignment: .leading)
                 .background(Theme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.line, lineWidth: 1))
                 .padding(.top, 6)
@@ -618,5 +619,24 @@ struct EventCard: View {
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.rutab.opacity(0.3), lineWidth: 1))
             .padding(.bottom, 14)
         }
+    }
+}
+
+/// The web's listen pill: plays the season's briefing in the nokhatha's voice, inked while it speaks.
+struct ListenButton: View {
+    @EnvironmentObject var model: AppModel
+    let seasonId: String
+    var body: some View {
+        let on = model.voicePlaying == seasonId
+        Button { model.listen(seasonId) } label: {
+            HStack(spacing: 6) {
+                Image(systemName: on ? "stop.fill" : "speaker.wave.2").font(.system(size: 12, weight: .semibold))
+                Text(model.t(on ? "act.listening" : "act.listen")).font(Theme.body(13, "SemiBold"))
+            }
+            .foregroundStyle(on ? Theme.onInk : Theme.ink).padding(.horizontal, 12).frame(height: 34)
+            .background(on ? Theme.ink : Theme.bg, in: Capsule()).overlay(Capsule().stroke(on ? Theme.ink : Theme.line, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(model.t("voice.label", ["season": model.catalog.season(seasonId)?.name(model.lang) ?? ""]))
     }
 }

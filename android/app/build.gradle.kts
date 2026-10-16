@@ -19,7 +19,7 @@ android {
 
     // The app reads the same seasons, tasks, strings and places files as the web app,
     // straight from docs/data, so the three platforms can never drift apart.
-    sourceSets["main"].assets.srcDirs("../../docs/data")
+    sourceSets["main"].assets.srcDirs("../../docs/data", "../../docs/audio")
 
     // The upload key is never stored in the repository: a release build reads it from the environment.
     val keystorePath: String? = System.getenv("NOKHATHA_KEYSTORE")

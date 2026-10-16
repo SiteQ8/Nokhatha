@@ -428,7 +428,11 @@
     "more.ramadan": "قبل رمضان",
     "ramadan.lede": "اللي يجهّزه البيت قبل رمضان بأسبوعين: نظافة عميقة وصيانة قبل السهرات والضيوف، وتنمسح القائمة كل سنة.",
     "ramadan.progress": "{n} من {of} لرمضان {y} هـ",
-    "ramadan.reset": "ابدأ من جديد"
+    "ramadan.reset": "ابدأ من جديد",
+    "act.listen": "اسمع",
+    "act.listening": "يتكلم",
+    "voice.label": "صوت النوخذة عن {season}",
+    "voice.failed": "ما قدرنا نشغّل الصوت"
   },
   "en": {
     "app.name": "Nokhatha",
@@ -859,6 +863,10 @@
     "more.ramadan": "Before Ramadan",
     "ramadan.lede": "What the house gets ready two weeks before Ramadan: a deep clean and maintenance before the long evenings and guests. The list clears every year.",
     "ramadan.progress": "{n} of {of} for Ramadan {y} AH",
-    "ramadan.reset": "Start over"
+    "ramadan.reset": "Start over",
+    "act.listen": "Listen",
+    "act.listening": "Playing",
+    "voice.label": "The nokhatha on {season}",
+    "voice.failed": "The clip could not play"
   }
 }

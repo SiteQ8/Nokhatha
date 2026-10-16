@@ -287,7 +287,7 @@ function viewToday() {
 <section class="today-dial">
 <p class="greet"><span>${greeting()}</span><span class="greet-d">${longDate(TODAY)}</span><span class="greet-h">${esc(hijriText(TODAY))}</span></p>
 <div class="dial-wrap${intro ? ' intro' : ''}">${dial}</div>
-<p class="tip">${icon('spark')}<span>${esc(D.season[season.id]['hint_' + L()])}</span></p>
+<p class="tip">${icon('spark')}<span>${esc(D.season[season.id]['hint_' + L()])}</span><button type="button" class="listen${voicePlaying === season.id ? ' on' : ''}" data-act="listen" data-id="${esc(season.id)}" aria-label="${esc(t('voice.label', { season: D.season[season.id][L()] }))}">${icon(voicePlaying === season.id ? 'stop' : 'sound')}<span>${voicePlaying === season.id ? t('act.listening') : t('act.listen')}</span></button></p>
 </section>
 <section class="today-list">
 ${installTip()}
@@ -1388,6 +1388,34 @@ function shareLink(ev) {
   return 'https://wa.me/?text=' + encodeURIComponent(shareText(ev));
 }
 
+/* ------------------------------------------------------------- the nokhatha's voice */
+
+let voicePlaying = null;
+let voiceAudio = null;
+
+/** The season's briefing, read in the nokhatha's voice; a second press stops it. */
+function listen(seasonId) {
+  if (voicePlaying === seasonId && voiceAudio) {
+    voiceAudio.pause();
+    return;
+  }
+  if (voiceAudio) voiceAudio.pause();
+  const a = new Audio(`../audio/seasons/${seasonId}-${L()}.mp3`);
+  voiceAudio = a;
+  voicePlaying = seasonId;
+  const done = () => {
+    if (voiceAudio !== a) return;
+    voicePlaying = null;
+    voiceAudio = null;
+    render();
+  };
+  a.addEventListener('ended', done);
+  a.addEventListener('pause', done);
+  a.addEventListener('error', () => { done(); toast(t('voice.failed')); });
+  a.play().catch(() => { done(); toast(t('voice.failed')); });
+  render();
+}
+
 async function doBackup(share = false) {
   const pass = val('pass');
   if (pass.length < 8) return toast(t('backup.short'));
@@ -1712,6 +1740,7 @@ async function onClick(e) {
       break;
     }
     case 'ramadan-reset': state.ramadan = { year: ramadanYear(), done: [] }; commit(); break;
+    case 'listen': listen(id); break;
     case 'add-doc': docSheet(null); break;
     case 'doc': docSheet(id); break;
     case 'fill-who': { const input = $('#sheet-root [name="who"]'); if (input) input.value = el.dataset.v; break; }

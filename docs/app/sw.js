@@ -1,6 +1,6 @@
 // Offline support, and reminders from the device itself.
 // One cache per version, the app shell answers every navigation.
-const VERSION = '0.5.1';
+const VERSION = '0.6.0';
 const CACHE = `nokhatha-${VERSION}`;
 // Written by the page: what is due in the coming weeks, already worded in the person's language.
 const DIGEST = 'nokhatha-digest';
@@ -62,6 +62,11 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   if (req.mode === 'navigate') {
     event.respondWith(caches.match('index.html').then((hit) => hit || fetch(req)));
+    return;
+  }
+  if (url.pathname.includes('/audio/seasons/')) {
+    // the briefings are kept once heard, so the voice works offline after the first play
+    event.respondWith(caches.open(CACHE).then((c) => c.match(req).then((hit) => hit || fetch(req).then((res) => { if (res.ok) c.put(req, res.clone()); return res; }))));
     return;
   }
   event.respondWith(caches.match(req, { ignoreSearch: true }).then((hit) => hit || fetch(req)));

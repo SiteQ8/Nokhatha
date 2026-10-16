@@ -184,7 +184,12 @@ body.locked { overflow: hidden; }
   border-radius: 18px; background: var(--surface); border: 1px solid var(--line);
   font-size: 14.5px; line-height: 1.7; color: var(--ink-2);
 }
-.tip .ic { color: var(--sadu); margin-top: 3px; width: 18px; height: 18px; }
+.tip > .ic { color: var(--sadu); margin-top: 3px; width: 18px; height: 18px; }
+.tip > span { flex: 1; }
+.listen { flex: none; display: inline-flex; align-items: center; gap: 6px; align-self: center; height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.listen .ic { width: 16px; height: 16px; color: var(--ink-2); }
+.listen.on { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+.listen.on .ic { color: var(--on-ink); }
 
 .ask {
   margin: 14px 0 0; padding: 16px; border-radius: 20px;
