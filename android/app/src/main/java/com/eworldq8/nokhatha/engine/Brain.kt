@@ -287,6 +287,10 @@ class Brain(val catalog: Catalog, var state: AppState, val today: Day) {
             set(home.id, "gas_hose") { it.copy(lastDone = ago(176)) }
             set(home.id, "hood") { it.copy(lastDone = ago(45)) }
             set(home.id, "pests") { it.copy(lastDone = ago(96), log = listOf(cost(96, 12000))) }
+            set(home.id, "power_bill") {
+                val bills = listOf(28000, 41000, 63000, 58000)
+                it.copy(lastDone = ago(12), log = bills.mapIndexed { i, amount -> LogEntry(today.plusMonths(i - 4).iso, amount, "KWD") } + cost(12, 39000))
+            }
             val keep = setOf("ac_filters", "water_tank", "pests", "roof_drains", "smoke")
             b.state = b.state.copy(items = b.state.items.map { if (it.asset == chalet.id && !keep.contains(it.tpl)) it.copy(enabled = false) else it })
             set(chalet.id, "ac_filters") { it.copy(lastDone = ago(20)) }

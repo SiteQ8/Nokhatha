@@ -368,6 +368,11 @@ public struct Brain: Sendable {
         set(home.id, "gas_hose") { $0.lastDone = ago(176) }
         set(home.id, "hood") { $0.lastDone = ago(45) }
         set(home.id, "pests") { $0.lastDone = ago(96); $0.log = [cost(96, 12000)] }
+        set(home.id, "power_bill") {
+            $0.lastDone = ago(12)
+            let bills = [28000, 41000, 63000, 58000]
+            $0.log = bills.enumerated().map { i, amount in LogEntry(date: today.addingMonths(i - 4).iso, cost: amount, cur: "KWD") } + [cost(12, 39000)]
+        }
         for i in b.state.items.indices where b.state.items[i].asset == chalet.id
             && !["ac_filters", "water_tank", "pests", "roof_drains", "smoke"].contains(b.state.items[i].tpl ?? "") {
             b.state.items[i].enabled = false
