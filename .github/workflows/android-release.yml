@@ -13,6 +13,10 @@ on:
     tags:
       - 'android-v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version name, such as 1.1.0'
+        required: false
 
 permissions:
   contents: read
@@ -36,7 +40,8 @@ jobs:
       - name: Version
         run: |
           echo "NOKHATHA_VERSION_CODE=$((GITHUB_RUN_NUMBER + 1))" >> "$GITHUB_ENV"
-          V="${GITHUB_REF_NAME#android-v}"
+          V="${{ inputs.version }}"
+          test -n "$V" || V="${GITHUB_REF_NAME#android-v}"
           case "$V" in [0-9]*) echo "NOKHATHA_VERSION_NAME=$V" >> "$GITHUB_ENV";; esac
 
       - name: Build and sign
