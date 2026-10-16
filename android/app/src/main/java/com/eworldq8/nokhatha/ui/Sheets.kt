@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,6 +42,20 @@ fun Sheet(model: AppModel, title: String?, onClose: () -> Unit, content: @Compos
 }
 
 /** A date field shaped like the web's input; days are whole civil dates, so the picker works in UTC. */
+/** Who does a task: a name typed once, then offered as a chip on every other task. */
+@Composable
+fun WhoField(model: AppModel, e: Evaluated) {
+    var who by remember(e.item.id) { mutableStateOf(e.item.who ?: "") }
+    val names = model.brain().whoNames().filter { it != who }.take(4)
+    FieldLabel(model.t("item.who"))
+    Input(who, { v -> who = v.take(40); model.update { it.setWho(e.item.id, v) } }, model.t("item.who_ph"))
+    if (names.isNotEmpty()) {
+        Row(Modifier.fillMaxWidth().padding(top = 8.dp).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (n in names) Chip(n, false) { who = n; model.update { it.setWho(e.item.id, n) } }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DayPicker(label: String, day: Day, modifier: Modifier = Modifier, onPick: (Day) -> Unit) {
@@ -127,6 +142,7 @@ fun TaskSheet(model: AppModel, e: Evaluated, onClose: () -> Unit) {
             e.due?.let { model.t("item.next") to w.date(it, model.today) },
             if (e.item.lastKm != null && set(e.every.km) != null) model.t("item.at_km") to w.km(e.item.lastKm) else null,
         ))
+        WhoField(model, e)
         if (e.every.fixed == true) {
             DayPicker(model.t("item.expiry"), pick) { pick = it }
             Spacer(Modifier.height(14.dp))

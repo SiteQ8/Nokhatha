@@ -189,7 +189,7 @@ function row(ev, showAsset = false) {
 <button class="row-body" data-act="item" data-id="${esc(ev.it.id)}">
 <span class="row-ic">${icon(ev.tpl ? ev.tpl.icon : 'spark')}</span>
 <span class="row-main"><span class="row-title">${esc(title)}</span>
-<span class="row-meta">${dueMeta(ev)}${showAsset && ev.asset ? `<span class="asset">${esc(ev.asset.name)}</span>` : ''}</span>
+<span class="row-meta">${dueMeta(ev)}${showAsset && ev.asset ? `<span class="asset">${esc(ev.asset.name)}</span>` : ''}${ev.it.who ? `<span class="asset who">${esc(ev.it.who)}</span>` : ''}</span>
 ${p == null ? '' : `<span class="weave" data-p="${p.toFixed(3)}"><i></i></span>`}</span>
 </button>${doneBtn(ev)}</li>`;
 }
@@ -303,6 +303,7 @@ ${warr.length ? `<div class="sec"><h2>${t('today.warranties')}</h2></div><ul cla
 ${docsSoon.length ? `<div class="sec"><h2>${t('today.docs')}</h2></div><ul class="list">${docsSoon.map(docRow).join('')}</ul>` : ''}
 ${later.length ? `<div class="sec"><h2>${t('today.later')}</h2></div><ul class="list">${later.map((e) => row(e, true)).join('')}</ul>` : ''}
 <div class="actions"><a class="btn btn-quiet" href="https://wa.me/?text=${encodeURIComponent(weekText())}" target="_blank" rel="noopener noreferrer">${icon('chat')}<span>${t('act.share_week')}</span></a></div>
+${whoNames().length ? `<div class="actions who-weeks">${whoNames().slice(0, 4).map((n) => `<a class="btn btn-quiet" href="https://wa.me/?text=${encodeURIComponent(weekText(n))}" target="_blank" rel="noopener noreferrer">${icon('chat')}<span>${esc(t('act.share_week_who', { name: n }))}</span></a>`).join('')}</div>` : ''}
 ${backupNudge()}
 </section></div>`;
 }
@@ -1268,6 +1269,8 @@ function itemSheet(id) {
 <div><dt>${t('item.last')}</dt><dd>${it.lastDone ? esc(dateText(it.lastDone)) : t('item.never')}</dd></div>
 ${ev.due ? `<div><dt>${t('item.next')}</dt><dd>${esc(dateText(ev.due))}</dd></div>` : ''}
 ${it.lastKm != null && ev.every.km ? `<div><dt>${t('item.at_km')}</dt><dd>${esc(kmText(it.lastKm))}</dd></div>` : ''}</dl>`;
+  h += `<label class="field"><span>${t('item.who')}</span><input class="input" name="who" list="who-names" data-who="${esc(id)}" value="${esc(it.who || '')}" placeholder="${esc(t('item.who_ph'))}" autocomplete="off" maxlength="40"></label>
+<datalist id="who-names">${whoNames().map((n) => `<option value="${esc(n)}"></option>`).join('')}</datalist>`;
   if (ev.every.fixed) {
     h += `<label class="field"><span>${t('item.expiry')}</span><input class="input" type="date" name="due" value="${esc(it.due || '')}"></label>
 <button class="btn btn-primary btn-block" data-act="save-due" data-id="${esc(id)}">${t('act.save')}</button>
@@ -1481,25 +1484,32 @@ function shareText(ev) {
   return t(ev.due ? 'share.task' : 'share.task_nodate', vars);
 }
 
-/** The week ahead as one message for the household: overdue, due within seven days, renewals and documents. */
-function weekText() {
+/** The people tasks are assigned to, most used first. */
+function whoNames() {
+  const count = {};
+  for (const i of state.items) if (i.who && i.enabled !== false) count[i.who] = (count[i.who] || 0) + 1;
+  return Object.keys(count).sort((a, b) => count[b] - count[a] || a.localeCompare(b));
+}
+
+/** The week ahead as one message for the household: overdue, due within seven days, renewals and documents; or one person's tasks only. */
+function weekText(who) {
   const end = E.addDays(TODAY, 7);
   const sep = L() === 'ar' ? '، ' : ', ';
-  const lines = [t('week.title'), t('week.head', { from: dateText(TODAY), to: dateText(end) }), ''];
-  const evs = items().filter((e) => e.due);
+  const lines = [who ? t('week.title_who', { name: who }) : t('week.title'), t('week.head', { from: dateText(TODAY), to: dateText(end) }), ''];
+  const evs = items().filter((e) => e.due && (!who || e.it.who === who));
   const overdue = evs.filter((e) => e.status === 'overdue');
   const soon = evs.filter((e) => e.status !== 'overdue' && e.due <= end).sort((a, b) => a.due.localeCompare(b.due));
   const line = (e) => `• ${itemTitle(e)}${e.asset ? ` (${e.asset.name})` : ''}${sep}${e.status === 'overdue' ? rel(e.days) : dateText(e.due)}`;
   if (overdue.length) lines.push(t('week.overdue') + ':', ...overdue.map(line), '');
   if (soon.length) lines.push(...soon.map(line), '');
-  const subs = state.subs.map(evalSub).filter((x) => !x.s.cancelled && x.next <= end);
+  const subs = who ? [] : state.subs.map(evalSub).filter((x) => !x.s.cancelled && x.next <= end);
   if (subs.length) lines.push(t('week.subs') + ':', ...subs.map((x) => `• ${x.s.name}${sep}${E.formatMoney(x.s.amount, x.s.currency, L())}${sep}${dateText(x.next)}`), '');
-  const docs = state.docs.map((d) => evalDoc(d)).filter((x) => x.status !== 'ok');
+  const docs = who ? [] : state.docs.map((d) => evalDoc(d)).filter((x) => x.status !== 'ok');
   if (docs.length) lines.push(t('week.docs') + ':', ...docs.map((x) => `• ${docTitle(x.d, x.ty)}${x.d.who ? ` (${x.d.who})` : ''}${sep}${dateText(x.d.expiry)}`), '');
-  const nx = hawlNext();
+  const nx = who ? null : hawlNext();
   const hawl = nx && nx.date <= end;
   if (hawl) lines.push(`• ${t('week.hawl')}${sep}${dateText(nx.date)}`, '');
-  if (!overdue.length && !soon.length && !subs.length && !docs.length && !hawl) lines.push(t('week.none'), '');
+  if (!overdue.length && !soon.length && !subs.length && !docs.length && !hawl) lines.push(t(who ? 'week.none_who' : 'week.none'), '');
   lines.push(t('week.foot'));
   return lines.join('\n');
 }
@@ -2132,6 +2142,13 @@ function onChange(e) {
   if (el.matches('[data-act="currency"]')) {
     state.settings.currency = el.value;
     commit();
+    return;
+  }
+  if (el.matches('[data-who]')) {
+    const it = state.items.find((x) => x.id === el.dataset.who);
+    if (!it) return;
+    it.who = el.value.trim() || null;
+    commit(true);
     return;
   }
   if (el.matches('[data-act="hawl-m"], [data-act="hawl-d"]')) {

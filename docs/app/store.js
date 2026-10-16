@@ -229,18 +229,18 @@ export function sample(lang, today, templates) {
 
   for (const i of s.items) if (i.asset === chalet.id && !['ac_filters', 'water_tank', 'pests', 'roof_drains', 'smoke'].includes(i.tpl)) i.enabled = false;
   set(chalet.id, 'ac_filters', { lastDone: ago(20) });
-  set(chalet.id, 'water_tank', { lastDone: ago(60) });
-  set(chalet.id, 'pests', { lastDone: ago(40), log: [cost(40, 10000)] });
+  set(chalet.id, 'water_tank', { lastDone: ago(60), who: T('الحارس', 'Caretaker') });
+  set(chalet.id, 'pests', { lastDone: ago(40), log: [cost(40, 10000)], who: T('الحارس', 'Caretaker') });
   set(chalet.id, 'smoke', { lastDone: ago(90) });
 
-  set(car.id, 'oil', { lastDone: ago(100), lastKm: 61900, log: [{ ...cost(100, 18500), km: 61900 }] });
+  set(car.id, 'oil', { lastDone: ago(100), lastKm: 61900, log: [{ ...cost(100, 18500), km: 61900 }], who: T('السواق', 'Driver') });
   set(car.id, 'air_filter', { lastDone: ago(200), lastKm: 57500 });
   set(car.id, 'cabin_filter', { lastDone: ago(190), lastKm: 58000 });
   set(car.id, 'car_ac', { lastDone: ago(172) });
   set(car.id, 'coolant', { lastDone: ago(165) });
   set(car.id, 'tires', { lastDone: ago(160), log: [cost(160, 120000)] });
   set(car.id, 'battery', { lastDone: ago(158) });
-  set(car.id, 'tire_pressure', { lastDone: ago(27) });
+  set(car.id, 'tire_pressure', { lastDone: ago(27), who: T('السواق', 'Driver') });
   set(car.id, 'brake_fluid', { lastDone: ago(400), lastKm: 50000 });
   set(car.id, 'registration', { due: addDays(today, 21) });
   set(car.id, 'insurance', { due: addDays(today, 21) });

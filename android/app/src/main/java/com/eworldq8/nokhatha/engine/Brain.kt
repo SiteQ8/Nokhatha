@@ -101,6 +101,7 @@ class Brain(val catalog: Catalog, var state: AppState, val today: Day) {
     }
 
     fun setDue(id: String, day: Day) = updateItem(id) { it.copy(due = day.iso) }
+    fun setWho(id: String, who: String?) = updateItem(id) { it.copy(who = who?.trim()?.ifEmpty { null }) }
 
     private fun wants(t: Template, f: Map<String, Boolean>) = t.isDefault && (t.needs == null || f[t.needs] == true)
 
@@ -294,17 +295,17 @@ class Brain(val catalog: Catalog, var state: AppState, val today: Day) {
             val keep = setOf("ac_filters", "water_tank", "pests", "roof_drains", "smoke")
             b.state = b.state.copy(items = b.state.items.map { if (it.asset == chalet.id && !keep.contains(it.tpl)) it.copy(enabled = false) else it })
             set(chalet.id, "ac_filters") { it.copy(lastDone = ago(20)) }
-            set(chalet.id, "water_tank") { it.copy(lastDone = ago(60)) }
-            set(chalet.id, "pests") { it.copy(lastDone = ago(40), log = listOf(cost(40, 10000))) }
+            set(chalet.id, "water_tank") { it.copy(lastDone = ago(60), who = t("الحارس", "Caretaker")) }
+            set(chalet.id, "pests") { it.copy(lastDone = ago(40), log = listOf(cost(40, 10000)), who = t("الحارس", "Caretaker")) }
             set(chalet.id, "smoke") { it.copy(lastDone = ago(90)) }
-            set(car.id, "oil") { it.copy(lastDone = ago(100), lastKm = 61900, log = listOf(cost(100, 18500, 61900))) }
+            set(car.id, "oil") { it.copy(lastDone = ago(100), lastKm = 61900, log = listOf(cost(100, 18500, 61900)), who = t("السواق", "Driver")) }
             set(car.id, "air_filter") { it.copy(lastDone = ago(200), lastKm = 57500) }
             set(car.id, "cabin_filter") { it.copy(lastDone = ago(190), lastKm = 58000) }
             set(car.id, "car_ac") { it.copy(lastDone = ago(172)) }
             set(car.id, "coolant") { it.copy(lastDone = ago(165)) }
             set(car.id, "tires") { it.copy(lastDone = ago(160), log = listOf(cost(160, 120000))) }
             set(car.id, "battery") { it.copy(lastDone = ago(158)) }
-            set(car.id, "tire_pressure") { it.copy(lastDone = ago(27)) }
+            set(car.id, "tire_pressure") { it.copy(lastDone = ago(27), who = t("السواق", "Driver")) }
             set(car.id, "brake_fluid") { it.copy(lastDone = ago(400), lastKm = 50000) }
             set(car.id, "registration") { it.copy(due = today.plus(21).iso) }
             set(car.id, "insurance") { it.copy(due = today.plus(21).iso) }

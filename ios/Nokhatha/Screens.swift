@@ -38,6 +38,7 @@ struct TaskRow: View {
                             Text(line.rel).font(Theme.body(13.5, "SemiBold")).foregroundStyle(tint).lineLimit(1)
                             if let d = line.detail { Text(d).font(Theme.body(13.5)).foregroundStyle(Theme.ink3).lineLimit(1) }
                             if showAsset { MetaTag(text: e.asset.name) }
+                            if let who = e.item.who { MetaTag(text: who) }
                         }
                         if let p = model.brain.progress(e) { ProgressLine(value: p, color: tint) }
                     }
@@ -178,6 +179,17 @@ struct TodayScreen: View {
                 TaskList(rows: later, showAsset: true)
             }
             WideButton(title: model.t("act.share_week"), quiet: true, icon: "chat") { share = ShareItem(text: b.weekText(w)) }.padding(.top, 16)
+            let names = Array(b.whoNames().prefix(4))
+            if !names.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(names, id: \.self) { n in
+                            WideButton(title: model.t("act.share_week_who", ["name": n]), quiet: true, icon: "chat", block: false) { share = ShareItem(text: b.weekText(w, who: n)) }
+                        }
+                    }
+                }
+                .padding(.top, 8)
+            }
             BackupNudge()
         }
         .sheet(item: $share) { item in ShareSheet(url: item.url, text: item.text) }

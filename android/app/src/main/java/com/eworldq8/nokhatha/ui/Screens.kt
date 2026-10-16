@@ -58,6 +58,7 @@ fun TaskRow(model: AppModel, e: Evaluated, showAsset: Boolean) {
                     Text(line.first, style = body(13.5, FontWeight.SemiBold, 1.5), color = p.tint(e.status), maxLines = 1)
                     line.second?.let { Text(it, style = body(13.5, lineHeight = 1.5), color = p.ink3, maxLines = 1) }
                     if (showAsset) MetaTag(e.asset.name)
+                    e.item.who?.let { MetaTag(it) }
                 }
                 model.brain().progress(e)?.let { ProgressLine(it, p.tint(e.status)) }
             }
@@ -166,6 +167,12 @@ fun TodayScreen(model: AppModel) {
             TaskList(model, later, true)
         }
         Box(Modifier.padding(top = 16.dp)) { WideButton(model.t("act.share_week"), quiet = true, icon = "chat") { model.shareWeek() } }
+        val names = b.whoNames().take(4)
+        if (names.isNotEmpty()) {
+            Row(Modifier.fillMaxWidth().padding(top = 8.dp).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                for (n in names) WideButton(model.t("act.share_week_who", mapOf("name" to n)), quiet = true, icon = "chat", block = false) { model.shareWeek(n) }
+            }
+        }
         BackupNudge(model)
     }
 }

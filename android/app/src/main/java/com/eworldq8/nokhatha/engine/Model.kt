@@ -135,7 +135,7 @@ data class LogEntry(val date: String, val cost: Int? = null, val cur: String? = 
 data class Item(
     val id: String, val asset: String, val tpl: String?, val enabled: Boolean? = true, val lastDone: String? = null,
     val lastKm: Int? = null, val due: String? = null, val snoozeUntil: String? = null, val firstDue: String? = null,
-    val title: String? = null, val every: Every? = null, val log: List<LogEntry> = emptyList(),
+    val title: String? = null, val every: Every? = null, val log: List<LogEntry> = emptyList(), val who: String? = null,
 ) {
     val isOn: Boolean get() = enabled != false
 }
@@ -199,7 +199,7 @@ data class AppState(
                 JSONObject().put("id", i.id).put("asset", i.asset).put("tpl", i.tpl ?: JSONObject.NULL).put("enabled", i.enabled ?: true)
                     .put("lastDone", i.lastDone ?: JSONObject.NULL).opt("lastKm", i.lastKm).opt("due", i.due).opt("snoozeUntil", i.snoozeUntil)
                     .opt("firstDue", i.firstDue).opt("title", i.title).opt("every", i.every?.toJson())
-                    .put("log", JSONArray(i.log.map { l -> JSONObject().put("date", l.date).opt("cost", l.cost).opt("cur", l.cur).opt("km", l.km) }))
+                    .put("log", JSONArray(i.log.map { l -> JSONObject().put("date", l.date).opt("cost", l.cost).opt("cur", l.cur).opt("km", l.km) })).opt("who", i.who)
             }))
             .put("subs", JSONArray(subs.map { s ->
                 JSONObject().put("id", s.id).put("name", s.name).put("amount", s.amount).put("currency", s.currency).put("cycle", s.cycle)
@@ -237,7 +237,7 @@ data class AppState(
                 items = o.arr("items").map { i ->
                     Item(i.getString("id"), i.getString("asset"), i.str("tpl"), i.bool("enabled"), i.str("lastDone"), i.int("lastKm"), i.str("due"),
                         i.str("snoozeUntil"), i.str("firstDue"), i.str("title"), everyFrom(if (i.has("every") && !i.isNull("every")) i.getJSONObject("every") else null),
-                        i.arr("log").map { LogEntry(it.getString("date"), it.int("cost"), it.str("cur"), it.int("km")) })
+                        i.arr("log").map { LogEntry(it.getString("date"), it.int("cost"), it.str("cur"), it.int("km")) }, i.str("who"))
                 },
                 subs = o.arr("subs").map { s2 ->
                     val u = if (s2.has("usage") && !s2.isNull("usage")) s2.getJSONObject("usage") else JSONObject()

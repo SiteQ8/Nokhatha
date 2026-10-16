@@ -332,23 +332,30 @@ public extension Brain {
 
 public extension Brain {
     /// The week ahead as one message for the household: overdue, due within seven days, renewals and documents.
-    func weekText(_ w: Words) -> String {
+    /// The people tasks are assigned to, most used first.
+    func whoNames() -> [String] {
+        var count: [String: Int] = [:]
+        for i in state.items where i.enabled != false { if let who = i.who { count[who, default: 0] += 1 } }
+        return count.keys.sorted { count[$0]! != count[$1]! ? count[$0]! > count[$1]! : $0 < $1 }
+    }
+
+    func weekText(_ w: Words, who: String? = nil) -> String {
         let end = today.adding(7)
         let sep = w.isArabic ? "، " : ", "
-        var lines = [w.t("week.title"), w.t("week.head", ["from": w.date(today, today: today), "to": w.date(end, today: today)]), ""]
-        let evs = tasks().filter { $0.due != nil }
+        var lines = [who.map { w.t("week.title_who", ["name": $0]) } ?? w.t("week.title"), w.t("week.head", ["from": w.date(today, today: today), "to": w.date(end, today: today)]), ""]
+        let evs = tasks().filter { $0.due != nil && (who == nil || $0.item.who == who) }
         let overdue = evs.filter { $0.status == "overdue" }
         let soon = evs.filter { $0.status != "overdue" && $0.due! <= end }.sorted { $0.due! < $1.due! }
         func line(_ e: Evaluated) -> String { "• \(e.title(w.lang)) (\(e.asset.name))\(sep)\(e.status == "overdue" ? w.rel(e.days ?? 0) : w.date(e.due!, today: today))" }
         if !overdue.isEmpty { lines.append(w.t("week.overdue") + ":"); lines += overdue.map(line); lines.append("") }
         if !soon.isEmpty { lines += soon.map(line); lines.append("") }
-        let subs = subs().filter { $0.sub.cancelled != true && $0.next <= end }
+        let subs = who != nil ? [] : subs().filter { $0.sub.cancelled != true && $0.next <= end }
         if !subs.isEmpty { lines.append(w.t("week.subs") + ":"); lines += subs.map { "• \($0.sub.name)\(sep)\(w.money($0.sub.amount, $0.sub.currency))\(sep)\(w.date($0.next, today: today))" }; lines.append("") }
-        let docs = docs().filter { $0.status != "ok" }
+        let docs = who != nil ? [] : docs().filter { $0.status != "ok" }
         if !docs.isEmpty { lines.append(w.t("week.docs") + ":"); lines += docs.map { x in "• \(docTitle(x.d, lang: w.lang))\(x.d.who.map { " (\($0))" } ?? "")\(sep)\(Day(iso: x.d.expiry).map { w.date($0, today: today) } ?? x.d.expiry)" }; lines.append("") }
-        let hawl = hawlNext().flatMap { $0.date <= end ? $0 : nil }
+        let hawl = who != nil ? nil : hawlNext().flatMap { $0.date <= end ? $0 : nil }
         if let hawl { lines.append("• \(w.t("week.hawl"))\(sep)\(w.date(hawl.date, today: today))"); lines.append("") }
-        if overdue.isEmpty && soon.isEmpty && subs.isEmpty && docs.isEmpty && hawl == nil { lines.append(w.t("week.none")); lines.append("") }
+        if overdue.isEmpty && soon.isEmpty && subs.isEmpty && docs.isEmpty && hawl == nil { lines.append(w.t(who != nil ? "week.none_who" : "week.none")); lines.append("") }
         lines.append(w.t("week.foot"))
         return lines.joined(separator: "\n")
     }

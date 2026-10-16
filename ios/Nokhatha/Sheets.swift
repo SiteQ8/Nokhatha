@@ -4,6 +4,29 @@ import SwiftUI
 
 // MARK: - task
 
+/// Who does a task: a name typed once, then offered as a chip on every other task.
+struct WhoField: View {
+    @EnvironmentObject var model: AppModel
+    let e: Evaluated
+    @State private var who = ""
+    var body: some View {
+        let names = model.brain.whoNames().filter { $0 != who }.prefix(4)
+        FieldLabel(text: model.t("item.who"))
+        Input(text: $who, placeholder: model.t("item.who_ph"))
+            .onAppear { who = e.item.who ?? "" }
+            .onChange(of: who) { v in
+                let w = String(v.prefix(40))
+                if w != (model.state?.items.first { $0.id == e.item.id }?.who ?? "") { model.update { $0.setWho(e.item.id, w) } }
+            }
+        if !names.isEmpty {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) { ForEach(Array(names), id: \.self) { n in ChipButton(text: n, on: false) { who = n } } }
+            }
+            .padding(.top, 8)
+        }
+    }
+}
+
 struct TaskSheet: View {
     @EnvironmentObject var model: AppModel
     let e: Evaluated
@@ -50,6 +73,7 @@ struct TaskSheet: View {
                     .background(Theme.bg, in: RoundedRectangle(cornerRadius: 16, style: .continuous)).padding(.top, 14)
             }
             Facts(items: facts(hasKm: hasKm))
+            WhoField(e: e)
             if e.every.fixed == true {
                 DayField(label: model.t("item.expiry"), day: $pick)
                 WideButton(title: model.t("act.save")) { model.update("toast.saved") { $0.setDue(e.item.id, pick) }; onClose() }.padding(.top, 14)

@@ -139,6 +139,13 @@ public struct Brain: Sendable {
         state.items[i].due = day.iso
     }
 
+    /// Who does a task; an empty name clears it.
+    public mutating func setWho(_ id: String, _ who: String?) {
+        guard let i = state.items.firstIndex(where: { $0.id == id }) else { return }
+        let w = (who ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        state.items[i].who = w.isEmpty ? nil : w
+    }
+
     public mutating func snooze(_ id: String, days: Int = 7) {
         guard let i = state.items.firstIndex(where: { $0.id == id }) else { return }
         state.items[i].snoozeUntil = today.adding(days).iso
@@ -380,17 +387,17 @@ public struct Brain: Sendable {
             b.state.items[i].enabled = false
         }
         set(chalet.id, "ac_filters") { $0.lastDone = ago(20) }
-        set(chalet.id, "water_tank") { $0.lastDone = ago(60) }
-        set(chalet.id, "pests") { $0.lastDone = ago(40); $0.log = [cost(40, 10000)] }
+        set(chalet.id, "water_tank") { $0.lastDone = ago(60); $0.who = T("الحارس", "Caretaker") }
+        set(chalet.id, "pests") { $0.lastDone = ago(40); $0.log = [cost(40, 10000)]; $0.who = T("الحارس", "Caretaker") }
         set(chalet.id, "smoke") { $0.lastDone = ago(90) }
-        set(car.id, "oil") { $0.lastDone = ago(100); $0.lastKm = 61900; $0.log = [cost(100, 18500, km: 61900)] }
+        set(car.id, "oil") { $0.lastDone = ago(100); $0.lastKm = 61900; $0.log = [cost(100, 18500, km: 61900)]; $0.who = T("السواق", "Driver") }
         set(car.id, "air_filter") { $0.lastDone = ago(200); $0.lastKm = 57500 }
         set(car.id, "cabin_filter") { $0.lastDone = ago(190); $0.lastKm = 58000 }
         set(car.id, "car_ac") { $0.lastDone = ago(172) }
         set(car.id, "coolant") { $0.lastDone = ago(165) }
         set(car.id, "tires") { $0.lastDone = ago(160); $0.log = [cost(160, 120000)] }
         set(car.id, "battery") { $0.lastDone = ago(158) }
-        set(car.id, "tire_pressure") { $0.lastDone = ago(27) }
+        set(car.id, "tire_pressure") { $0.lastDone = ago(27); $0.who = T("السواق", "Driver") }
         set(car.id, "brake_fluid") { $0.lastDone = ago(400); $0.lastKm = 50000 }
         set(car.id, "registration") { $0.due = today.adding(21).iso }
         set(car.id, "insurance") { $0.due = today.adding(21).iso }

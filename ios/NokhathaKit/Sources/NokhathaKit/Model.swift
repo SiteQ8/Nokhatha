@@ -130,6 +130,7 @@ public struct Item: Codable, Hashable, Sendable, Identifiable {
     public var title: String?
     public var every: Every?
     public var log: [LogEntry]?
+    public var who: String?
 
     public init(id: String, asset: String, tpl: String?, title: String? = nil, every: Every? = nil) {
         self.id = id; self.asset = asset; self.tpl = tpl; self.enabled = true; self.title = title; self.every = every; self.log = []
